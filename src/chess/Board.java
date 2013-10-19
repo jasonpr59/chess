@@ -110,6 +110,10 @@ public class Board {
     public Piece getPiece(Square square){
         return board[square.getFile() - 1][square.getRank() - 1];
     }
+    
+    public Square getEnPassantSquare(){
+        return enPassantSquare;
+    }
 
     
 }

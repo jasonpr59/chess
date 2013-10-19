@@ -24,4 +24,8 @@ public class Square {
         return file;
     }
 
+    public Square plus(Delta delta) {
+        return new Square(file + delta.getDeltaFile(), rank + delta.getDeltaRank());
+    }
+    
 }
