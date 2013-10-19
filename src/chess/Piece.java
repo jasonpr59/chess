@@ -39,28 +39,5 @@ public class Piece {
     
     public PieceColor getPieceColor(){
         return this.color;
-    }
-    
-    public boolean hasMoveAbility(Square start, Square end, Square enPassantSquare){
-        int deltaFile = end.getFile() - start.getFile();
-        int deltaRank = end.getRank() - start.getRank();
-        
-        if (type == PieceType.ROOK) {
-            return (deltaRank == 0) ^ (deltaFile == 0);
-        } else if (type == PieceType.BISHOP){
-            return Math.abs(deltaRank) == Math.abs(deltaFile);
-        } else if (type == PieceType.QUEEN){
-            return ((deltaRank == 0) ^ (deltaFile == 0)) ||
-                    (Math.abs(deltaRank) == Math.abs(deltaFile));
-        } else if (type == PieceType.KNIGHT){
-            // TODO: Implement
-        } else if (type == PieceType.KING){
-            // TODO: Implement
-        } else if (type == PieceType.PAWN){
-            //TODO: Implement
-        } else {
-            throw new IllegalArgumentException("Invalid piece type " + type);
-        }
-    }
-    
+    }    
 }

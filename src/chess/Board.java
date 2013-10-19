@@ -84,12 +84,11 @@ public class Board {
      */
     public void move(Move move) throws InvalidMoveException{
         Square start = move.getStart();
-        Square end = move.getEnd();
-        
+
         Piece movingPiece = getPiece(start);
         
-        if (!movingPiece.hasMoveAbility(start, end)) {
-            throw new PieceAbilityException(movingPiece + " cannot move from " + start + " to " + end);
+        if (!move.isSane(this)) {
+            throw new PieceAbilityException(movingPiece + " cannot make move " + move);
         }
         
         // TODO(jasonpr): Finish implementing.
@@ -108,7 +107,7 @@ public class Board {
     /**
      * Get the piece at the given square.
      */
-    private Piece getPiece(Square square){
+    public Piece getPiece(Square square){
         return board[square.getFile() - 1][square.getRank() - 1];
     }
 
