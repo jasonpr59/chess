@@ -97,6 +97,13 @@ public class Move {
         }
     }
     
+    private boolean isLandable(Board board) {
+        Piece movingPiece = board.getPiece(start);
+        Piece capturedPiece = board.getPiece(end);
+        return (capturedPiece == null ||
+                capturedPiece.getPieceColor() != movingPiece.getPieceColor());
+    }
+
     private boolean isDiagonal() {
         return Math.abs(delta.getDeltaRank()) == Math.abs(delta.getDeltaFile());
     }
