@@ -26,4 +26,12 @@ public class Delta{
     public Delta scaled(int scale) {
         return new Delta(deltaFile * scale, deltaRank * scale);
     }
+
+    public Delta unitized() {
+        // TODO(jasonpr): Check that is diagonal or is basic.
+        // This will require some refactoring, since currently
+        // isDiagonal and isBasic are methods of Move.
+        int length = Math.max(Math.abs(deltaFile), Math.abs(deltaRank));
+        return new Delta(deltaFile / length, deltaRank / length);
+    }
 }

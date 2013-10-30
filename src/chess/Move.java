@@ -1,5 +1,8 @@
 package chess;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 public class Move {
 
     private final Square start;
@@ -77,24 +80,43 @@ public class Move {
                 } else {
                     return false;
                 }
-                break;
             case KNIGHT:
                 return Math.abs(delta.getDeltaRank() * delta.getDeltaFile()) == 2; 
-                break;
             case BISHOP:
                 return isDiagonal() && isOpen(board);
-                break;
             case ROOK:
                 return isBasic() && isOpen(board);
-                break;
             case QUEEN:
                 return (isBasic() || isDiagonal()) && isOpen(board);
-                break;
             case KING:
                 // TODO(jasonpr): Handle castling!
                 return (Math.abs(delta.getDeltaRank()) <= 1 && Math.abs(delta.getDeltaFile()) <= 1);
-                break;
+            default:
+                throw new RuntimeException("The piece type was not matched in the switch statement.");
         }
+    }
+    
+    private boolean isOpen(Board board) {
+        assert isDiagonal() || isBasic();
+        for (Square s : between()) {
+            if (board.getPiece(s) != null) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private Collection<Square> between() {
+        assert isDiagonal() || isBasic();
+
+        Delta unitStep = delta.unitized();
+        Collection<Square> squares = new ArrayList<Square>();
+        Square currentSquare = start.plus(unitStep);
+        while (!currentSquare.equals(end)) {
+            squares.add(currentSquare);
+            currentSquare = currentSquare.plus(unitStep);
+        }
+        return squares;
     }
     
     private boolean isLandable(Board board) {
