@@ -40,5 +40,28 @@ public class Square {
 
     public Square plus(Delta delta) {
         return new Square(file + delta.getDeltaFile(), rank + delta.getDeltaRank());
-    }    
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        } else if (obj.getClass() != this.getClass()) {
+            return false;
+        }
+        
+        Square that = (Square) obj;
+        return file == that.getFile() && rank == that.getRank();
+    }
+    
+    @Override
+    public int hashCode() {
+        return 17 * file + rank;
+    }
+
+    @Override
+    public String toString(){
+        // TODO(jasonpr): Make this say "a4" instead of "Square(file: 1, rank: 4)".
+        return "Square(file: " + file + ", rank: " + rank + ")";
+    }
 }
