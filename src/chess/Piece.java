@@ -39,5 +39,29 @@ public class Piece {
     
     public PieceColor getPieceColor(){
         return this.color;
-    }    
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        
+        if (obj.getClass() != this.getClass()) {
+            return false;
+        }
+        
+        Piece that = (Piece) obj;
+        return type == that.getType() && color == that.getPieceColor();
+    }
+    
+    @Override
+    public int hashCode() {
+        return 17 * type.hashCode() + color.hashCode();
+    }
+    
+    @Override
+    public String toString() {
+        return "Piece of type " + type + " and color "+ color;
+    }
 }
