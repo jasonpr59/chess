@@ -133,4 +133,27 @@ public class Move {
     private boolean isBasic() {
         return (delta.getDeltaRank() == 0) ^ (delta.getDeltaFile() == 0);
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+
+        Move that = (Move) obj;
+        return start.equals(that.getStart()) && end.equals(that.getEnd());
+    }
+
+    @Override
+    public int hashCode() {
+        return 17 * start.hashCode() + end.hashCode();
+    }
+
+    @Override
+    public String toString(){
+        return "Move(" + start + ", " + end + ")";
+    }
+    
+    
 }
