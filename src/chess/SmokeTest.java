@@ -10,7 +10,7 @@ public class SmokeTest {
 
     @Test
     public void testSmokeTest() {
-        Board b = new Board();
+        Board b = Board.newGame();
         Square sq = Square.algebraic("b1");
 
         // Assert white knight at b1.
