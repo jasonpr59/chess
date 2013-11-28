@@ -92,8 +92,13 @@ public class Square {
 
     @Override
     public String toString(){
-        // TODO(jasonpr): Make this say "a4" instead of "Square(file: 1, rank: 4)".
-        return "Square(file: " + file + ", rank: " + rank + ")";
+        // TODO(jasonpr): Do this in one line,
+        // without making Java angry about int vs. char types.
+        char fileChar = 'a';
+        fileChar -= 1;
+        fileChar += file;
+
+        return Character.toString(fileChar) + rank;
     }
     
     /**
