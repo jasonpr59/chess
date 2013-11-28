@@ -2,6 +2,8 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import exceptions.NonexistantSquareException;
 
@@ -10,6 +12,19 @@ public class Square {
     // Rank and file are both in [1...8].
     private final int rank;
     private final int file;
+    // The space of all squares.
+    public static final Iterable<Square> ALL;
+    
+    
+    static {
+        List<Square> all = new ArrayList<Square>();
+        for (int file = 1; file <= 8; file++) {
+            for (int rank = 1; rank <= 8; rank++) {
+                all.add(new Square(file, rank));
+            }
+        }
+        ALL = Collections.unmodifiableList(all);
+    }
     
     public Square(int file, int rank) throws NonexistantSquareException{
         if (rank < 1 || rank > 8){

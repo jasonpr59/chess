@@ -3,9 +3,9 @@ package chess;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
+import chess.Piece.PieceColor;
 import exceptions.InvalidMoveException;
 import exceptions.PieceAbilityException;
 
@@ -195,6 +195,10 @@ public class Board {
      */
     public Set<Move> saneMoves(Square start) {
         Piece movingPiece = getPiece(start);
+        
+        if (movingPiece == null) {
+            return new HashSet<Move>();
+        }
 
         Collection<Square> candidateEnds;
         Collection<Move> candidateMoves;
@@ -266,4 +270,23 @@ public class Board {
         }
         return saneMoves;
     }
+    
+    
+    public boolean isAttackable(Square target, PieceColor attackerColor) {
+        for (Square attackerSquare : Square.ALL) {
+            Piece attacker = getPiece(attackerSquare);
+            if (attacker == null || attacker.getPieceColor() != attackerColor) {
+                // No attacker on this square.
+                continue;
+            }
+            for (Move m: saneMoves(attackerSquare)) {
+                if (m.getEnd().equals(target)) {
+                    return true;
+                }
+            }
+        }
+        // Nobody attacks the target.
+        return false;
+    }
+    
 }
