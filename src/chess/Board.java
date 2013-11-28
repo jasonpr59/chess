@@ -7,6 +7,7 @@ import java.util.Set;
 
 import chess.Piece.PieceColor;
 import exceptions.InvalidMoveException;
+import exceptions.NonexistantSquareException;
 import exceptions.PieceAbilityException;
 
 public class Board {
@@ -226,7 +227,12 @@ public class Board {
 
                 candidateMoves = new ArrayList<Move>();
                 for (Delta delta : deltas) {
-                    candidateMoves.add(new Move(start, delta));
+                    try {
+                        candidateMoves.add(new Move(start, delta));
+                    } catch (NonexistantSquareException e) {
+                        // Swallow it.  If this move would have landed us on a
+                        // nonexistant square, then it's not a valid move.
+                    }
                 }
                 break;
             case KNIGHT:
@@ -244,7 +250,11 @@ public class Board {
                             dRank = rankDir * order[0];
                             dFile = fileDir * order[1];
                             delta = new Delta(dFile, dRank);
-                            candidateMoves.add(new Move(start, delta));
+                            try {
+                                candidateMoves.add(new Move(start, delta));
+                            } catch (NonexistantSquareException e) {
+                                // Swallow it. (See explanation in PAWN case).
+                            }
                         }
                     }
                 }
