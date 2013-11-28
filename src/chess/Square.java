@@ -124,6 +124,7 @@ public class Square {
                     break;
                 }
                 foundSquares.add(foundSquare);
+                factor++;
             }
         }
         return foundSquares;

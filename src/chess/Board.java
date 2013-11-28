@@ -222,8 +222,8 @@ public class Board {
                 Collection<Delta> deltas = new ArrayList<Delta>();
                 deltas.add(fwd);
                 deltas.add(fwd.scaled(2));
-                deltas.add(Delta.sum(fwd, new Delta(0, 1)));
-                deltas.add(Delta.sum(fwd,  new Delta(0, -1)));
+                deltas.add(Delta.sum(fwd, new Delta(1, 0)));
+                deltas.add(Delta.sum(fwd,  new Delta(-1, 0)));
 
                 candidateMoves = new ArrayList<Move>();
                 for (Delta delta : deltas) {
@@ -292,7 +292,22 @@ public class Board {
         return saneMoves;
     }
     
-    
+    public Collection<Move> legalMoves() {
+        Collection<Move> legalMoves = new ArrayList<Move>();
+        Piece movingPiece;
+        for (Square start : Square.ALL) {
+            movingPiece = getPiece(start);
+            if (movingPiece == null || movingPiece.getPieceColor() != toMoveColor) {
+                continue;
+            }
+            for (Move saneMove : saneMoves(start)) {
+                // TODO: Ensure move is *legal* (not just sane).
+                legalMoves.add(saneMove);
+            }
+        }
+        return legalMoves;
+    }
+
     public boolean isAttackable(Square target, PieceColor attackerColor) {
         for (Square attackerSquare : Square.ALL) {
             Piece attacker = getPiece(attackerSquare);

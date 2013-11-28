@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Collection;
+
 import org.junit.Test;
 
 public class SmokeTest {
@@ -27,6 +29,10 @@ public class SmokeTest {
         // Assert that the white knight at b1 cannot move to d2.
         Move m3 = new Move(sq, Square.algebraic("d2"));
         assertFalse(m3.isSane(b));
+
+        // Assert that there are 20 sane initial moves.
+        Collection<Move> firstMoves = b.legalMoves();
+        assertEquals(firstMoves.size(), 20);
     }
 
 }
