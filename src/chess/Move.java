@@ -155,5 +155,52 @@ public class Move {
         return "Move(" + start + ", " + end + ")";
     }
     
+    /**
+     * Determine the square that is occupied by the piece that's to be captured by this move.
+     * (Takes en passant into account.)
+     * @param board The board on which the move is to be made.
+     * @return The square that is occupied by the to-be-captured piece,
+     *  or null if no piece is to be captured.
+     *  @requires That this move is sane. 
+     */
+    public Square capturedSquare(Board board) {
+        // TODO(jasonpr): Factor some common code out of here and isSane.
+        Piece movingPiece = board.getPiece(start);
+        if (board.getPiece(end) != null) {
+            // There's something in the landing square, so that's what's captured.
+            return end;
+        } else if (isPawnCapture(board)){
+            return board.getEnPassantSquare();
+        } else {
+            // Nothing at destination, and not a pawn.
+            return null;
+        }
+    }
     
+    public Square enPassantSquare(Board board) {
+        Piece movingPiece = board.getPiece(start);
+        if (movingPiece == null || movingPiece.getType() != Piece.PieceType.PAWN) {
+            return null;
+        }
+        
+        if (Math.abs(delta.getDeltaRank()) == 2) {
+            return Square.mean(start, end);
+        } else {
+            return null;
+        }
+    }
+    
+    /**
+     * 
+     * @return
+     * @requires that this move is sane.
+     */
+    private boolean isPawnCapture(Board board) {
+        Piece movingPiece = board.getPiece(start);
+        if (movingPiece == null || movingPiece.getType() != Piece.PieceType.PAWN) {
+            // Not a pawn.
+            return false;
+        }
+        return delta.getDeltaFile() != 0;
+    }
 }

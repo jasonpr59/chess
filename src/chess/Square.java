@@ -42,6 +42,17 @@ public class Square {
         return new Square(file + delta.getDeltaFile(), rank + delta.getDeltaRank());
     }
     
+    public static Square mean(Square a, Square b) {
+        int fileSum = a.getFile() + b.getFile();
+        int rankSum = a.getRank() + b.getRank();
+        if (fileSum % 2 != 0 || rankSum % 2 != 0) {
+            throw new IllegalArgumentException("Input squares " + a + " and " + b +
+                                               " do not have a mean that's a valid square.");
+        }
+        
+        return new Square(fileSum / 2, rankSum / 2);
+    }
+    
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
