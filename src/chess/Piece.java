@@ -1,5 +1,6 @@
 package chess;
 
+
 public class Piece {
     public enum PieceType{
         PAWN,
@@ -12,7 +13,18 @@ public class Piece {
     
     public enum PieceColor{
         WHITE,
-        BLACK
+        BLACK;
+
+        public PieceColor opposite() {
+            switch (this) {
+            case WHITE:
+                return BLACK;
+            case BLACK:
+                return WHITE;
+            default:
+                throw new RuntimeException("Unexpected PieceColor " + this);
+            }
+        }
     }
     
     public static PieceColor getOppositeColor(PieceColor pieceColor){

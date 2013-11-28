@@ -23,6 +23,8 @@ public class Board {
     
     private Square enPassantSquare;
     
+    private PieceColor toMoveColor;
+    
     private Board() {
         board = new Piece[8][8];
 
@@ -88,6 +90,7 @@ public class Board {
         b.placePiece(new Piece(Piece.PieceType.ROOK, Piece.PieceColor.BLACK),
                     new Square(8, 8));
         
+        b.setToMoveColor(Piece.PieceColor.WHITE);
         b.freeze();
         return b;
     }
@@ -140,6 +143,8 @@ public class Board {
 
         result.setEnPassantSquare(move.enPassantSquare(this));
 
+        result.setToMoveColor(toMoveColor.opposite());
+        
         return result.freeze();
     }
  
@@ -163,6 +168,12 @@ public class Board {
     public Board setEnPassantSquare(Square square) {
         assertUnfrozen();
         this.enPassantSquare = square;
+        return this;
+    }
+    
+    public Board setToMoveColor(PieceColor color) {
+        assertUnfrozen();
+        this.toMoveColor = color;
         return this;
     }
     
@@ -288,5 +299,8 @@ public class Board {
         // Nobody attacks the target.
         return false;
     }
-    
+
+    public PieceColor getToMoveColor() {
+        return toMoveColor;
+    }
 }
