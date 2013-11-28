@@ -1,16 +1,21 @@
 package chess;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
+import exceptions.NonexistantSquareException;
+
 public class Square {
     
     // Rank and file are both in [1...8].
     private final int rank;
     private final int file;
     
-    public Square(int file, int rank) throws IllegalArgumentException{
+    public Square(int file, int rank) throws NonexistantSquareException{
         if (rank < 1 || rank > 8){
-            throw new IllegalArgumentException("Illegal rank: " + rank);
+            throw new NonexistantSquareException("Illegal rank: " + rank);
         } else if (file < 1 || file >8) {
-            throw new IllegalArgumentException("Illegal file: " + file);
+            throw new NonexistantSquareException("Illegal file: " + file);
         }
         this.rank = rank;
         this.file = file;
@@ -74,5 +79,46 @@ public class Square {
     public String toString(){
         // TODO(jasonpr): Make this say "a4" instead of "Square(file: 1, rank: 4)".
         return "Square(file: " + file + ", rank: " + rank + ")";
+    }
+    
+    /**
+     * Return all squares that are in any specified direction from this square.
+     * @param directions a set of quasi-unit Deltas, specifying directions to explore.
+     * @return
+     */
+    public Collection<Square> explore(Collection<Delta> directions) {
+        // Moving more than 7 in *any* direction will land you
+        // off the board.
+        return explore(directions, 7);
+    }
+    
+    public Collection<Square> explore(Collection<Delta> directions, int maxDist) {
+        Collection<Square> foundSquares = new ArrayList<Square>();
+        int factor;
+        Square foundSquare;
+        for (Delta d : directions) {
+            factor = 1;
+            // We should always break by attempting to create a bad square,
+            // but keep factor below 8, just in case.
+            // TODO: Throw a RuntimeException if factor grows beyond 8?
+            // TODO: Remove use of Exceptions for control flow?
+            while (factor <= maxDist) {
+                try {
+                    foundSquare = this.plus(d.scaled(factor));
+                } catch (NonexistantSquareException e) {
+                    break;
+                }
+                foundSquares.add(foundSquare);
+            }
+        }
+        return foundSquares;
+    }
+    
+    public Collection<Move> distributeOverEnds(Collection<Square> ends) {
+        Collection<Move> moves = new ArrayList<Move>();
+        for (Square end : ends) {
+            moves.add(new Move(this, end));
+        }
+        return moves;
     }
 }

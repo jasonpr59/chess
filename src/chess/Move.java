@@ -22,6 +22,10 @@ public class Move {
         }
     }
     
+    public Move(Square start, Delta delta) {
+        this(start, start.plus(delta));
+    }
+    
     public Square getStart() {
         return start;
     }

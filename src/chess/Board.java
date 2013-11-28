@@ -1,6 +1,9 @@
 package chess;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import exceptions.InvalidMoveException;
@@ -185,5 +188,82 @@ public class Board {
         }
     }
     
+    /**
+     * Get the set of sane move available to the piece on some square.
+     * @param square
+     * @return
+     */
+    public Set<Move> saneMoves(Square start) {
+        Piece movingPiece = getPiece(start);
+
+        Collection<Square> candidateEnds;
+        Collection<Move> candidateMoves;
+
+        switch (movingPiece.getType()) {
+            case PAWN:
+                boolean isWhite = movingPiece.getPieceColor() == Piece.PieceColor.WHITE;
+                Delta fwd = new Delta(0, isWhite? 1 : -1);
+                Collection<Delta> deltas = new ArrayList<Delta>();
+                deltas.add(fwd);
+                deltas.add(fwd.scaled(2));
+                deltas.add(Delta.sum(fwd, new Delta(0, 1)));
+                deltas.add(Delta.sum(fwd,  new Delta(0, -1)));
+
+                candidateMoves = new ArrayList<Move>();
+                for (Delta delta : deltas) {
+                    candidateMoves.add(new Move(start, delta));
+                }
+                break;
+            case KNIGHT:
+                int[] rankDirs = {-1, 1};
+                int[] fileDirs = {-1, 1};
+                int[][] orders = {{1, 2}, {2, 1}}; 
+
+                int dRank;
+                int dFile;
+                Delta delta;
+                candidateMoves = new ArrayList<Move>();
+                for (int rankDir : rankDirs) {
+                    for (int fileDir : fileDirs) {
+                        for (int[] order : orders) {
+                            dRank = rankDir * order[0];
+                            dFile = fileDir * order[1];
+                            delta = new Delta(dFile, dRank);
+                            candidateMoves.add(new Move(start, delta));
+                        }
+                    }
+                }
+                break;
+            case BISHOP:
+                candidateEnds = start.explore(Delta.DIAGONAL_DIRS);
+                candidateMoves = start.distributeOverEnds(candidateEnds);
+                break;
+            case ROOK:
+                candidateEnds = start.explore(Delta.BASIC_DIRS);
+                candidateMoves = start.distributeOverEnds(candidateEnds);
+                break;
+            case QUEEN:
+                candidateEnds = start.explore(Delta.QUEEN_DIRS);
+                candidateMoves = start.distributeOverEnds(candidateEnds);
+                break;
+            case KING:
+                // TODO: Handle castling.
+                candidateEnds = start.explore(Delta.QUEEN_DIRS, 1);
+                candidateMoves = start.distributeOverEnds(candidateEnds);
+                break;
+            default:
+                throw new RuntimeException("The piece type was not matched in the switch statement.");
+        }
+        return filterSane(candidateMoves);
+    }
     
+    private Set<Move> filterSane(Collection<Move> candidates) {
+        Set<Move> saneMoves = new HashSet<Move>();
+        for (Move c : candidates) {
+            if (c.isSane(this)) {
+                saneMoves.add(c);
+            }
+        }
+        return saneMoves;
+    }
 }
