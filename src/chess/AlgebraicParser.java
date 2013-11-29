@@ -108,12 +108,16 @@ public class AlgebraicParser {
         Piece movingPiece;
         Move candidateMove;
         for (Square start : candidateStarts) {
-            // TODO(jasonpr): Factor this duplicated chunk out from here and from start().
+            if (start.equals(end)) {
+                continue;
+            }
             movingPiece = board.getPiece(start);
-            if (movingPiece == null || movingPiece.getType() != type) {
+            if (movingPiece == null || movingPiece.getType() != type ||
+                movingPiece.getPieceColor() != board.getToMoveColor()) {
                 continue;
             }
             candidateMove = new Move(start, end);
+            
             if (candidateMove.isLegal(board)) {
                 return start;
             }

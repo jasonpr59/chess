@@ -7,6 +7,8 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import player.Heuristic;
+
 import chess.AlgebraicParser;
 import chess.Board;
 import chess.Move;
@@ -36,6 +38,7 @@ public class ChessServer {
             }
             out.println("Board");
             out.println(colorize(board));
+            out.println("H(board) = " + Heuristic.pieceValueHeuristic(board));
         }
     }
 
