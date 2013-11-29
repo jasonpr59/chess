@@ -139,10 +139,16 @@ public class Board {
         }
 
         result.placePiece(null, start);
-        result.placePiece(movingPiece, end);
+        if (move instanceof PromotionMove) {
+            PromotionMove promotionMove = (PromotionMove) move; 
+            Piece promotedPiece = new Piece(promotionMove.getPromotedType(),
+                                            movingPiece.getPieceColor());
+            result.placePiece(promotedPiece, end);
+        } else {
+            result.placePiece(movingPiece, end);
+        }
         
         // TODO(jasonpr): Handle castling.
-        // TODO(jasonpr): Hanlde promotion.
 
         result.setEnPassantSquare(move.enPassantSquare(this));
 
@@ -153,7 +159,6 @@ public class Board {
             throw new InvalidMoveException();
         }
 
-        
         return result.freeze();
     }
  
@@ -234,12 +239,25 @@ public class Board {
                 deltas.add(Delta.sum(fwd,  new Delta(-1, 0)));
 
                 candidateMoves = new ArrayList<Move>();
+                Move candidateMove;
                 for (Delta delta : deltas) {
                     try {
-                        candidateMoves.add(new Move(start, delta));
+                        candidateMove = new Move(start, delta);
                     } catch (NonexistantSquareException e) {
-                        // Swallow it.  If this move would have landed us on a
-                        // nonexistant square, then it's not a valid move.
+                        continue;
+                    }
+                    int endRank = candidateMove.getEnd().getRank();
+                    int deltaRank = delta.getDeltaRank();
+                    // Technically, we could just check that endRank in {1, 8}.
+                    // Not totally sure why it feels nicer to do the extra
+                    // deltaRank check.
+                    if ((endRank == 8 && deltaRank == 1) ||
+                        (endRank == 1 && deltaRank == -1)) {
+                        // It's a promotion!
+                        candidateMoves.addAll(PromotionMove.allPromotions(candidateMove));
+                    } else {
+                        // It's a non-promotion.
+                        candidateMoves.add(candidateMove);
                     }
                 }
                 break;

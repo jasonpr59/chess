@@ -33,6 +33,10 @@ public class Move {
     public Square getEnd() {
         return end;
     }
+    
+    public Delta getDelta() {
+        return delta;
+    }
 
     /**
      * Return whether this move is sane on a particular board.
