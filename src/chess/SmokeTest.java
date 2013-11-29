@@ -66,6 +66,8 @@ public class SmokeTest {
             // Good!  This move *was* invalid.
             // Swallow the exception.
         }
+
+        assertEquals(5, blackChecked.legalMoves().size());
     }
 
 }
