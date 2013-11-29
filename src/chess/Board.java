@@ -122,6 +122,8 @@ public class Board {
         
         Piece movingPiece = getPiece(start);
         
+        // TODO: Consider doing sanity check outside,
+        // and just requiring that the move is sane.
         if (!move.isSane(this)) {
             throw new PieceAbilityException(movingPiece + " cannot make move " + move);
         }
@@ -145,6 +147,12 @@ public class Board {
         result.setEnPassantSquare(move.enPassantSquare(this));
 
         result.setToMoveColor(toMoveColor.opposite());
+
+        // Current mover cannot be checked in resulting Board.
+        if (result.checked(toMoveColor)) {
+            throw new InvalidMoveException();
+        }
+
         
         return result.freeze();
     }
@@ -301,11 +309,42 @@ public class Board {
                 continue;
             }
             for (Move saneMove : saneMoves(start)) {
-                // TODO: Ensure move is *legal* (not just sane).
-                legalMoves.add(saneMove);
+                // TODO: Handle castling.
+                Board result;
+                try {
+                    result = moveResult(saneMove);
+                } catch (InvalidMoveException e) {
+                    // TODO: Deal with this.
+                    // This should never actually be thrown.
+                    // Maybe InvalidMoveException should be a RuntimeException?
+                    continue;
+                }
+                if (!result.checked(toMoveColor)) {
+                    legalMoves.add(saneMove);
+                }
             }
         }
         return legalMoves;
+    }
+
+    private Square kingSquare(PieceColor kingColor) {
+        // TODO: Make this more efficient by "caching" the king's position
+        // as an attribute of board.
+        Piece king = new Piece(Piece.PieceType.KING, kingColor);
+        
+        for (Square possibleKingSquare : Square.ALL){
+            if (king.equals(getPiece(possibleKingSquare))) {
+                return possibleKingSquare;
+            }
+        }
+        // Didn't return anything!
+        throw new RuntimeException("There is no king of color " + kingColor + " on the board!");
+        
+    }
+    
+    private boolean checked(PieceColor kingColor) {
+        Square kingSquare = kingSquare(kingColor);
+        return isAttackable(kingSquare, kingColor.opposite());
     }
 
     public boolean isAttackable(Square target, PieceColor attackerColor) {
