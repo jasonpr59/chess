@@ -320,12 +320,7 @@ public class Board {
     
     public Collection<Move> legalMoves() {
         Collection<Move> legalMoves = new ArrayList<Move>();
-        Piece movingPiece;
         for (Square start : Square.ALL) {
-            movingPiece = getPiece(start);
-            if (movingPiece == null || movingPiece.getPieceColor() != toMoveColor) {
-                continue;
-            }
             for (Move saneMove : saneMoves(start)) {
                 // TODO: Handle castling.
                 Board result;
@@ -360,7 +355,7 @@ public class Board {
         
     }
     
-    private boolean checked(PieceColor kingColor) {
+    public boolean checked(PieceColor kingColor) {
         Square kingSquare = kingSquare(kingColor);
         return isAttackable(kingSquare, kingColor.opposite());
     }

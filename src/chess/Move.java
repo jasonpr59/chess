@@ -3,6 +3,11 @@ package chess;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import javax.activity.InvalidActivityException;
+
+import chess.Piece.PieceType;
+import exceptions.InvalidMoveException;
+
 public class Move {
 
     private final Square start;
@@ -51,6 +56,10 @@ public class Move {
         }
         
         Piece movingPiece = board.getPiece(start);
+        
+        if (movingPiece == null || movingPiece.getPieceColor() != board.getToMoveColor()) {
+            return false;
+        }
         
         switch (movingPiece.getType()) {
             case PAWN:
@@ -102,6 +111,16 @@ public class Move {
             default:
                 throw new RuntimeException("The piece type was not matched in the switch statement.");
         }
+    }
+    
+    public boolean isLegal(Board board) {
+        Board resultBoard;
+        try {
+            resultBoard = board.moveResult(this);
+        } catch (InvalidMoveException e) {
+            return false;
+        }
+        return !resultBoard.checked(board.getToMoveColor());
     }
     
     private boolean isOpen(Board board) {

@@ -142,4 +142,32 @@ public class Square {
         }
         return moves;
     }
+    
+    public static Collection<Square> line(char clue) {
+        if ('1' <= clue && clue <= '8') {
+            return rank(clue);
+        } else if ('a' <= clue && clue <= 'h') {
+            return file(clue);
+        } else {
+            throw new IllegalArgumentException("Illegal line clue " + clue);
+        }
+    }
+    
+    private static Collection<Square> rank(char asciiRank) {
+        Collection<Square> squares = new ArrayList<Square>();
+        char rank = (char) (asciiRank - '1' + 1);
+        for (char file = 1; file <= 8; file++) {
+            squares.add(new Square(file, rank));
+        }
+        return squares;
+    }
+    
+    private static Collection<Square> file(char asciiFile) {
+        Collection<Square> squares = new ArrayList<Square>();
+        char file = (char) (asciiFile - 'a' + 1);
+        for (char rank = 1; rank <= 8; rank++) {
+            squares.add(new Square(file, rank));
+        }
+        return squares;
+    }
 }
