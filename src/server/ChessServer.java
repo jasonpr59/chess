@@ -6,9 +6,11 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Arrays;
 
 import player.Heuristic;
-
+import player.Minimax;
+import player.MoveDecision;
 import chess.AlgebraicParser;
 import chess.Board;
 import chess.Move;
@@ -39,6 +41,9 @@ public class ChessServer {
             out.println("Board");
             out.println(colorize(board));
             out.println("H(board) = " + Heuristic.pieceValueHeuristic(board));
+            MoveDecision bestDecision = Minimax.bestMove(board, 3);
+            out.println("H(continuation) = " + bestDecision.getScore());
+            out.println("In view of :" + Arrays.toString(bestDecision.getMoveList().toArray()));
         }
     }
 

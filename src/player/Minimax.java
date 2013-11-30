@@ -56,7 +56,7 @@ public class Minimax {
             
             // Choose the possible decision that give the optimal score.
             MoveDecision bestDecision;
-            if (board.getToMoveColor() == Piece.PieceColor.WHITE){
+            if (board.getToMoveColor() == Piece.PieceColor.WHITE) {
                 bestDecision = MoveDecision.highestScored(possibleDecisions);
             } else {
                 bestDecision = MoveDecision.lowestScored(possibleDecisions);

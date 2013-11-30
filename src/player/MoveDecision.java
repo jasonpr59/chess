@@ -43,6 +43,7 @@ public class MoveDecision {
             if (!seenAny || currentScore > optimalScore ) {
                 best = d;
                 optimalScore = currentScore;
+                seenAny = true;
             }
         }
         return best;
