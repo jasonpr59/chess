@@ -15,12 +15,11 @@ public class AlphaBeta {
     // TODO(jasonpr): Good god don't do this.
     private static final float INFINITY = 10000000;
     
-    private static MoveDecision alphaBeta(Board board, int depth, float alpha, float beta) {
-        if (depth < 0) {
-            throw new IllegalArgumentException("Depth cannot be negative.");
-        } else if (depth == 0) {
-            return new MoveDecision(new ArrayList<Move>(), Heuristic.pieceValueHeuristic(board));
-        } else {
+    private static final float EXTENSION_THRESHOLD = 0.7f;
+    
+    private static MoveDecision alphaBeta(Board board, int depth, float alpha, float beta, float parentScore) {
+        float score = Heuristic.pieceValueHeuristic(board);
+        if (depth > 0 || shouldExtend(score, parentScore)) {
             // Generate all legal moves.
             List<Move> legalMoves = new ArrayList<Move>(board.legalMoves());
             // TODO(jasonpr): Order nicely.
@@ -63,7 +62,7 @@ public class AlphaBeta {
                     throw new RuntimeException();
                 }
                 // Get the best decision from this possible result...
-                MoveDecision nextDecision = alphaBeta(possibleResult, depth - 1, alpha, beta);
+                MoveDecision nextDecision = alphaBeta(possibleResult, depth - 1, alpha, beta, score);
                 if (!seenAny || nextDecision.getScore() * mult > bestDecision.getScore() * mult) {
                     seenAny = true;
                     nextMoves = new ArrayList<Move>();
@@ -85,10 +84,17 @@ public class AlphaBeta {
                 }
             }
             return bestDecision;
+        } else {
+            return new MoveDecision(new ArrayList<Move>(), score);
         }
     }
     
     public static MoveDecision bestMove(Board board, int depth) {
-        return alphaBeta(board, depth, -INFINITY, INFINITY);
+        // TODO(jasonpr): Come up with a better fake parent score.
+        return alphaBeta(board, depth, -INFINITY, INFINITY, 0.0f);
     }   
+    
+    private static boolean shouldExtend(float score, float parentScore) {
+        return Math.abs(score - parentScore) > EXTENSION_THRESHOLD;
+    }
 }
