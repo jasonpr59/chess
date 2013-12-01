@@ -12,21 +12,32 @@ public class Square {
     // Rank and file are both in [1...8].
     private final int rank;
     private final int file;
+
+    // A grid of all 64 squares.
+    // GRID[1][3] = "b4".
+    public static final Square[][] GRID;
+    
     // The space of all squares.
     public static final Iterable<Square> ALL;
     
-    
     static {
+        GRID = new Square[8][8];
+        for (int file = 1; file <= 8; file++) {
+            for (int rank = 1; rank <= 8; rank++) {
+                GRID[file - 1][rank - 1] = new Square(file, rank);
+            }
+        }
+        
         List<Square> all = new ArrayList<Square>();
         for (int file = 1; file <= 8; file++) {
             for (int rank = 1; rank <= 8; rank++) {
-                all.add(new Square(file, rank));
+                all.add(squareAt(file, rank));
             }
         }
         ALL = Collections.unmodifiableList(all);
     }
     
-    public Square(int file, int rank) throws NonexistantSquareException{
+    private Square(int file, int rank) throws NonexistantSquareException{
         if (rank < 1 || rank > 8){
             throw new NonexistantSquareException("Illegal rank: " + rank);
         } else if (file < 1 || file >8) {
@@ -47,7 +58,7 @@ public class Square {
         char file = algRep.charAt(0);
         int fileNum = file - 'a' + 1;
         int rankNum = Integer.parseInt(algRep.substring(1, 2));
-        return new Square(fileNum, rankNum);
+        return squareAt(fileNum, rankNum);
     }
 
     public int getRank() {
@@ -59,7 +70,7 @@ public class Square {
     }
 
     public Square plus(Delta delta) {
-        return new Square(file + delta.getDeltaFile(), rank + delta.getDeltaRank());
+        return squareAt(file + delta.getDeltaFile(), rank + delta.getDeltaRank());
     }
     
     public static Square mean(Square a, Square b) {
@@ -70,7 +81,7 @@ public class Square {
                                                " do not have a mean that's a valid square.");
         }
         
-        return new Square(fileSum / 2, rankSum / 2);
+        return squareAt(fileSum / 2, rankSum / 2);
     }
     
     @Override
@@ -125,7 +136,7 @@ public class Square {
             while (factor <= maxDist) {
                 try {
                     foundSquare = this.plus(d.scaled(factor));
-                } catch (NonexistantSquareException e) {
+                } catch (ArrayIndexOutOfBoundsException e) {
                     break;
                 }
                 foundSquares.add(foundSquare);
@@ -157,7 +168,7 @@ public class Square {
         Collection<Square> squares = new ArrayList<Square>();
         char rank = (char) (asciiRank - '1' + 1);
         for (char file = 1; file <= 8; file++) {
-            squares.add(new Square(file, rank));
+            squares.add(squareAt(file, rank));
         }
         return squares;
     }
@@ -166,8 +177,12 @@ public class Square {
         Collection<Square> squares = new ArrayList<Square>();
         char file = (char) (asciiFile - 'a' + 1);
         for (char rank = 1; rank <= 8; rank++) {
-            squares.add(new Square(file, rank));
+            squares.add(squareAt(file, rank));
         }
         return squares;
+    }
+    
+    public static Square squareAt(int file, int rank) {
+        return GRID[file - 1][rank - 1];
     }
 }

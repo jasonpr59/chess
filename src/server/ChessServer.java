@@ -53,7 +53,7 @@ public class ChessServer {
         String colorCode;
         for (char rank = 8; rank >= 1; rank--) {
             for (char file = 1; file <= 8; file ++) {
-                Piece p = board.getPiece(new Square(file, rank));
+                Piece p = board.getPiece(Square.squareAt(file, rank));
                 if (p == null) {
                     sb.append(" ");
                 } else {

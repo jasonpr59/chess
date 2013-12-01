@@ -45,51 +45,51 @@ public class Board {
         // Set up the pawns
         for (int file = 1; file <= 8; file++){
             b.placePiece(new Piece(Piece.PieceType.PAWN, Piece.PieceColor.WHITE),
-                         new Square(file, 2));
+                         Square.squareAt(file, 2));
             b.placePiece(new Piece(Piece.PieceType.PAWN, Piece.PieceColor.BLACK),
-                         new Square(file, 7));
+                         Square.squareAt(file, 7));
         }
         
         // Set up the pieces
         b.placePiece(new Piece(Piece.PieceType.ROOK, Piece.PieceColor.WHITE),
-                    new Square(1, 1));
+                    Square.squareAt(1, 1));
         b.placePiece(new Piece(Piece.PieceType.ROOK, Piece.PieceColor.BLACK),
-                    new Square(1, 8));
+                    Square.squareAt(1, 8));
         
         b.placePiece(new Piece(Piece.PieceType.KNIGHT, Piece.PieceColor.WHITE),
-                    new Square(2, 1));
+                    Square.squareAt(2, 1));
         b.placePiece(new Piece(Piece.PieceType.KNIGHT, Piece.PieceColor.BLACK),
-                    new Square(2, 8));
+                    Square.squareAt(2, 8));
         
         b.placePiece(new Piece(Piece.PieceType.BISHOP, Piece.PieceColor.WHITE),
-                    new Square(3, 1));
+                    Square.squareAt(3, 1));
         b.placePiece(new Piece(Piece.PieceType.BISHOP, Piece.PieceColor.BLACK),
-                    new Square(3, 8));
+                    Square.squareAt(3, 8));
         
         b.placePiece(new Piece(Piece.PieceType.QUEEN, Piece.PieceColor.WHITE),
-                    new Square(4, 1));
+                    Square.squareAt(4, 1));
         b.placePiece(new Piece(Piece.PieceType.QUEEN, Piece.PieceColor.BLACK),
-                    new Square(4, 8));
+                    Square.squareAt(4, 8));
         
         b.placePiece(new Piece(Piece.PieceType.KING, Piece.PieceColor.WHITE),
-                    new Square(5, 1));
+                    Square.squareAt(5, 1));
         b.placePiece(new Piece(Piece.PieceType.KING, Piece.PieceColor.BLACK),
-                    new Square(5, 8));
+                    Square.squareAt(5, 8));
         
         b.placePiece(new Piece(Piece.PieceType.BISHOP, Piece.PieceColor.WHITE),
-                    new Square(6, 1));
+                    Square.squareAt(6, 1));
         b.placePiece(new Piece(Piece.PieceType.BISHOP, Piece.PieceColor.BLACK),
-                    new Square(6, 8));
+                    Square.squareAt(6, 8));
         
         b.placePiece(new Piece(Piece.PieceType.KNIGHT, Piece.PieceColor.WHITE),
-                    new Square(7, 1));
+                    Square.squareAt(7, 1));
         b.placePiece(new Piece(Piece.PieceType.KNIGHT, Piece.PieceColor.BLACK),
-                    new Square(7, 8));
+                    Square.squareAt(7, 8));
         
         b.placePiece(new Piece(Piece.PieceType.ROOK, Piece.PieceColor.WHITE),
-                    new Square(8, 1));
+                    Square.squareAt(8, 1));
         b.placePiece(new Piece(Piece.PieceType.ROOK, Piece.PieceColor.BLACK),
-                    new Square(8, 8));
+                    Square.squareAt(8, 8));
         
         b.setToMoveColor(Piece.PieceColor.WHITE);
         b.freeze();
@@ -100,7 +100,7 @@ public class Board {
         Board b = new Board();
         for (int file = 1; file <= 8; file++) {
             for (int rank = 1; rank <= 8; rank++) {
-                Square sq = new Square(file, rank);
+                Square sq = Square.squareAt(file, rank);
                 b.placePiece(getPiece(sq), sq);
             }
         }
@@ -243,7 +243,7 @@ public class Board {
                 for (Delta delta : deltas) {
                     try {
                         candidateMove = new Move(start, delta);
-                    } catch (NonexistantSquareException e) {
+                    } catch (ArrayIndexOutOfBoundsException e) {
                         continue;
                     }
                     int endRank = candidateMove.getEnd().getRank();
@@ -278,7 +278,7 @@ public class Board {
                             delta = new Delta(dFile, dRank);
                             try {
                                 candidateMoves.add(new Move(start, delta));
-                            } catch (NonexistantSquareException e) {
+                            } catch (ArrayIndexOutOfBoundsException e) {
                                 // Swallow it. (See explanation in PAWN case).
                             }
                         }
