@@ -16,9 +16,10 @@ import chess.Board;
 import chess.Move;
 import chess.Piece;
 import chess.Square;
+import exceptions.AlgebraicNotationException;
 import exceptions.InvalidMoveException;
 
-public class ChessServer {
+public class SocketChessServer {
     public static void main(String[] args) throws IOException {
         int portNumber = 4444;
         ServerSocket listener = new ServerSocket(portNumber);
@@ -32,18 +33,34 @@ public class ChessServer {
 
         String inputLine;
         while ((inputLine = in.readLine()) != null) {
-            Move m = AlgebraicParser.parseAlgebraic(inputLine, board);
+            Move m;
+            try {
+                m = AlgebraicParser.parseAlgebraic(inputLine, board);
+            } catch (AlgebraicNotationException e) {
+                out.println("Invalid move!");
+                continue;
+            }
             try {
                 board = board.moveResult(m);
             } catch (InvalidMoveException e) {
                 out.println("Invalid move!");
             }
-            out.println("Board");
             out.println(colorize(board));
             out.println("H(board) = " + Heuristic.pieceValueHeuristic(board));
+
+            out.println("Thinking...");
             MoveDecision bestDecision = AlphaBeta.bestMove(board, 3);
+            out.println("Making move" + bestDecision.getFirstMove());
+            try {
+                board = board.moveResult(bestDecision.getFirstMove());
+            } catch (InvalidMoveException e) {
+                // Impossible!
+                throw new RuntimeException();
+            }
+            
+            out.println(colorize(board));
             out.println("H(continuation) = " + bestDecision.getScore());
-            out.println("In view of :" + Arrays.toString(bestDecision.getMoveList().toArray()));
+            out.println("From sequence: " + Arrays.toString(bestDecision.getMoveList().toArray()));
         }
     }
 
