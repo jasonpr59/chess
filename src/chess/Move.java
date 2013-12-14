@@ -230,4 +230,22 @@ public class Move {
         }
         return delta.getDeltaFile() != 0;
     }
+    
+    public String serialized() {
+        return "" + start.getFile() + start.getRank() + end.getFile() + end.getRank();
+    }
+    
+    public static Move deserialized(String s) {
+        s = s.trim();
+        assert s.length() == 4;
+        int startFile = Integer.parseInt(s.substring(0,1));
+        int startRank = Integer.parseInt(s.substring(1,2));
+        int endFile = Integer.parseInt(s.substring(2,3));
+        int endRank = Integer.parseInt(s.substring(3,4));
+        return new Move(Square.squareAt(startFile, startRank),
+                        Square.squareAt(endFile, endRank));
+        
+    }
+    
+    
 }
