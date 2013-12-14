@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import chess.Piece.PieceType;
+import exceptions.AlgebraicNotationException;
 
 public class AlgebraicParser {
     private static final Map<Character, Piece.PieceType> PIECE_NAMES;
@@ -31,8 +32,9 @@ public class AlgebraicParser {
      * @param alg
      * @param board
      * @return
+     * @throws AlgebraicNotationException 
      */
-    public static Move parseAlgebraic(String alg, Board board) {
+    public static Move parseAlgebraic(String alg, Board board) throws AlgebraicNotationException {
         if (alg.equals("O-O") || alg.equals("O-O-O")) {
             // TODO(jasonpr): Implement.
             throw new RuntimeException("Not implemented!");
@@ -85,6 +87,8 @@ public class AlgebraicParser {
         }
 
         // TODO(jasonpr): Do some sanity checks.
+        System.out.println("start " + start);
+        System.out.println("end " + end);
         return new Move(start, end);
         
         
@@ -92,19 +96,19 @@ public class AlgebraicParser {
     }
     
     
-    private static Square start(Piece.PieceType type, Square end, Board board) {
+    private static Square start(Piece.PieceType type, Square end, Board board) throws AlgebraicNotationException {
         // TODO: Make more efficient.
         // TODO: Check uniqueness of start square (i.e. that no disambiguation
         // was necessary).
         return startFromSquares(type, Square.ALL, end, board);
     }
     
-    private static Square startFromClue(Piece.PieceType type, char clue, Square end, Board board) {
+    private static Square startFromClue(Piece.PieceType type, char clue, Square end, Board board) throws AlgebraicNotationException {
         return startFromSquares(type, Square.line(clue), end, board);
     }
     
     private static Square startFromSquares(Piece.PieceType type, Iterable<Square> candidateStarts,
-                                           Square end, Board board) {
+                                           Square end, Board board) throws AlgebraicNotationException {
         Piece movingPiece;
         Move candidateMove;
         for (Square start : candidateStarts) {
@@ -123,7 +127,6 @@ public class AlgebraicParser {
             }
         }
         // There is no such start square.
-        // FIXME(jasonpr): Should this really return null, and not throw an exception?
-        return null;
+        throw new AlgebraicNotationException();
     }
 }
