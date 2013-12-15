@@ -1,4 +1,4 @@
 function Piece(type, isWhite){
-	this.type = type;
-	this.isWhite = isWhite;
+  this.type = type;
+  this.isWhite = isWhite;
 }
