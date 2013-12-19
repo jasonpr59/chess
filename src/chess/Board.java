@@ -2,12 +2,12 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
 import chess.Piece.PieceColor;
 import exceptions.InvalidMoveException;
-import exceptions.NonexistantSquareException;
 import exceptions.PieceAbilityException;
 
 public class Board {
@@ -26,6 +26,9 @@ public class Board {
     
     private PieceColor toMoveColor;
     
+    // For use in deciding whether castling is legal.
+    private CastlingInfo castlingInfo;
+    
     private Board() {
         board = new Piece[8][8];
 
@@ -34,6 +37,8 @@ public class Board {
         
         // No en passant square, yet.
         enPassantSquare = null;
+        
+        castlingInfo = new CastlingInfo();
     }
     
     /**
@@ -110,6 +115,8 @@ public class Board {
         b.setEnPassantSquare(enPassantSquare);
         b.setToMoveColor(toMoveColor);
         
+        b.setCastlingInfo(castlingInfo);
+        
         return b;
     }
 
@@ -132,11 +139,26 @@ public class Board {
         Board result = unfrozenCopy();
 
         // The captured square might not be in the end square (in the case of en passant).
-        
-
         Square capturedSquare = move.capturedSquare(this);
         if (capturedSquare != null) {
             result.placePiece(null, capturedSquare);
+        }
+        
+        if (move.isCastling(this)) {
+            // Place the rook in its new spot.
+            Square rookEnd= start.plus(move.getDelta().unitized());
+            result.placePiece(new Piece(Piece.PieceType.ROOK, toMoveColor), rookEnd);
+            
+            // Remove the old rook.
+            Square rookStart;
+            if (move.getDelta().getDeltaFile() > 0) {
+                // King Castle
+                rookStart = start.plus(new Delta(3, 0));
+            } else {
+                // Queen Castle
+                rookStart = start.plus(new Delta(-4, 0));
+            }
+            result.placePiece(null, rookStart);
         }
 
         result.placePiece(null, start);
@@ -149,11 +171,13 @@ public class Board {
             result.placePiece(movingPiece, end);
         }
         
-        // TODO(jasonpr): Handle castling.
-
         result.setEnPassantSquare(move.enPassantSquare(this));
 
         result.setToMoveColor(toMoveColor.opposite());
+
+        // Keep track of whether castling will be allowable
+        // in future moves.
+        result.updateCastlingInfo(move);
 
         // Current mover cannot be checked in resulting Board.
         if (result.checked(toMoveColor)) {
@@ -192,11 +216,30 @@ public class Board {
         return this;
     }
     
+    public Board setCastlingInfo(CastlingInfo castlingInfo) {
+        assertUnfrozen();
+        // Duplicate it, so we can modify it without affecting
+        // the input CastlingInfo.
+        this.castlingInfo = new CastlingInfo(castlingInfo);
+        return this;
+    }
+    
+    public Board updateCastlingInfo(Move move) {
+        assertUnfrozen();
+        this.castlingInfo.update(move);
+        return this;
+    }
+
+    
     /**
      * Get the piece at the given square.
      */
     public Piece getPiece(Square square){
         return board[square.getFile() - 1][square.getRank() - 1];
+    }
+    
+    public boolean isEmpty(Square square) {
+        return getPiece(square) == null;
     }
     
     public Square getEnPassantSquare(){
@@ -299,8 +342,14 @@ public class Board {
                 candidateMoves = start.distributeOverEnds(candidateEnds);
                 break;
             case KING:
-                // TODO: Handle castling.
                 candidateEnds = start.explore(Delta.QUEEN_DIRS, 1);
+                if (start.getFile() == 5) {
+                    // There's a decent chance that the king's in its home square,
+                    // and a zero chance that a two-square hop along a rank will
+                    // put us off the board.
+                    candidateEnds.add(start.plus(new Delta(2, 0)));
+                    candidateEnds.add(start.plus(new Delta(-2, 0)));
+                }
                 candidateMoves = start.distributeOverEnds(candidateEnds);
                 break;
             default:
@@ -323,7 +372,16 @@ public class Board {
         Collection<Move> legalMoves = new ArrayList<Move>();
         for (Square start : Square.ALL) {
             for (Move saneMove : saneMoves(start)) {
-                // TODO: Handle castling.
+                if (getPiece(start).getType() == Piece.PieceType.KING && saneMove.isCastling(this)) {
+                    // assert that king was not checked before moving.
+                    if (checked(toMoveColor)) {
+                        continue;
+                    }
+                    // assert that king did not move through check.
+                    if (isAttackable(start.plus(saneMove.getDelta().unitized()), toMoveColor.opposite())) {
+                        continue;
+                    }
+                }
                 Board result;
                 try {
                     result = moveResult(saneMove);
@@ -352,8 +410,7 @@ public class Board {
             }
         }
         // Didn't return anything!
-        throw new RuntimeException("There is no king of color " + kingColor + " on the board!");
-        
+        throw new RuntimeException("There is no king of color " + kingColor + " on the board!");        
     }
     
     public boolean checked(PieceColor kingColor) {
@@ -381,4 +438,20 @@ public class Board {
     public PieceColor getToMoveColor() {
         return toMoveColor;
     }
+    
+    /**
+     * @return true iff the king is unmoved and the h-rook is unmoved.
+     */
+    public boolean kingCastlePiecesReady(Piece.PieceColor color) {
+        return castlingInfo.kingCastlePiecesReady(color);
+    }
+
+    /**
+     * 
+     * @return true iff the king is unmoved and the a-rook is unmoved.
+     */
+    public boolean queenCastlePiecesReady(Piece.PieceColor color) {
+        return castlingInfo.queenCastlePiecesReady(color);
+    }
+    
 }

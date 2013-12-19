@@ -9,6 +9,9 @@ import java.util.Collection;
 
 import org.junit.Test;
 
+import server.SocketChessServer;
+
+import exceptions.AlgebraicNotationException;
 import exceptions.InvalidMoveException;
 
 public class SmokeTest {
@@ -68,6 +71,36 @@ public class SmokeTest {
         }
 
         assertEquals(5, blackChecked.legalMoves().size());
+    }
+    
+    @Test
+    public void testCastling() throws InvalidMoveException, AlgebraicNotationException {
+        Board b = Board.newGame();
+        b = b.moveResult(AlgebraicParser.parseAlgebraic("e4", b));
+        b = b.moveResult(AlgebraicParser.parseAlgebraic("e5", b));
+
+        b = b.moveResult(AlgebraicParser.parseAlgebraic("Bc4", b));
+        b = b.moveResult(AlgebraicParser.parseAlgebraic("Bc5", b));
+        
+        b = b.moveResult(AlgebraicParser.parseAlgebraic("Nf3", b));
+        b = b.moveResult(AlgebraicParser.parseAlgebraic("Nc6", b));
+        
+        // Should not crash!
+        Board b_good = b.moveResult(new Move(Square.algebraic("e1"), Square.algebraic("g1")));
+        
+        assertEquals(b_good.getPiece(Square.algebraic("e1")), null);
+        assertEquals(b_good.getPiece(Square.algebraic("f1")), new Piece(Piece.PieceType.ROOK, Piece.PieceColor.WHITE));        
+        assertEquals(b_good.getPiece(Square.algebraic("g1")), new Piece(Piece.PieceType.KING, Piece.PieceColor.WHITE));
+        assertEquals(b_good.getPiece(Square.algebraic("h1")), null);
+                
+        // Should crash
+        try {
+            Board b_bad = b.moveResult(new Move(Square.algebraic("e8"), Square.algebraic("g8")));
+            fail("Successfully castled, when castling should have been impossible!");
+        } catch (InvalidMoveException e) {
+            // Good, it *was* an invalid move!
+        }
+
     }
 
 }

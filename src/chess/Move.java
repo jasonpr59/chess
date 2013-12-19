@@ -106,8 +106,29 @@ public class Move {
             case QUEEN:
                 return (isBasic() || isDiagonal()) && isOpen(board);
             case KING:
-                // TODO(jasonpr): Handle castling!
-                return (Math.abs(delta.getDeltaRank()) <= 1 && Math.abs(delta.getDeltaFile()) <= 1);
+                if (delta.getDeltaFile() == 2 && delta.getDeltaRank() == 0) {
+                    // This could be a king-castling move.
+                    if (board.kingCastlePiecesReady(board.getToMoveColor())) {
+                        // King and rook are in place... Check if there's space!
+                        return (board.isEmpty(start.plus(new Delta(1, 0))) &&
+                                board.isEmpty(start.plus(new Delta(2, 0))));
+                    } else {
+                        return false;
+                    }
+                } else if (delta.getDeltaFile() == -2 && delta.getDeltaRank() == 0) {
+                    // This could be a queen-castling move.
+                    if (board.queenCastlePiecesReady(board.getToMoveColor())) {
+                        // King and rook are in place.  Check if there's space!
+                        return (board.isEmpty(start.plus(new Delta(-1, 0))) &&
+                                board.isEmpty(start.plus(new Delta(-2, 0))) &&
+                                board.isEmpty(start.plus(new Delta(-3, 0))));
+                    } else {
+                        return false;
+                    }
+                } else {
+                    // Not a castling move.
+                    return (Math.abs(delta.getDeltaRank()) <= 1 && Math.abs(delta.getDeltaFile()) <= 1);
+                }
             default:
                 throw new RuntimeException("The piece type was not matched in the switch statement.");
         }
@@ -245,6 +266,21 @@ public class Move {
         return new Move(Square.squareAt(startFile, startRank),
                         Square.squareAt(endFile, endRank));
         
+    }
+    
+    public boolean startsOrEndsAt(Square square) {
+        return start.equals(square) || end.equals(square);
+    }
+    
+    /**
+     * @return Whether this is a castling move.
+     * Requires that the move is sane.
+     */
+    public boolean isCastling(Board board) {
+        // We already required that the move is sane.
+        // So, it's castling if it's a two-step king move.
+        return (board.getPiece(start).getType() == Piece.PieceType.KING &&
+                Math.abs(delta.getDeltaFile()) == 2);
     }
     
     
