@@ -1,14 +1,17 @@
 package chess;
 
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
+import chess.Piece.PieceColor;
 import chess.Piece.PieceType;
 import exceptions.AlgebraicNotationException;
 
 public class AlgebraicParser {
     private static final Map<Character, Piece.PieceType> PIECE_NAMES;
+    private static final Map<Piece.PieceColor, Square> KING_SQUARES;
     
     static {
         Map<Character, Piece.PieceType> pieceNames = new HashMap<Character, Piece.PieceType>();
@@ -18,6 +21,11 @@ public class AlgebraicParser {
         pieceNames.put('Q', Piece.PieceType.QUEEN);
         pieceNames.put('K', Piece.PieceType.KING);
         PIECE_NAMES = Collections.unmodifiableMap(pieceNames);
+
+        Map<Piece.PieceColor, Square> kingSquares = new EnumMap<Piece.PieceColor, Square>(Piece.PieceColor.class);
+        kingSquares.put(Piece.PieceColor.WHITE, Square.squareAt(5, 1));
+        kingSquares.put(Piece.PieceColor.BLACK, Square.squareAt(5, 8));
+        KING_SQUARES = Collections.unmodifiableMap(kingSquares);
     }
     
     /**
@@ -35,9 +43,12 @@ public class AlgebraicParser {
      * @throws AlgebraicNotationException 
      */
     public static Move parseAlgebraic(String alg, Board board) throws AlgebraicNotationException {
-        if (alg.equals("O-O") || alg.equals("O-O-O")) {
-            // TODO(jasonpr): Implement.
-            throw new RuntimeException("Not implemented!");
+        if (alg.equals("O-O")) {
+            return new Move(KING_SQUARES.get(board.getToMoveColor()), new Delta(2, 0));
+        }
+        
+        if (alg.equals("O-O-O")) {
+            return new Move(KING_SQUARES.get(board.getToMoveColor()), new Delta(-2, 0));
         }
         
         // TODO: Implement promotion.
