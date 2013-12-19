@@ -108,6 +108,7 @@ public class Board {
         // so we don't need to pass in a copy.
         b.setCaptured(captured);
         b.setEnPassantSquare(enPassantSquare);
+        b.setToMoveColor(toMoveColor);
         
         return b;
     }
