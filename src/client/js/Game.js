@@ -685,3 +685,13 @@ Game.prototype.is_under_attack = function(x, y, byWhite, ignore_check){
   }
   return false;
 };
+
+Game.prototype.makeServerMove = function(moveString) {
+  // TODO: Assert correct length.
+  // TODO: Handle promotion.
+  var startFile = parseInt(moveString.charAt(0), 10);
+  var startRank = parseInt(moveString.charAt(1), 10);
+  var endFile = parseInt(moveString.charAt(2), 10);
+  var endRank = parseInt(moveString.charAt(3), 10);
+  this.move(startFile, startRank, endFile, endRank);
+};

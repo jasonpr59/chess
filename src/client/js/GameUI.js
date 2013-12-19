@@ -11,6 +11,11 @@ function GameUI(game, canvas, history_table, to_move){
   this.currentx = null;
   this.currenty = null;
 
+  var gameUI = this;
+  this.serverLink = new ServerLink(function(moveString) {
+    gameUI.game.makeServerMove(moveString);
+    gameUI.draw(new Highlights());
+  });
 }
 
 
@@ -22,6 +27,9 @@ GameUI.prototype.click = function(x, y, width){
     //This click indicates the end of a move.
     try {
       this.game.move(this.currentx, this.currenty, row, col, function(x_o, y_o, x_d, y_d, isWhite){return prompt("Promote to 'queen', 'rook', 'bishop', or 'knight'?");});
+
+      // Send to server.
+      this.serverLink.sendMove(this.currentx, this.currenty, row, col);
     } finally {
       this.currentlyMoving = false;
       this.currentx = null;
@@ -248,3 +256,5 @@ GameUI.prototype.update_to_move = function(){
   }
   this.to_move.html(move_text);
 };
+
+
