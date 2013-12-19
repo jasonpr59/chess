@@ -87,8 +87,6 @@ public class AlgebraicParser {
         }
 
         // TODO(jasonpr): Do some sanity checks.
-        System.out.println("start " + start);
-        System.out.println("end " + end);
         return new Move(start, end);
         
         
