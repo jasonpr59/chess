@@ -138,6 +138,21 @@ public class Board {
         
         Board result = unfrozenCopy();
 
+        // If it's castling, make sure it's legal.
+        if (getPiece(start).getType() == Piece.PieceType.KING && move.isCastling(this)) {
+            // assert that king was not checked before moving.
+            if (checked(toMoveColor)) {
+                throw new InvalidMoveException(movingPiece + " cannot castle out of check.");
+            }
+            // assert that king did not move through check.
+            // Do this by making the king move to that square, and seeing whether it is checked.
+            Square transitSquare = start.plus(move.getDelta().unitized());
+            Board fromLoneKingMove = moveResult(new Move(start, transitSquare));
+            if (fromLoneKingMove.checked(toMoveColor)) {
+                throw new InvalidMoveException(movingPiece + " cannot castle thorugh check.");
+            }
+        }
+        
         // The captured square might not be in the end square (in the case of en passant).
         Square capturedSquare = move.capturedSquare(this);
         if (capturedSquare != null) {
@@ -372,23 +387,12 @@ public class Board {
         Collection<Move> legalMoves = new ArrayList<Move>();
         for (Square start : Square.ALL) {
             for (Move saneMove : saneMoves(start)) {
-                if (getPiece(start).getType() == Piece.PieceType.KING && saneMove.isCastling(this)) {
-                    // assert that king was not checked before moving.
-                    if (checked(toMoveColor)) {
-                        continue;
-                    }
-                    // assert that king did not move through check.
-                    if (isAttackable(start.plus(saneMove.getDelta().unitized()), toMoveColor.opposite())) {
-                        continue;
-                    }
-                }
                 Board result;
                 try {
                     result = moveResult(saneMove);
                 } catch (InvalidMoveException e) {
-                    // TODO: Deal with this.
-                    // This should never actually be thrown.
-                    // Maybe InvalidMoveException should be a RuntimeException?
+                    // TODO: Maybe check ahead of time if it's illegal, rather than
+                    // using exceptions?
                     continue;
                 }
                 if (!result.checked(toMoveColor)) {
@@ -415,10 +419,19 @@ public class Board {
     
     public boolean checked(PieceColor kingColor) {
         Square kingSquare = kingSquare(kingColor);
-        return isAttackable(kingSquare, kingColor.opposite());
+        Board trialBoard;
+        if (toMoveColor == kingColor) {
+            // Act as though it's the other side's turn, to see if they could attack the king.
+            trialBoard = unfrozenCopy().setToMoveColor(toMoveColor.opposite()).freeze();
+        } else {
+            // It's the other color's turn, so see if they can attack this king.
+            trialBoard = this;
+        }
+        return trialBoard.isAttackable(kingSquare);
     }
 
-    public boolean isAttackable(Square target, PieceColor attackerColor) {
+    public boolean isAttackable(Square target) {
+        Piece.PieceColor attackerColor = toMoveColor;
         for (Square attackerSquare : Square.ALL) {
             Piece attacker = getPiece(attackerSquare);
             if (attacker == null || attacker.getPieceColor() != attackerColor) {
