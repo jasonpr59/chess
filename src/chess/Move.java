@@ -3,9 +3,6 @@ package chess;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.activity.InvalidActivityException;
-
-import chess.Piece.PieceType;
 import exceptions.InvalidMoveException;
 
 public class Move {
@@ -213,7 +210,6 @@ public class Move {
      */
     public Square capturedSquare(Board board) {
         // TODO(jasonpr): Factor some common code out of here and isSane.
-        Piece movingPiece = board.getPiece(start);
         if (board.getPiece(end) != null) {
             // There's something in the landing square, so that's what's captured.
             return end;
