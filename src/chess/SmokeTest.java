@@ -9,7 +9,6 @@ import java.util.Collection;
 
 import org.junit.Test;
 
-import exceptions.AlgebraicNotationException;
 import exceptions.InvalidMoveException;
 
 public class SmokeTest {
