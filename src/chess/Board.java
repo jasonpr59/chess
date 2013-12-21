@@ -46,7 +46,7 @@ public class Board {
         }
         enPassantSquare = source.getEnPassantSquare();
         toMoveColor = source.getToMoveColor();
-        castlingInfo = source.getCastlingInfo();
+        castlingInfo = new CastlingInfo(source.getCastlingInfo());
     }
 
     /** Construct a new board in the default chess starting position. */

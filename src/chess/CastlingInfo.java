@@ -24,7 +24,7 @@ public class CastlingInfo {
     
     // Convenience squares, for deciding whether kings/rooks have moved.
     private static final Square E1 = Square.squareAt(5, 1);
-    private static final Square E8 = Square.squareAt(5, 1);
+    private static final Square E8 = Square.squareAt(5, 8);
     
     private static final Square H1 = Square.squareAt(8, 1);
     private static final Square H8 = Square.squareAt(8, 8);
