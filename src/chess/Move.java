@@ -45,6 +45,43 @@ public class Move {
     }
 
     /**
+     * Return the square that is occupied by the piece that's to be captured by this move.
+     * Return null if no piece is to be captured.
+     * Takes en passant into account.
+     * @param board The board on which the move is to be made.
+     * Requires that this move is sane. 
+     */
+    public Square capturedSquare(Board board) {
+        // TODO(jasonpr): Factor some common code out of here and isSane.
+        if (board.getPiece(end) != null) {
+            // There's something in the landing square, so that's what's captured.
+            return end;
+        } else if (isPawnCapture(board)){
+            return board.getEnPassantSquare();
+        } else {
+            // Nothing at destination, and not a pawn.
+            return null;
+        }
+    }
+
+    /**
+     * Return the en passant Square produced by this move, or null if there isn't one.
+     * @param board The board on which the move is to be made.
+     */
+    public Square enPassantSquare(Board board) {
+        Piece movingPiece = board.getPiece(start);
+        if (movingPiece == null || movingPiece.getType() != Piece.PieceType.PAWN) {
+            return null;
+        }
+        
+        if (Math.abs(delta.getDeltaRank()) == 2) {
+            return Square.mean(start, end);
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * Return whether this move is sane on a particular board.
      * 
      * A move is sane if it is legal, IGNORING the no-check criterion.
@@ -228,43 +265,6 @@ public class Move {
         return "Move(" + start + ", " + end + ")";
     }
     
-    /**
-     * Return the square that is occupied by the piece that's to be captured by this move.
-     * Return null if no piece is to be captured.
-     * Takes en passant into account.
-     * @param board The board on which the move is to be made.
-     * Requires that this move is sane. 
-     */
-    public Square capturedSquare(Board board) {
-        // TODO(jasonpr): Factor some common code out of here and isSane.
-        if (board.getPiece(end) != null) {
-            // There's something in the landing square, so that's what's captured.
-            return end;
-        } else if (isPawnCapture(board)){
-            return board.getEnPassantSquare();
-        } else {
-            // Nothing at destination, and not a pawn.
-            return null;
-        }
-    }
-    
-    /**
-     * Return the en passant Square produced by this move, or null if there isn't one.
-     * @param board The board on which the move is to be made.
-     */
-    public Square enPassantSquare(Board board) {
-        Piece movingPiece = board.getPiece(start);
-        if (movingPiece == null || movingPiece.getType() != Piece.PieceType.PAWN) {
-            return null;
-        }
-        
-        if (Math.abs(delta.getDeltaRank()) == 2) {
-            return Square.mean(start, end);
-        } else {
-            return null;
-        }
-    }
-    
     /** Return whether move makes a pawn do a capture on a Board. */
     private boolean isPawnCapture(Board board) {
         Piece movingPiece = board.getPiece(start);
@@ -275,6 +275,22 @@ public class Move {
         return delta.getDeltaFile() != 0;
     }
     
+    /**
+     * Returns whether this is a castling move on some Board.
+     * Requires that the move is sane.
+     */
+    public boolean isCastling(Board board) {
+        // We already required that the move is sane.
+        // So, it's castling if it's a two-step king move.
+        return (board.getPiece(start).getType() == Piece.PieceType.KING &&
+                Math.abs(delta.getDeltaFile()) == 2);
+    }
+
+    /** Return whether this Move starts or ends at some Square. */
+    public boolean startsOrEndsAt(Square square) {
+        return start.equals(square) || end.equals(square);
+    }
+
     /** Serialize this move as a 4-character String. */
     public String serialized() {
         return "" + start.getFile() + start.getRank() + end.getFile() + end.getRank();
@@ -291,21 +307,5 @@ public class Move {
         return new Move(Square.squareAt(startFile, startRank),
                         Square.squareAt(endFile, endRank));
         
-    }
-    
-    /** Return whether this Move starts or ends at some Square. */
-    public boolean startsOrEndsAt(Square square) {
-        return start.equals(square) || end.equals(square);
-    }
-    
-    /**
-     * Returns whether this is a castling move on some Board.
-     * Requires that the move is sane.
-     */
-    public boolean isCastling(Board board) {
-        // We already required that the move is sane.
-        // So, it's castling if it's a two-step king move.
-        return (board.getPiece(start).getType() == Piece.PieceType.KING &&
-                Math.abs(delta.getDeltaFile()) == 2);
     }
 }
