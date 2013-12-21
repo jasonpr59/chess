@@ -237,7 +237,7 @@ public class Board {
      * Set the square onto which pawns move for an en-passant capture.
      * @return This Board, for daisy chaining.
      */
-    public Board setEnPassantSquare(Square square) {
+    private Board setEnPassantSquare(Square square) {
         assertUnfrozen();
         this.enPassantSquare = square;
         return this;
@@ -505,15 +505,14 @@ public class Board {
 
 
     /**
-     * @return true iff the king is unmoved and the h-rook is unmoved.
+     * Return whether the king is unmoved and the h-rook is unmoved.
      */
     public boolean kingCastlePiecesReady(Piece.PieceColor color) {
         return castlingInfo.kingCastlePiecesReady(color);
     }
 
     /**
-     * 
-     * @return true iff the king is unmoved and the a-rook is unmoved.
+     * Return whether the king is unmoved and the a-rook is unmoved.
      */
     public boolean queenCastlePiecesReady(Piece.PieceColor color) {
         return castlingInfo.queenCastlePiecesReady(color);
