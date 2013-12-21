@@ -116,7 +116,8 @@ public class Move {
                     if (delta.equals(forward)) {
                         return true;
                     } else if (delta.equals(doubleForward)) {
-                        return board.getPiece(start.plus(doubleForward)) == null;
+                        return (start.isOnPawnHomeRank(movingPiece.getPieceColor()) &&
+                                board.getPiece(start.plus(doubleForward)) == null);
                     } else {
                         return false;
                     }
