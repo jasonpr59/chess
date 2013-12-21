@@ -11,18 +11,14 @@ import exceptions.PieceAbilityException;
 
 /** A chess board at a specific position. */
 public class Board {
-
     // Once frozen is true, the board becomes immutable.
     private boolean frozen = false;
     
     // board[file - 1][rank - 1] = the piece with specified rank and file
     // For example, board[1][7] is the piece at b8.
     private final Piece[][] board;
-    
     private Square enPassantSquare;
-    
     private PieceColor toMoveColor;
-    
     // For use in deciding whether castling is legal.
     private CastlingInfo castlingInfo;
     
@@ -127,7 +123,6 @@ public class Board {
         setToMoveColor(Piece.PieceColor.WHITE);
     }
     
-    
     /**
      * Get the board that results from a move.
      * @param move A Move object designating which move should be made.
@@ -197,7 +192,6 @@ public class Board {
         }
         
         result.setEnPassantSquare(move.enPassantSquare(this));
-
         result.setToMoveColor(toMoveColor.opposite());
 
         // Keep track of whether castling will be allowable
@@ -259,7 +253,7 @@ public class Board {
     public Piece getPiece(Square square){
         return board[square.getFile() - 1][square.getRank() - 1];
     }
-    
+
     /** Return whether a square is empty. */
     public boolean isEmpty(Square square) {
         return getPiece(square) == null;
@@ -478,7 +472,6 @@ public class Board {
         return false;
     }
 
-
     /** Return whether the king is unmoved and the h-rook is unmoved. */
     public boolean kingCastlePiecesReady(Piece.PieceColor color) {
         return castlingInfo.kingCastlePiecesReady(color);
@@ -488,5 +481,4 @@ public class Board {
     public boolean queenCastlePiecesReady(Piece.PieceColor color) {
         return castlingInfo.queenCastlePiecesReady(color);
     }
-    
 }
