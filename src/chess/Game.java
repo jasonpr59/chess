@@ -65,7 +65,12 @@ public class Game {
     public static Game fromMoves(String[] moves) throws AlgebraicNotationException, InvalidMoveException {
         Game g = new Game();
         for (String move : moves) {
-            g.makeMove(AlgebraicParser.parseAlgebraic(move, g.getBoard()));
+            Move m = AlgebraicParser.parseAlgebraic(move, g.getBoard());
+            if (m.isLegal(g.getBoard())){
+                g.makeMove(m);
+            } else {
+                throw new InvalidMoveException();
+            }
         }
         return g;
     }

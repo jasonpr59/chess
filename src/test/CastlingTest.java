@@ -79,4 +79,15 @@ public class CastlingTest {
         Move illegalCastle = new Move(Square.algebraic("e1"), Square.algebraic("g1"));
         assertFalse(illegalCastle.isLegal(g.getBoard()));
     }
+
+    @Test
+    public void testLegalKingCastle() throws InvalidMoveException, AlgebraicNotationException {
+        String[] moves = {"e4", "e5",
+                          "Nf3", "Nf6",
+                          "Bc4", "Bc5",
+                          "O-O", "O-O"};
+
+        // For now, just make sure there are no exceptions.
+        Game.fromMoves(moves);
+    }
 }

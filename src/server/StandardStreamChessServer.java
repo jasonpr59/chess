@@ -26,7 +26,7 @@ public class StandardStreamChessServer {
             try {
                 m = Move.deserialized(input);
             } catch (ArrayIndexOutOfBoundsException e) {
-                System.out.println(ERROR_TOKEN);
+                System.out.println(ERROR_TOKEN + ": cannot deseralize.");
                 continue;
             }
             
@@ -34,7 +34,7 @@ public class StandardStreamChessServer {
             if (m.isLegal(board)) {
                 board = board.moveResult(m);
             } else {
-                System.out.println(ERROR_TOKEN);
+                System.out.println(ERROR_TOKEN + ": illegal move!");
                 continue;
             }
             
