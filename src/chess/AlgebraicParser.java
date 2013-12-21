@@ -96,11 +96,15 @@ public class AlgebraicParser {
             start = start(type, end, board);
         }
 
-        // TODO(jasonpr): Do some sanity checks.
-        return new Move(start, end);
+        Move move = new Move(start, end);
+
+        // TODO(jasonpr): Do some more sanity checks
+        if (captures == (move.capturedSquare(board) == null)) {
+            throw new AlgebraicNotationException("A capture was indicated with 'x', but " +
+                                                 "the indicated move doesn't perform a capture.");
+        }
         
-        
-        
+        return move;
     }
     
     
