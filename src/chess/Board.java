@@ -285,7 +285,7 @@ public class Board {
     
     private void assertUnfrozen() {
         if (frozen){
-            throw new RuntimeException("Cannot modify a frozen Board.");
+            throw new AssertionError("Cannot modify a frozen Board.");
         }
     }
     
