@@ -155,7 +155,6 @@ public class Move {
      * there is no definition of Squares "between" the start and end.
      */
     private boolean isOpen(Board board) {
-        assert isDiagonal() || isBasic();
         for (Square s : between()) {
             if (board.getPiece(s) != null) {
                 return false;
