@@ -17,7 +17,6 @@ import chess.Move;
 import chess.Piece;
 import chess.Square;
 import exceptions.AlgebraicNotationException;
-import exceptions.InvalidMoveException;
 
 public class SocketChessServer {
     public static void main(String[] args) throws IOException {
@@ -40,23 +39,20 @@ public class SocketChessServer {
                 out.println("Invalid move!");
                 continue;
             }
-            try {
+            if (m.isLegal(board)) {
                 board = board.moveResult(m);
-            } catch (InvalidMoveException e) {
-                out.println("Invalid move!");
+            } else {
+                out.println("Invalid move!"); 
+                continue;
             }
+            
             out.println(colorize(board));
             out.println("H(board) = " + Heuristic.pieceValueHeuristic(board));
 
             out.println("Thinking...");
             MoveDecision bestDecision = AlphaBeta.bestMove(board, 3);
             out.println("Making move" + bestDecision.getFirstMove());
-            try {
-                board = board.moveResult(bestDecision.getFirstMove());
-            } catch (InvalidMoveException e) {
-                // Impossible!
-                throw new RuntimeException();
-            }
+            board = board.moveResult(bestDecision.getFirstMove());
             
             out.println(colorize(board));
             out.println("H(continuation) = " + bestDecision.getScore());

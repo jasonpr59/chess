@@ -1,7 +1,7 @@
 package test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
 
@@ -31,11 +31,7 @@ public class BoardTest {
         blackChecked.moveResult(m2b_legal);
 
         // The illegal response should throw an exception
-        try {
-            blackChecked.moveResult(m2b_illegal);
-            fail();
-        } catch (InvalidMoveException expected) {
-        }
+        assertFalse(m2b_illegal.isLegal(blackChecked));
 
         assertEquals(5, blackChecked.legalMoves().size());
     }

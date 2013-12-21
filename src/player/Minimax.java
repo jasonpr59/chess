@@ -7,7 +7,6 @@ import java.util.List;
 import chess.Board;
 import chess.Move;
 import chess.Piece;
-import exceptions.InvalidMoveException;
 
 public class Minimax {
     public static MoveDecision bestMove(Board board, int depth) {
@@ -42,11 +41,7 @@ public class Minimax {
             
             Collections.shuffle(legalMoves);
             for (Move m : legalMoves) {
-                try {
-                    possibleResult = board.moveResult(m);
-                } catch (InvalidMoveException e) {
-                    throw new RuntimeException();
-                }
+                possibleResult = board.moveResult(m);
                 MoveDecision nextDecision = bestMove(possibleResult, depth - 1);
                 nextMoves = new ArrayList<Move>();
                 nextMoves.add(m);

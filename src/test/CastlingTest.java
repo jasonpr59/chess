@@ -1,7 +1,7 @@
 package test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
 
@@ -32,12 +32,8 @@ public class CastlingTest {
         assertEquals(b_good.getPiece(Square.algebraic("h1")), null);
                 
         // Be sure black can't castle through his bishop! 
-        try {
-            Board b_bad = b_good.moveResult(new Move(Square.algebraic("e8"), Square.algebraic("g8")));
-            fail("Successfully castled, when castling should have been impossible!");
-        } catch (InvalidMoveException e) {
-            // Good, it *was* an invalid move!
-        }
+        Move illegalCastle = new Move(Square.algebraic("e8"), Square.algebraic("g8"));
+        assertFalse(illegalCastle.isLegal(b_good));
     }
     
     @Test
@@ -56,12 +52,8 @@ public class CastlingTest {
         assertEquals(b_good.getPiece(Square.algebraic("e1")), null);
         
         // Be sure black can't castle through his knight.
-        try {
-            Board b_bad = b_good.moveResult(new Move(Square.algebraic("e8"), Square.algebraic("c8")));
-            fail("Successfully castled, when castling should have been impossible!");
-        } catch (InvalidMoveException e) {
-            // Good, it *was* an invalid move!
-        }
+        Move illegalCastle = new Move(Square.algebraic("e8"), Square.algebraic("c8"));
+        assertFalse(illegalCastle.isLegal(b_good));
     }
     
     @Test
@@ -71,13 +63,9 @@ public class CastlingTest {
                           "Bg2", "Ba6",
                           "e3", "g6"};
         Game g = Game.fromMoves(moves);
-        // Be sure white can't castle (because the bishop on a6 attacks f1).
-        try {
-            Board b_bad = g.getBoard().moveResult(new Move(Square.algebraic("e1"), Square.algebraic("g1")));
-            fail();
-        } catch (InvalidMoveException e) {
-            // Good, it *was* an invalid move!
-        }
+        
+        Move illegalCastle = new Move(Square.algebraic("e1"), Square.algebraic("g1"));
+        assertFalse(illegalCastle.isLegal(g.getBoard()));
     }
 
     @Test
@@ -88,15 +76,7 @@ public class CastlingTest {
                           "Bb5", "Bb4"};
         Game g = Game.fromMoves(moves);
         
-       try{
-           Board b_bad = g.getBoard().moveResult(new Move(Square.algebraic("e1"), Square.algebraic("g1")));
-           fail("Succeeded in castling out of check.");
-       } catch (InvalidMoveException e) {
-           // Good, it *was* an invalid move!
-       }
+        Move illegalCastle = new Move(Square.algebraic("e1"), Square.algebraic("g1"));
+        assertFalse(illegalCastle.isLegal(g.getBoard()));
     }
-    
-    
-    
-    
 }
