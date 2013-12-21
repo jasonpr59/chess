@@ -130,22 +130,25 @@ public class Board {
     public Board moveResult(Move move){
         Square start = move.getStart();
         Square end = move.getEnd();
+        Piece movingPiece = movingPiece(move);
         
-        Piece movingPiece = getPiece(start);
-        
+        // Make an unfrozen copy that we can modify to effect the move.
         Board result = new Board(this);
 
         // The captured square might not be in the end square (in the case of en passant).
         Square capturedSquare = move.capturedSquare(this);
         if (capturedSquare != null) {
+            // Remove the captured piece.
             result.placePiece(null, capturedSquare);
         }
+
+        // Remove the piece from its starting position...
+        result.placePiece(null, start);
+        // ... and put it in its final position.
+        result.placePiece(movingPiece, end);
         
+        // Move the rook, too, if this is a castling move.
         if (move.isCastling(this)) {
-            // Place the rook in its new spot.
-            Square rookEnd= start.plus(move.getDelta().unitized());
-            result.placePiece(new Piece(Piece.PieceType.ROOK, toMoveColor), rookEnd);
-            
             // Remove the old rook.
             Square rookStart;
             if (move.getDelta().getDeltaFile() > 0) {
@@ -156,21 +159,23 @@ public class Board {
                 rookStart = start.plus(new Delta(-4, 0));
             }
             result.placePiece(null, rookStart);
+
+            // Place the rook in its new spot.
+            Square rookEnd= start.plus(move.getDelta().unitized());
+            result.placePiece(new Piece(Piece.PieceType.ROOK, toMoveColor), rookEnd);
         }
 
-        result.placePiece(null, start);
+        // If this is a promotion, replace the pawn with a new piece.
         if (move instanceof PromotionMove) {
             PromotionMove promotionMove = (PromotionMove) move; 
             Piece promotedPiece = new Piece(promotionMove.getPromotedType(),
                                             movingPiece.getPieceColor());
             result.placePiece(promotedPiece, end);
-        } else {
-            result.placePiece(movingPiece, end);
         }
         
+        // Update extra board info.
         result.setEnPassantSquare(move.enPassantSquare(this));
         result.setToMoveColor(toMoveColor.opposite());
-
         // Keep track of whether castling will be allowable
         // in future moves.
         result.updateCastlingInfo(move);
@@ -243,6 +248,11 @@ public class Board {
         // FIXME: This is a pretty bad rep exposure:
         // CastlingInfo is mutable.
         return castlingInfo;
+    }
+
+    /** Return the piece that would move if this move were performed. */
+    private Piece movingPiece(Move move) {
+        return getPiece(move.getStart());
     }
     
     
