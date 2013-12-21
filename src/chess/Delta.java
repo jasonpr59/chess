@@ -64,6 +64,11 @@ public class Delta{
         this.deltaRank = deltaRank;
     }
     
+    public Delta(Square start, Square end) {
+        deltaFile = end.getFile() - start.getFile();
+        deltaRank = end.getRank() - start.getRank();
+    }
+    
     public int getDeltaFile() {
         return deltaFile;
     }

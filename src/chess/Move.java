@@ -12,16 +12,13 @@ public class Move {
     private final Delta delta;
 
     public Move(Square start, Square end) {
-        this.start = start;
-        this.end = end;
-
-        // Acceptable to use "this" here: Delta only uses start and end,
-        // which were already set.
-        delta = new Delta(this);
-        
-        if (delta.getDeltaFile() == 0 && delta.getDeltaRank() == 0) {
+        if (start.equals(end)) {
             throw new IllegalArgumentException("A move cannot start and end on the same square.");
         }
+
+        this.start = start;
+        this.end = end;
+        this.delta = new Delta(start, end);
     }
     
     public Move(Square start, Delta delta) {
