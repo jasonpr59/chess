@@ -41,6 +41,27 @@ public class Board {
     }
     
     /**
+     * Create an unfrozen copy of a board.
+     *
+     * Unfrozen boards are mutable: pieces can be placed/removed,
+     * the toMoveColor can be changed, etc.  We use frozen boards
+     * wherever possible, because they are immutable.  But, to create
+     * a board with all the right properties, we need to create a board
+     * and mutate it.  And, when that board needs to be similar to an
+     * existing board, it makes sense to create an unfrozen copy from
+     * which to work.
+     */
+    private Board(Board source) {
+        this();
+        for (Square sq : Square.ALL) {
+            placePiece(source.getPiece(sq), sq);
+        }
+        enPassantSquare = source.getEnPassantSquare();
+        toMoveColor = source.getToMoveColor();
+        castlingInfo = source.getCastlingInfo();
+    }
+
+    /**
      * Construct a new board in the default chess starting position.
      */
     public static Board newGame() {
@@ -116,27 +137,6 @@ public class Board {
         setToMoveColor(Piece.PieceColor.WHITE);
     }
     
-    
-    /**
-     * Create an unfrozen copy of a board.
-     * 
-     * Unfrozen boards are mutable: pieces can be placed/removed,
-     * the toMoveColor can be changed, etc.  We use frozen boards
-     * wherever possible, because they are immutable.  But, to create
-     * a board with all the right properties, we need to create a board
-     * and mutate it.  And, when that board needs to be similar to an
-     * existing board, it makes sense to create an unfrozen copy from
-     * which to work.
-     */
-    private Board(Board source) {
-        this();
-        for (Square sq : Square.ALL) {
-            placePiece(source.getPiece(sq), sq);
-        }
-        enPassantSquare = source.getEnPassantSquare();
-        toMoveColor = source.getToMoveColor();
-        castlingInfo = source.getCastlingInfo();
-    }
     
     /**
      * Get the board that results from a move.
