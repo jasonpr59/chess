@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import chess.Piece.PieceColor;
+
 import exceptions.NonexistantSquareException;
 
 public class Square {
@@ -154,6 +156,15 @@ public class Square {
         return moves;
     }
     
+    /** Return whether the square is on the color's pawns' home rank. */
+    public boolean isOnPawnHomeRank(Piece.PieceColor color) {
+        if (color == Piece.PieceColor.WHITE) {
+            return rank == 2;
+        } else {
+            return rank == 7;
+        }
+    }
+
     public static Collection<Square> line(char clue) {
         if ('1' <= clue && clue <= '8') {
             return rank(clue);
