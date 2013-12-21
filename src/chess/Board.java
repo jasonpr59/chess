@@ -9,119 +9,125 @@ import chess.Piece.PieceColor;
 import exceptions.InvalidMoveException;
 import exceptions.PieceAbilityException;
 
+/** A chess board at a specific position. */
 public class Board {
-
     // Once frozen is true, the board becomes immutable.
     private boolean frozen = false;
-    
     
     // board[file - 1][rank - 1] = the piece with specified rank and file
     // For example, board[1][7] is the piece at b8.
     private final Piece[][] board;
-    
-    private Set<Piece> captured;
-    
     private Square enPassantSquare;
-    
     private PieceColor toMoveColor;
-    
     // For use in deciding whether castling is legal.
     private CastlingInfo castlingInfo;
     
+    /** Construct a new board with no pieces placed. */
     private Board() {
         board = new Piece[8][8];
-
-        // No captured pieces, yet.
-        captured = new HashSet<Piece>();
-        
         // No en passant square, yet.
         enPassantSquare = null;
-        
         castlingInfo = new CastlingInfo();
     }
     
     /**
-     * Construct a new board in the default chess starting position.
+     * Create an unfrozen copy of a board.
+     *
+     * Unfrozen boards are mutable: pieces can be placed/removed,
+     * the toMoveColor can be changed, etc.  We use frozen boards
+     * wherever possible, because they are immutable.  But, to create
+     * a board with all the right properties, we need to create a board
+     * and mutate it.  And, when that board needs to be similar to an
+     * existing board, it makes sense to create an unfrozen copy from
+     * which to work.
      */
+    private Board(Board source) {
+        this();
+        for (Square sq : Square.ALL) {
+            placePiece(source.getPiece(sq), sq);
+        }
+        enPassantSquare = source.getEnPassantSquare();
+        toMoveColor = source.getToMoveColor();
+        castlingInfo = source.getCastlingInfo();
+    }
+
+    /** Construct a new board in the default chess starting position. */
     public static Board newGame() {
         Board b = new Board();
+        b.setupNewGame();
+        return b.freeze();
+    }
+
+    /** Put the board in the default chess starting position. */
+    private void setupNewGame() {
+        assertUnfrozen();
+
+        // Clear out the whole board.
+        for (Square sq : Square.ALL) {
+            placePiece(null, sq);
+        }
+        // No en passant square, yet.
+        enPassantSquare = null;
+        castlingInfo = new CastlingInfo();
+        
         
         // Set up the pawns
         for (int file = 1; file <= 8; file++){
-            b.placePiece(new Piece(Piece.PieceType.PAWN, Piece.PieceColor.WHITE),
+            placePiece(new Piece(Piece.PieceType.PAWN, Piece.PieceColor.WHITE),
                          Square.squareAt(file, 2));
-            b.placePiece(new Piece(Piece.PieceType.PAWN, Piece.PieceColor.BLACK),
+            placePiece(new Piece(Piece.PieceType.PAWN, Piece.PieceColor.BLACK),
                          Square.squareAt(file, 7));
         }
         
         // Set up the pieces
-        b.placePiece(new Piece(Piece.PieceType.ROOK, Piece.PieceColor.WHITE),
-                    Square.squareAt(1, 1));
-        b.placePiece(new Piece(Piece.PieceType.ROOK, Piece.PieceColor.BLACK),
-                    Square.squareAt(1, 8));
+        placePiece(new Piece(Piece.PieceType.ROOK, Piece.PieceColor.WHITE),
+                   Square.squareAt(1, 1));
+        placePiece(new Piece(Piece.PieceType.ROOK, Piece.PieceColor.BLACK),
+                   Square.squareAt(1, 8));
         
-        b.placePiece(new Piece(Piece.PieceType.KNIGHT, Piece.PieceColor.WHITE),
-                    Square.squareAt(2, 1));
-        b.placePiece(new Piece(Piece.PieceType.KNIGHT, Piece.PieceColor.BLACK),
-                    Square.squareAt(2, 8));
+        placePiece(new Piece(Piece.PieceType.KNIGHT, Piece.PieceColor.WHITE),
+                   Square.squareAt(2, 1));
+        placePiece(new Piece(Piece.PieceType.KNIGHT, Piece.PieceColor.BLACK),
+                   Square.squareAt(2, 8));
         
-        b.placePiece(new Piece(Piece.PieceType.BISHOP, Piece.PieceColor.WHITE),
-                    Square.squareAt(3, 1));
-        b.placePiece(new Piece(Piece.PieceType.BISHOP, Piece.PieceColor.BLACK),
-                    Square.squareAt(3, 8));
+        placePiece(new Piece(Piece.PieceType.BISHOP, Piece.PieceColor.WHITE),
+                   Square.squareAt(3, 1));
+        placePiece(new Piece(Piece.PieceType.BISHOP, Piece.PieceColor.BLACK),
+                   Square.squareAt(3, 8));
         
-        b.placePiece(new Piece(Piece.PieceType.QUEEN, Piece.PieceColor.WHITE),
-                    Square.squareAt(4, 1));
-        b.placePiece(new Piece(Piece.PieceType.QUEEN, Piece.PieceColor.BLACK),
-                    Square.squareAt(4, 8));
+        placePiece(new Piece(Piece.PieceType.QUEEN, Piece.PieceColor.WHITE),
+                   Square.squareAt(4, 1));
+        placePiece(new Piece(Piece.PieceType.QUEEN, Piece.PieceColor.BLACK),
+                   Square.squareAt(4, 8));
         
-        b.placePiece(new Piece(Piece.PieceType.KING, Piece.PieceColor.WHITE),
-                    Square.squareAt(5, 1));
-        b.placePiece(new Piece(Piece.PieceType.KING, Piece.PieceColor.BLACK),
-                    Square.squareAt(5, 8));
+        placePiece(new Piece(Piece.PieceType.KING, Piece.PieceColor.WHITE),
+                   Square.squareAt(5, 1));
+        placePiece(new Piece(Piece.PieceType.KING, Piece.PieceColor.BLACK),
+                   Square.squareAt(5, 8));
         
-        b.placePiece(new Piece(Piece.PieceType.BISHOP, Piece.PieceColor.WHITE),
-                    Square.squareAt(6, 1));
-        b.placePiece(new Piece(Piece.PieceType.BISHOP, Piece.PieceColor.BLACK),
-                    Square.squareAt(6, 8));
+        placePiece(new Piece(Piece.PieceType.BISHOP, Piece.PieceColor.WHITE),
+                   Square.squareAt(6, 1));
+        placePiece(new Piece(Piece.PieceType.BISHOP, Piece.PieceColor.BLACK),
+                   Square.squareAt(6, 8));
         
-        b.placePiece(new Piece(Piece.PieceType.KNIGHT, Piece.PieceColor.WHITE),
-                    Square.squareAt(7, 1));
-        b.placePiece(new Piece(Piece.PieceType.KNIGHT, Piece.PieceColor.BLACK),
-                    Square.squareAt(7, 8));
+        placePiece(new Piece(Piece.PieceType.KNIGHT, Piece.PieceColor.WHITE),
+                   Square.squareAt(7, 1));
+        placePiece(new Piece(Piece.PieceType.KNIGHT, Piece.PieceColor.BLACK),
+                   Square.squareAt(7, 8));
         
-        b.placePiece(new Piece(Piece.PieceType.ROOK, Piece.PieceColor.WHITE),
-                    Square.squareAt(8, 1));
-        b.placePiece(new Piece(Piece.PieceType.ROOK, Piece.PieceColor.BLACK),
-                    Square.squareAt(8, 8));
+        placePiece(new Piece(Piece.PieceType.ROOK, Piece.PieceColor.WHITE),
+                   Square.squareAt(8, 1));
+        placePiece(new Piece(Piece.PieceType.ROOK, Piece.PieceColor.BLACK),
+                   Square.squareAt(8, 8));
         
-        b.setToMoveColor(Piece.PieceColor.WHITE);
-        b.freeze();
-        return b;
+        setToMoveColor(Piece.PieceColor.WHITE);
     }
     
-    private Board unfrozenCopy() {
-        Board b = new Board();
-        for (int file = 1; file <= 8; file++) {
-            for (int rank = 1; rank <= 8; rank++) {
-                Square sq = Square.squareAt(file, rank);
-                b.placePiece(getPiece(sq), sq);
-            }
-        }
-        // setCaptured makes a copy and discards the input set,
-        // so we don't need to pass in a copy.
-        b.setCaptured(captured);
-        b.setEnPassantSquare(enPassantSquare);
-        b.setToMoveColor(toMoveColor);
-        
-        b.setCastlingInfo(castlingInfo);
-        
-        return b;
-    }
-
     /**
-     * Return the result of performing a move on this board.
+     * Get the board that results from a move.
      * @param move A Move object designating which move should be made.
+     * @return A frozen board that is the result of making the move on
+     *     this board.
      */
     public Board moveResult(Move move) throws InvalidMoveException{
         Square start = move.getStart();
@@ -135,7 +141,7 @@ public class Board {
             throw new PieceAbilityException(movingPiece + " cannot make move " + move);
         }
         
-        Board result = unfrozenCopy();
+        Board result = new Board(this);
 
         // If it's castling, make sure it's legal.
         if (getPiece(start).getType() == Piece.PieceType.KING && move.isCastling(this)) {
@@ -186,7 +192,6 @@ public class Board {
         }
         
         result.setEnPassantSquare(move.enPassantSquare(this));
-
         result.setToMoveColor(toMoveColor.opposite());
 
         // Keep track of whether castling will be allowable
@@ -202,84 +207,94 @@ public class Board {
     }
  
     /**
-     * Place a piece on a specific square.
-     * 
-     * If another piece is already on that square, it's replaced.
+     * Place a piece on a square.
+     * If another piece is already on that square, it is replaced.
      */
-    public Board placePiece(Piece piece, Square square){
+    private Board placePiece(Piece piece, Square square){
         assertUnfrozen();
         board[square.getFile() - 1][square.getRank() - 1] = piece;
         return this;
     }
     
-    public Board setCaptured(Set<Piece> captured) {
-        assertUnfrozen();
-        this.captured = new HashSet<Piece>(captured);
-        return this;
-    }
-    
-    public Board setEnPassantSquare(Square square) {
+    /**
+     * Set the square onto which pawns move for an en-passant capture.
+     * @return This Board, for daisy chaining.
+     */
+    private Board setEnPassantSquare(Square square) {
         assertUnfrozen();
         this.enPassantSquare = square;
         return this;
     }
     
-    public Board setToMoveColor(PieceColor color) {
+    /**
+     * Set the color whose move it is.
+     * @return This Board, for daisy chaining.
+     */
+    private Board setToMoveColor(PieceColor color) {
         assertUnfrozen();
         this.toMoveColor = color;
         return this;
     }
     
-    public Board setCastlingInfo(CastlingInfo castlingInfo) {
-        assertUnfrozen();
-        // Duplicate it, so we can modify it without affecting
-        // the input CastlingInfo.
-        this.castlingInfo = new CastlingInfo(castlingInfo);
-        return this;
-    }
-    
-    public Board updateCastlingInfo(Move move) {
+    /**
+     * Take note of a move's effect on future castling abilities.
+     * For example, if the move moves white's h-rook, then white
+     * will no longer be able to castle kingside henceforth.
+     * @return This Board, for daisy chaining.
+     */
+    private Board updateCastlingInfo(Move move) {
         assertUnfrozen();
         this.castlingInfo.update(move);
         return this;
     }
 
-    
-    /**
-     * Get the piece at the given square.
-     */
+    /** Get the piece at a square, or null if the square is empty. */
     public Piece getPiece(Square square){
         return board[square.getFile() - 1][square.getRank() - 1];
     }
-    
+
+    /** Return whether a square is empty. */
     public boolean isEmpty(Square square) {
         return getPiece(square) == null;
     }
-    
+
+    /** Get the en-passant square, or null if there isn't one.*/
     public Square getEnPassantSquare(){
         return enPassantSquare;
     }
 
-    public Board freeze() {
+    public PieceColor getToMoveColor() {
+        return toMoveColor;
+    }
+
+    public CastlingInfo getCastlingInfo() {
+        // FIXME: This is a pretty bad rep exposure:
+        // CastlingInfo is mutable.
+        return castlingInfo;
+    }
+    
+    
+    /**
+     * Freeze the board, so it becomes immutable.
+     * @return This Board, for daisy chaining.
+     */
+    private Board freeze() {
         frozen = true;
         return this;
     }
     
     private void assertUnfrozen() {
         if (frozen){
-            throw new RuntimeException("Cannot modify a frozen Board.");
+            throw new AssertionError("Cannot modify a frozen Board.");
         }
     }
     
-    /**
-     * Get the set of sane move available to the piece on some square.
-     * @param square
-     * @return
-     */
-    public Set<Move> saneMoves(Square start) {
+    /** Get the set of sane moves available to the piece on a square. */
+    public Iterable<Move> saneMoves(Square start) {
         Piece movingPiece = getPiece(start);
         
         if (movingPiece == null) {
+            // No piece at that square = no available moves!
             return new HashSet<Move>();
         }
 
@@ -290,27 +305,24 @@ public class Board {
             case PAWN:
                 boolean isWhite = movingPiece.getPieceColor() == Piece.PieceColor.WHITE;
                 Delta fwd = new Delta(0, isWhite? 1 : -1);
-                Collection<Delta> deltas = new ArrayList<Delta>();
-                deltas.add(fwd);
-                deltas.add(fwd.scaled(2));
-                deltas.add(Delta.sum(fwd, new Delta(1, 0)));
-                deltas.add(Delta.sum(fwd,  new Delta(-1, 0)));
+                Collection<Delta> candidateDeltas = new ArrayList<Delta>();
+                // There are at most four possible pawn moves (ignoring promotion choices).
+                // Just try them all!
+                candidateDeltas.add(fwd);
+                candidateDeltas.add(fwd.scaled(2));
+                candidateDeltas.add(Delta.sum(fwd, new Delta(1, 0)));
+                candidateDeltas.add(Delta.sum(fwd,  new Delta(-1, 0)));
 
                 candidateMoves = new ArrayList<Move>();
                 Move candidateMove;
-                for (Delta delta : deltas) {
+                for (Delta delta : candidateDeltas) {
                     try {
                         candidateMove = new Move(start, delta);
                     } catch (ArrayIndexOutOfBoundsException e) {
                         continue;
                     }
                     int endRank = candidateMove.getEnd().getRank();
-                    int deltaRank = delta.getDeltaRank();
-                    // Technically, we could just check that endRank in {1, 8}.
-                    // Not totally sure why it feels nicer to do the extra
-                    // deltaRank check.
-                    if ((endRank == 8 && deltaRank == 1) ||
-                        (endRank == 1 && deltaRank == -1)) {
+                    if (endRank == 8 || endRank == 1) {
                         // It's a promotion!
                         candidateMoves.addAll(PromotionMove.allPromotions(candidateMove));
                     } else {
@@ -320,9 +332,12 @@ public class Board {
                 }
                 break;
             case KNIGHT:
+                // Knight moves are specified by three binary parameters:
+                // Direction along rank, direction along file, and
+                // alignment of the L-shape's long leg.
                 int[] rankDirs = {-1, 1};
                 int[] fileDirs = {-1, 1};
-                int[][] orders = {{1, 2}, {2, 1}}; 
+                int[][] alignments = {{1, 2}, {2, 1}}; 
 
                 int dRank;
                 int dFile;
@@ -330,9 +345,9 @@ public class Board {
                 candidateMoves = new ArrayList<Move>();
                 for (int rankDir : rankDirs) {
                     for (int fileDir : fileDirs) {
-                        for (int[] order : orders) {
-                            dRank = rankDir * order[0];
-                            dFile = fileDir * order[1];
+                        for (int[] alignment : alignments) {
+                            dRank = rankDir * alignment[0];
+                            dFile = fileDir * alignment[1];
                             delta = new Delta(dFile, dRank);
                             try {
                                 candidateMoves.add(new Move(start, delta));
@@ -371,8 +386,9 @@ public class Board {
         }
         return filterSane(candidateMoves);
     }
-    
-    private Set<Move> filterSane(Collection<Move> candidates) {
+
+    /** Return the subset of sane moves from a set of moves. */
+    private Collection<Move> filterSane(Collection<Move> candidates) {
         Set<Move> saneMoves = new HashSet<Move>();
         for (Move c : candidates) {
             if (c.isSane(this)) {
@@ -381,7 +397,8 @@ public class Board {
         }
         return saneMoves;
     }
-    
+
+    /** Return all legal moves. */
     public Collection<Move> legalMoves() {
         Collection<Move> legalMoves = new ArrayList<Move>();
         for (Square start : Square.ALL) {
@@ -402,6 +419,7 @@ public class Board {
         return legalMoves;
     }
 
+    /** Return the square that the king of some color occupies. */
     private Square kingSquare(PieceColor kingColor) {
         // TODO: Make this more efficient by "caching" the king's position
         // as an attribute of board.
@@ -415,13 +433,14 @@ public class Board {
         // Didn't return anything!
         throw new RuntimeException("There is no king of color " + kingColor + " on the board!");        
     }
-    
+
+    /** Return whether the king of some color is in check. */
     public boolean checked(PieceColor kingColor) {
         Square kingSquare = kingSquare(kingColor);
         Board trialBoard;
         if (toMoveColor == kingColor) {
             // Act as though it's the other side's turn, to see if they could attack the king.
-            trialBoard = unfrozenCopy().setToMoveColor(toMoveColor.opposite()).freeze();
+            trialBoard = new Board(this).setToMoveColor(toMoveColor.opposite()).freeze();
         } else {
             // It's the other color's turn, so see if they can attack this king.
             trialBoard = this;
@@ -429,6 +448,12 @@ public class Board {
         return trialBoard.isAttackable(kingSquare);
     }
 
+    /**
+     * Return whether the given square is currently under attack.
+     * A square is under attack if a piece of the toMoveColor is
+     * attacking it.
+     * TODO: Consider allowing caller to specify attackerColor.   
+     */
     public boolean isAttackable(Square target) {
         Piece.PieceColor attackerColor = toMoveColor;
         for (Square attackerSquare : Square.ALL) {
@@ -447,23 +472,13 @@ public class Board {
         return false;
     }
 
-    public PieceColor getToMoveColor() {
-        return toMoveColor;
-    }
-    
-    /**
-     * @return true iff the king is unmoved and the h-rook is unmoved.
-     */
+    /** Return whether the king is unmoved and the h-rook is unmoved. */
     public boolean kingCastlePiecesReady(Piece.PieceColor color) {
         return castlingInfo.kingCastlePiecesReady(color);
     }
 
-    /**
-     * 
-     * @return true iff the king is unmoved and the a-rook is unmoved.
-     */
+    /** Return whether the king is unmoved and the a-rook is unmoved. */
     public boolean queenCastlePiecesReady(Piece.PieceColor color) {
         return castlingInfo.queenCastlePiecesReady(color);
     }
-    
 }
