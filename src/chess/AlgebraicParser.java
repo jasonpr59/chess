@@ -5,7 +5,6 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
-import chess.Piece.PieceColor;
 import chess.Piece.PieceType;
 import exceptions.AlgebraicNotationException;
 
