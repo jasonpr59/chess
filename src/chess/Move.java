@@ -5,12 +5,18 @@ import java.util.Collection;
 
 import exceptions.InvalidMoveException;
 
+/**
+ * A move from one Square to another Square.
+ *  This class is immutable.
+ */
 public class Move {
 
     private final Square start;
     private final Square end;
+    // We'll cache the delta from start to end, since Move is immutable. 
     private final Delta delta;
 
+    /** Construct a Move from one Square to another Square. */
     public Move(Square start, Square end) {
         if (start.equals(end)) {
             throw new IllegalArgumentException("A move cannot start and end on the same square.");
@@ -21,6 +27,7 @@ public class Move {
         this.delta = new Delta(start, end);
     }
     
+    /** Construct a Move from starting at a Square and moving by a Delta. */
     public Move(Square start, Delta delta) {
         this(start, start.plus(delta));
     }
@@ -128,6 +135,7 @@ public class Move {
         }
     }
     
+    /** Return whether a move is legal on a given board. */
     public boolean isLegal(Board board) {
         Board resultBoard;
         try {
@@ -138,6 +146,14 @@ public class Move {
         return !resultBoard.checked(board.getToMoveColor());
     }
     
+    /**
+     * Return whether a move is open on a given board.
+     * A move is open if the Squares between its start and end
+     * are all unoccupied.
+     *
+     * Requires that the move is basic or diagonal: for other moves,
+     * there is no definition of Squares "between" the start and end.
+     */
     private boolean isOpen(Board board) {
         assert isDiagonal() || isBasic();
         for (Square s : between()) {
@@ -148,6 +164,11 @@ public class Move {
         return true;
     }
 
+    /**
+     * Get the Squares between the start and end.
+     * Requires that the move is basic or diagonal: for other moves,
+     * there is no definition of Squares "between" the start and end.
+     */
     private Collection<Square> between() {
         assert isDiagonal() || isBasic();
 
@@ -161,6 +182,11 @@ public class Move {
         return squares;
     }
     
+    /**
+     * Return whether the Piece at the start could land on the end Square.
+     * A Piece could land on a Square iff that Square is unoccupied or it is
+     * occupied by a piece of the opposite color.
+     */
     private boolean isLandable(Board board) {
         Piece movingPiece = board.getPiece(start);
         Piece capturedPiece = board.getPiece(end);
@@ -171,7 +197,13 @@ public class Move {
     private boolean isDiagonal() {
         return Math.abs(delta.getDeltaRank()) == Math.abs(delta.getDeltaFile());
     }
-        
+
+    /** Return whether this is a rook-like move.
+     *  That is, return true iff this move is entirely along a rank
+     *  or a file.
+     *  Such moves are "basic" because the rank and file directions form
+     *  a nice basis for all moves on the board.
+     */
     private boolean isBasic() {
         return (delta.getDeltaRank() == 0) ^ (delta.getDeltaFile() == 0);
     }
@@ -198,12 +230,11 @@ public class Move {
     }
     
     /**
-     * Determine the square that is occupied by the piece that's to be captured by this move.
-     * (Takes en passant into account.)
+     * Return the square that is occupied by the piece that's to be captured by this move.
+     * Return null if no piece is to be captured.
+     * Takes en passant into account.
      * @param board The board on which the move is to be made.
-     * @return The square that is occupied by the to-be-captured piece,
-     *  or null if no piece is to be captured.
-     *  @requires That this move is sane. 
+     * Requires that this move is sane. 
      */
     public Square capturedSquare(Board board) {
         // TODO(jasonpr): Factor some common code out of here and isSane.
@@ -218,6 +249,10 @@ public class Move {
         }
     }
     
+    /**
+     * Return the en passant Square produced by this move, or null if there isn't one.
+     * @param board The board on which the move is to be made.
+     */
     public Square enPassantSquare(Board board) {
         Piece movingPiece = board.getPiece(start);
         if (movingPiece == null || movingPiece.getType() != Piece.PieceType.PAWN) {
@@ -231,11 +266,7 @@ public class Move {
         }
     }
     
-    /**
-     * 
-     * @return
-     * @requires that this move is sane.
-     */
+    /** Return whether move makes a pawn do a capture on a Board. */
     private boolean isPawnCapture(Board board) {
         Piece movingPiece = board.getPiece(start);
         if (movingPiece == null || movingPiece.getType() != Piece.PieceType.PAWN) {
@@ -245,10 +276,12 @@ public class Move {
         return delta.getDeltaFile() != 0;
     }
     
+    /** Serialize this move as a 4-character String. */
     public String serialized() {
         return "" + start.getFile() + start.getRank() + end.getFile() + end.getRank();
     }
     
+    /** Deserialize this move from a 4-character String. */
     public static Move deserialized(String s) {
         s = s.trim();
         assert s.length() == 4;
@@ -261,12 +294,13 @@ public class Move {
         
     }
     
+    /** Return whether this Move starts or ends at some Square. */
     public boolean startsOrEndsAt(Square square) {
         return start.equals(square) || end.equals(square);
     }
     
     /**
-     * @return Whether this is a castling move.
+     * Returns whether this is a castling move on some Board.
      * Requires that the move is sane.
      */
     public boolean isCastling(Board board) {
@@ -275,6 +309,4 @@ public class Move {
         return (board.getPiece(start).getType() == Piece.PieceType.KING &&
                 Math.abs(delta.getDeltaFile()) == 2);
     }
-    
-    
 }
