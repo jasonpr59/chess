@@ -9,11 +9,7 @@ import chess.Piece.PieceColor;
 import exceptions.InvalidMoveException;
 import exceptions.PieceAbilityException;
 
-/**
- * A chess board at a specific position.
- *
- * @author Jason Paller-Rzepka
- */
+/** A chess board at a specific position. */
 public class Board {
 
     // Once frozen is true, the board becomes immutable.
@@ -30,9 +26,7 @@ public class Board {
     // For use in deciding whether castling is legal.
     private CastlingInfo castlingInfo;
     
-    /**
-     * Construct a new board with no pieces placed.
-     */
+    /** Construct a new board with no pieces placed. */
     private Board() {
         board = new Piece[8][8];
         // No en passant square, yet.
@@ -61,18 +55,14 @@ public class Board {
         castlingInfo = source.getCastlingInfo();
     }
 
-    /**
-     * Construct a new board in the default chess starting position.
-     */
+    /** Construct a new board in the default chess starting position. */
     public static Board newGame() {
         Board b = new Board();
         b.setupNewGame();
         return b.freeze();
     }
 
-    /**
-     * Put the board in the default chess starting position.
-     */
+    /** Put the board in the default chess starting position. */
     private void setupNewGame() {
         assertUnfrozen();
 
@@ -142,7 +132,7 @@ public class Board {
      * Get the board that results from a move.
      * @param move A Move object designating which move should be made.
      * @return A frozen board that is the result of making the move on
-     *   this board.
+     *     this board.
      */
     public Board moveResult(Move move) throws InvalidMoveException{
         Square start = move.getStart();
@@ -224,7 +214,6 @@ public class Board {
  
     /**
      * Place a piece on a square.
-     * 
      * If another piece is already on that square, it is replaced.
      */
     private Board placePiece(Piece piece, Square square){
@@ -266,16 +255,12 @@ public class Board {
     }
 
     
-    /**
-     * Get the piece at a square.
-     */
+    /** Get the piece at a square. */
     public Piece getPiece(Square square){
         return board[square.getFile() - 1][square.getRank() - 1];
     }
     
-    /**
-     * Return whether a square is empty.
-     */
+    /** Return whether a square is empty. */
     public boolean isEmpty(Square square) {
         return getPiece(square) == null;
     }
@@ -310,9 +295,7 @@ public class Board {
         }
     }
     
-    /**
-     * Get the set of sane move available to the piece on a square.
-     */
+    /** Get the set of sane move available to the piece on a square. */
     public Iterable<Move> saneMoves(Square start) {
         Piece movingPiece = getPiece(start);
         
@@ -410,9 +393,7 @@ public class Board {
         return filterSane(candidateMoves);
     }
 
-    /**
-     * Return the subset of sane moves from a set of moves.
-     */
+    /** Return the subset of sane moves from a set of moves. */
     private Collection<Move> filterSane(Collection<Move> candidates) {
         Set<Move> saneMoves = new HashSet<Move>();
         for (Move c : candidates) {
@@ -423,9 +404,7 @@ public class Board {
         return saneMoves;
     }
 
-    /**
-     * Return all legal moves.
-     */
+    /** Return all legal moves. */
     public Collection<Move> legalMoves() {
         Collection<Move> legalMoves = new ArrayList<Move>();
         for (Square start : Square.ALL) {
@@ -446,9 +425,7 @@ public class Board {
         return legalMoves;
     }
 
-    /**
-     * Return the square that the king of some color occupies.
-     */
+    /** Return the square that the king of some color occupies. */
     private Square kingSquare(PieceColor kingColor) {
         // TODO: Make this more efficient by "caching" the king's position
         // as an attribute of board.
@@ -463,9 +440,7 @@ public class Board {
         throw new RuntimeException("There is no king of color " + kingColor + " on the board!");        
     }
 
-    /**
-     * Return whether the king of some color is in check.
-     */
+    /** Return whether the king of some color is in check. */
     public boolean checked(PieceColor kingColor) {
         Square kingSquare = kingSquare(kingColor);
         Board trialBoard;
@@ -504,16 +479,12 @@ public class Board {
     }
 
 
-    /**
-     * Return whether the king is unmoved and the h-rook is unmoved.
-     */
+    /** Return whether the king is unmoved and the h-rook is unmoved. */
     public boolean kingCastlePiecesReady(Piece.PieceColor color) {
         return castlingInfo.kingCastlePiecesReady(color);
     }
 
-    /**
-     * Return whether the king is unmoved and the a-rook is unmoved.
-     */
+    /** Return whether the king is unmoved and the a-rook is unmoved. */
     public boolean queenCastlePiecesReady(Piece.PieceColor color) {
         return castlingInfo.queenCastlePiecesReady(color);
     }
