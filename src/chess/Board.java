@@ -248,8 +248,7 @@ public class Board {
         return this;
     }
 
-    
-    /** Get the piece at a square. */
+    /** Get the piece at a square, or null if the square is empty. */
     public Piece getPiece(Square square){
         return board[square.getFile() - 1][square.getRank() - 1];
     }
@@ -259,6 +258,7 @@ public class Board {
         return getPiece(square) == null;
     }
 
+    /** Get the en-passant square, or null if there isn't one.*/
     public Square getEnPassantSquare(){
         return enPassantSquare;
     }
@@ -289,7 +289,7 @@ public class Board {
         }
     }
     
-    /** Get the set of sane move available to the piece on a square. */
+    /** Get the set of sane moves available to the piece on a square. */
     public Iterable<Move> saneMoves(Square start) {
         Piece movingPiece = getPiece(start);
         
