@@ -5,20 +5,35 @@ import java.util.List;
 
 import exceptions.AlgebraicNotationException;
 import exceptions.InvalidMoveException;
-
+/** An entire chess game, starting from the initial position. */
 public class Game {
+    
     private final List<Board> history;
     
+    /**
+     * Construct a new Game.
+     * At this point, only the initial Board position is in the
+     * Game's history: no Moves have been made. 
+     */
     public Game() {
         history = new ArrayList<Board>();
         history.add(Board.newGame());
     }
     
+    /**
+     * Make a Move.
+     * The Move is made on the current (last) board, and the
+     * result is added to the history. This turns the result
+     * into the new current board.
+     * @return This Game, for daisy chaining.
+     * @throws InvalidMoveException
+     */
     public Game makeMove(Move move) throws InvalidMoveException{
         history.add(getBoard().moveResult(move));
         return this;
     }
 
+    /** Get the current (most recent) Board. */
     public Board getBoard() {
         return history.get(history.size() - 1);
     }
@@ -26,7 +41,10 @@ public class Game {
     /**
      * Get the position arrived at AFTER playing a move.
      * @param move The number of the move, in 1, 2, 3, ...
+     *     Or, 0, for the initial position.
      * @param ply 1 for white's ply, 2 for black's ply.
+     *     If move == 0, then ply can be anything-- the initial
+     *     position will be returned no matter what.
      * @return The Board at the given point in the game.
      */
     public Board getBoard(int move, int ply) {
@@ -43,7 +61,7 @@ public class Game {
         }
     }
     
-    
+    /** Create a Game whose history matches a history in Algebraic notation. */
     public static Game fromMoves(String[] moves) throws AlgebraicNotationException, InvalidMoveException {
         Game g = new Game();
         for (String move : moves) {
