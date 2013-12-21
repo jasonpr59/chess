@@ -6,8 +6,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import chess.Piece.PieceColor;
-import exceptions.InvalidMoveException;
-import exceptions.PieceAbilityException;
 
 /** A chess board at a specific position. */
 public class Board {
@@ -129,35 +127,14 @@ public class Board {
      * @return A frozen board that is the result of making the move on
      *     this board.
      */
-    public Board moveResult(Move move) throws InvalidMoveException{
+    public Board moveResult(Move move){
         Square start = move.getStart();
         Square end = move.getEnd();
         
         Piece movingPiece = getPiece(start);
         
-        // TODO: Consider doing sanity check outside,
-        // and just requiring that the move is sane.
-        if (!move.isSane(this)) {
-            throw new PieceAbilityException(movingPiece + " cannot make move " + move);
-        }
-        
         Board result = new Board(this);
 
-        // If it's castling, make sure it's legal.
-        if (getPiece(start).getType() == Piece.PieceType.KING && move.isCastling(this)) {
-            // assert that king was not checked before moving.
-            if (checked(toMoveColor)) {
-                throw new InvalidMoveException(movingPiece + " cannot castle out of check.");
-            }
-            // assert that king did not move through check.
-            // Do this by making the king move to that square, and seeing whether it is checked.
-            Square transitSquare = start.plus(move.getDelta().unitized());
-            Board fromLoneKingMove = moveResult(new Move(start, transitSquare));
-            if (fromLoneKingMove.checked(toMoveColor)) {
-                throw new InvalidMoveException(movingPiece + " cannot castle thorugh check.");
-            }
-        }
-        
         // The captured square might not be in the end square (in the case of en passant).
         Square capturedSquare = move.capturedSquare(this);
         if (capturedSquare != null) {
@@ -197,11 +174,6 @@ public class Board {
         // Keep track of whether castling will be allowable
         // in future moves.
         result.updateCastlingInfo(move);
-
-        // Current mover cannot be checked in resulting Board.
-        if (result.checked(toMoveColor)) {
-            throw new InvalidMoveException();
-        }
 
         return result.freeze();
     }
@@ -403,15 +375,7 @@ public class Board {
         Collection<Move> legalMoves = new ArrayList<Move>();
         for (Square start : Square.ALL) {
             for (Move saneMove : saneMoves(start)) {
-                Board result;
-                try {
-                    result = moveResult(saneMove);
-                } catch (InvalidMoveException e) {
-                    // TODO: Maybe check ahead of time if it's illegal, rather than
-                    // using exceptions?
-                    continue;
-                }
-                if (!result.checked(toMoveColor)) {
+                if (saneMove.isLegal(this)) {
                     legalMoves.add(saneMove);
                 }
             }

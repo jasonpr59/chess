@@ -3,8 +3,6 @@ package chess;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import exceptions.InvalidMoveException;
-
 /**
  * A move from one Square to another Square.
  *  This class is immutable.
@@ -174,12 +172,26 @@ public class Move {
     
     /** Return whether a move is legal on a given board. */
     public boolean isLegal(Board board) {
-        Board resultBoard;
-        try {
-            resultBoard = board.moveResult(this);
-        } catch (InvalidMoveException e) {
-            return false;
+     // All legal Moves are sane.
+     if (!isSane(board)) {
+         return false;
+     }
+     // If it's castling, make sure it's legal.
+        if (board.getPiece(start).getType() == Piece.PieceType.KING && isCastling(board)) {
+            // assert that king was not checked before moving.
+            if (board.checked(board.getToMoveColor())) {
+                return false;
+            }
+            // assert that king did not move through check.
+            // Do this by making the king move to that square, and seeing whether it is checked.
+            Square transitSquare = start.plus(getDelta().unitized());
+            Move loneKingMove = new Move(start, transitSquare); 
+            if (!loneKingMove.isLegal(board)) {
+                return false;
+            }
         }
+        
+        Board resultBoard = board.moveResult(this);
         return !resultBoard.checked(board.getToMoveColor());
     }
     

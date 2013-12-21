@@ -6,7 +6,6 @@ import player.AlphaBeta;
 import player.MoveDecision;
 import chess.Board;
 import chess.Move;
-import exceptions.InvalidMoveException;
 
 public class StandardStreamChessServer {
     
@@ -32,9 +31,9 @@ public class StandardStreamChessServer {
             }
             
             // Play it on the board.
-            try {
+            if (m.isLegal(board)) {
                 board = board.moveResult(m);
-            } catch (InvalidMoveException e) {
+            } else {
                 System.out.println(ERROR_TOKEN);
                 continue;
             }
@@ -44,13 +43,8 @@ public class StandardStreamChessServer {
             m = bestDecision.getFirstMove();
             
             // Play the response on the board.
-            try {
-                board = board.moveResult(m);
-            } catch (InvalidMoveException e) {
-                // Impossible!
-                throw new RuntimeException();
-            }
-            
+            board = board.moveResult(m);
+
             // Print the move.
             System.out.println(m.serialized());
         }

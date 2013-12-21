@@ -7,7 +7,6 @@ import java.util.List;
 import chess.Board;
 import chess.Move;
 import chess.Piece;
-import exceptions.InvalidMoveException;
 
 // TODO(jasonpr): Make this, and Minimax, share some Interface.
 public class AlphaBeta {
@@ -56,11 +55,8 @@ public class AlphaBeta {
             List<Move> nextMoves = new ArrayList<Move>();
             for (Move m : legalMoves) {
                 // Get the result, so we can do alphaBeta recursively.
-                try {
-                    possibleResult = board.moveResult(m);
-                } catch (InvalidMoveException e) {
-                    throw new RuntimeException();
-                }
+                possibleResult = board.moveResult(m);
+
                 // Get the best decision from this possible result...
                 MoveDecision nextDecision = alphaBeta(possibleResult, depth - 1, alpha, beta, score);
                 if (!seenAny || nextDecision.getScore() * mult > bestDecision.getScore() * mult) {
