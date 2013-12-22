@@ -17,41 +17,41 @@ public class Delta{
     public static final Delta NORTH_WEST;
     public static final Delta SOUTH_EAST;
     public static final Delta SOUTH_WEST;
-    
+
     public static final Collection<Delta> BASIC_DIRS;
     public static final Collection<Delta> DIAGONAL_DIRS;
     public static final Collection<Delta> QUEEN_DIRS;
-    
+
     static {
         NORTH = new Delta(0, 1);
-        EAST = new Delta(1, 0); 
+        EAST = new Delta(1, 0);
         SOUTH = NORTH.scaled(-1);
         WEST = EAST.scaled(-1);
-        
+
         List<Delta> basicDirs = new ArrayList<Delta>();
         basicDirs.add(NORTH);
         basicDirs.add(EAST);
         basicDirs.add(SOUTH);
         basicDirs.add(WEST);
         BASIC_DIRS = Collections.unmodifiableList(basicDirs);
-        
+
         NORTH_EAST = sum(NORTH, EAST);
         NORTH_WEST = sum(NORTH, WEST);
         SOUTH_EAST = sum(SOUTH, EAST);
         SOUTH_WEST = sum(SOUTH, WEST);
-        
+
         List<Delta> diagonalDirs = new ArrayList<Delta>();
         diagonalDirs.add(NORTH_EAST);
         diagonalDirs.add(NORTH_WEST);
         diagonalDirs.add(SOUTH_EAST);
         diagonalDirs.add(SOUTH_WEST);
         DIAGONAL_DIRS = Collections.unmodifiableList(diagonalDirs);
-        
+
         List<Delta> queenDirs = new ArrayList<Delta>();
         queenDirs.addAll(BASIC_DIRS);
         queenDirs.addAll(DIAGONAL_DIRS);
         QUEEN_DIRS = Collections.unmodifiableList(queenDirs);
-                
+
     }
 
     /** Create the delta between a Move's start and end Squares. */
@@ -64,21 +64,21 @@ public class Delta{
         this.deltaFile = deltaFile;
         this.deltaRank = deltaRank;
     }
-    
+
     /** Create a delta from one Square to another. */
     public Delta(Square start, Square end) {
         this(end.getFile() - start.getFile(),
              end.getRank() - start.getRank());
     }
-    
+
     public int getDeltaFile() {
         return deltaFile;
     }
-    
+
     public int getDeltaRank() {
         return deltaRank;
     }
-    
+
     /** Return a scaled-up copy of this Delta. */
     public Delta scaled(int scale) {
         return new Delta(deltaFile * scale, deltaRank * scale);
@@ -101,17 +101,17 @@ public class Delta{
         int length = Math.max(Math.abs(deltaFile), Math.abs(deltaRank));
         return new Delta(deltaFile / length, deltaRank / length);
     }
-    
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
             return false;
         }
-        
+
         if (obj.getClass() != this.getClass()) {
             return false;
         }
-        
+
         Delta that = (Delta) obj;
         return that.getDeltaFile() == deltaFile && that.getDeltaRank() == deltaRank;
     }
@@ -120,12 +120,12 @@ public class Delta{
     public int hashCode() {
         return 17 * deltaFile + deltaRank;
     }
-    
+
     @Override
     public String toString() {
         return "Delta(file: " + deltaFile + ", rank: " + deltaRank + ")";
     }
-    
+
     /**
      * Return the sum of two Deltas.
      * Delta sums are computed by doing component-wise addition.
