@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+/** The difference between two Squares. */
 public class Delta{
     private final int deltaFile;
     private final int deltaRank;
@@ -52,18 +53,22 @@ public class Delta{
         QUEEN_DIRS = Collections.unmodifiableList(queenDirs);
                 
     }
+
+    /** Create the delta between a Move's start and end Squares. */
     public Delta(Move move) {
         Square start = move.getStart();
         Square end = move.getEnd();
         deltaFile = end.getFile() - start.getFile();
         deltaRank = end.getRank() - start.getRank();
     }
-        
+
+    /** Create a Delta with specified changes in file and rank. */
     public Delta(int deltaFile, int deltaRank) {
         this.deltaFile = deltaFile;
         this.deltaRank = deltaRank;
     }
     
+    /** Create a delta from one Square to another. */
     public Delta(Square start, Square end) {
         deltaFile = end.getFile() - start.getFile();
         deltaRank = end.getRank() - start.getRank();
@@ -77,10 +82,21 @@ public class Delta{
         return deltaRank;
     }
     
+    /** Return a scaled-up copy of this Delta. */
     public Delta scaled(int scale) {
         return new Delta(deltaFile * scale, deltaRank * scale);
     }
 
+    /**
+     * Return a quasi-unitized version of this Delta.
+     * That is, return a quasi-unit Delta, d, such that scaling d
+     * up by some factor would yield a Delta equal to this one.
+     *
+     * A quasi-unit Delta is a Delta for which deltaRank <= 1 and
+     * deltaFile <= 1, but they're not both zero.  That is, it's a
+     * Delta that represents the difference between adjacent or
+     * diagonally adjacent Squares.
+     */
     public Delta unitized() {
         // TODO(jasonpr): Check that is diagonal or is basic.
         // This will require some refactoring, since currently
@@ -113,9 +129,12 @@ public class Delta{
         return "Delta(file: " + deltaFile + ", rank: " + deltaRank + ")";
     }
     
+    /**
+     * Return the sum of two Deltas.
+     * Delta sums are computed by doing component-wise addition.
+     */
     public static Delta sum(Delta a, Delta b) {
         return new Delta(a.getDeltaFile() + b.getDeltaFile(),
                          a.getDeltaRank() + b.getDeltaRank());
     }
-    
 }
