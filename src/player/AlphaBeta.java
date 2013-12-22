@@ -31,7 +31,7 @@ public class AlphaBeta {
                     // Checkmated.
                     // TODO(jasonpr): Track mate in 1 vs mate in 2, etc.
                     float mateScore;
-                    if (board.getToMoveColor() == Piece.PieceColor.WHITE) {
+                    if (board.getToMoveColor() == Piece.Color.WHITE) {
                         mateScore = -10000.0f;
                     } else {
                         mateScore = +10000.0f;
@@ -43,7 +43,7 @@ public class AlphaBeta {
                     return new MoveDecision(new ArrayList<Move>(), 0.0f);
                 }
             }
-            final boolean isMaxStep = board.getToMoveColor() == Piece.PieceColor.WHITE; 
+            final boolean isMaxStep = board.getToMoveColor() == Piece.Color.WHITE; 
             final float mult = isMaxStep? 1.0f : -1.0f;
             
             // We'll never actually return null:

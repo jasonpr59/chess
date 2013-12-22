@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import chess.Piece.PieceColor;
+import chess.Piece.Color;
 
 /** A chess board at a specific position. */
 public class Board {
@@ -16,7 +16,7 @@ public class Board {
     // For example, board[1][7] is the piece at b8.
     private final Piece[][] board;
     private Square enPassantSquare;
-    private PieceColor toMoveColor;
+    private Color toMoveColor;
     // For use in deciding whether castling is legal.
     private CastlingInfo castlingInfo;
     
@@ -71,54 +71,54 @@ public class Board {
         
         // Set up the pawns
         for (int file = 1; file <= 8; file++){
-            placePiece(new Piece(Piece.PieceType.PAWN, Piece.PieceColor.WHITE),
+            placePiece(new Piece(Piece.Type.PAWN, Piece.Color.WHITE),
                          Square.squareAt(file, 2));
-            placePiece(new Piece(Piece.PieceType.PAWN, Piece.PieceColor.BLACK),
+            placePiece(new Piece(Piece.Type.PAWN, Piece.Color.BLACK),
                          Square.squareAt(file, 7));
         }
         
         // Set up the pieces
-        placePiece(new Piece(Piece.PieceType.ROOK, Piece.PieceColor.WHITE),
+        placePiece(new Piece(Piece.Type.ROOK, Piece.Color.WHITE),
                    Square.squareAt(1, 1));
-        placePiece(new Piece(Piece.PieceType.ROOK, Piece.PieceColor.BLACK),
+        placePiece(new Piece(Piece.Type.ROOK, Piece.Color.BLACK),
                    Square.squareAt(1, 8));
         
-        placePiece(new Piece(Piece.PieceType.KNIGHT, Piece.PieceColor.WHITE),
+        placePiece(new Piece(Piece.Type.KNIGHT, Piece.Color.WHITE),
                    Square.squareAt(2, 1));
-        placePiece(new Piece(Piece.PieceType.KNIGHT, Piece.PieceColor.BLACK),
+        placePiece(new Piece(Piece.Type.KNIGHT, Piece.Color.BLACK),
                    Square.squareAt(2, 8));
         
-        placePiece(new Piece(Piece.PieceType.BISHOP, Piece.PieceColor.WHITE),
+        placePiece(new Piece(Piece.Type.BISHOP, Piece.Color.WHITE),
                    Square.squareAt(3, 1));
-        placePiece(new Piece(Piece.PieceType.BISHOP, Piece.PieceColor.BLACK),
+        placePiece(new Piece(Piece.Type.BISHOP, Piece.Color.BLACK),
                    Square.squareAt(3, 8));
         
-        placePiece(new Piece(Piece.PieceType.QUEEN, Piece.PieceColor.WHITE),
+        placePiece(new Piece(Piece.Type.QUEEN, Piece.Color.WHITE),
                    Square.squareAt(4, 1));
-        placePiece(new Piece(Piece.PieceType.QUEEN, Piece.PieceColor.BLACK),
+        placePiece(new Piece(Piece.Type.QUEEN, Piece.Color.BLACK),
                    Square.squareAt(4, 8));
         
-        placePiece(new Piece(Piece.PieceType.KING, Piece.PieceColor.WHITE),
+        placePiece(new Piece(Piece.Type.KING, Piece.Color.WHITE),
                    Square.squareAt(5, 1));
-        placePiece(new Piece(Piece.PieceType.KING, Piece.PieceColor.BLACK),
+        placePiece(new Piece(Piece.Type.KING, Piece.Color.BLACK),
                    Square.squareAt(5, 8));
         
-        placePiece(new Piece(Piece.PieceType.BISHOP, Piece.PieceColor.WHITE),
+        placePiece(new Piece(Piece.Type.BISHOP, Piece.Color.WHITE),
                    Square.squareAt(6, 1));
-        placePiece(new Piece(Piece.PieceType.BISHOP, Piece.PieceColor.BLACK),
+        placePiece(new Piece(Piece.Type.BISHOP, Piece.Color.BLACK),
                    Square.squareAt(6, 8));
         
-        placePiece(new Piece(Piece.PieceType.KNIGHT, Piece.PieceColor.WHITE),
+        placePiece(new Piece(Piece.Type.KNIGHT, Piece.Color.WHITE),
                    Square.squareAt(7, 1));
-        placePiece(new Piece(Piece.PieceType.KNIGHT, Piece.PieceColor.BLACK),
+        placePiece(new Piece(Piece.Type.KNIGHT, Piece.Color.BLACK),
                    Square.squareAt(7, 8));
         
-        placePiece(new Piece(Piece.PieceType.ROOK, Piece.PieceColor.WHITE),
+        placePiece(new Piece(Piece.Type.ROOK, Piece.Color.WHITE),
                    Square.squareAt(8, 1));
-        placePiece(new Piece(Piece.PieceType.ROOK, Piece.PieceColor.BLACK),
+        placePiece(new Piece(Piece.Type.ROOK, Piece.Color.BLACK),
                    Square.squareAt(8, 8));
         
-        setToMoveColor(Piece.PieceColor.WHITE);
+        setToMoveColor(Piece.Color.WHITE);
     }
     
     /**
@@ -162,14 +162,14 @@ public class Board {
 
             // Place the rook in its new spot.
             Square rookEnd= start.plus(move.getDelta().unitized());
-            result.placePiece(new Piece(Piece.PieceType.ROOK, toMoveColor), rookEnd);
+            result.placePiece(new Piece(Piece.Type.ROOK, toMoveColor), rookEnd);
         }
 
         // If this is a promotion, replace the pawn with a new piece.
         if (move instanceof PromotionMove) {
             PromotionMove promotionMove = (PromotionMove) move; 
             Piece promotedPiece = new Piece(promotionMove.getPromotedType(),
-                                            movingPiece.getPieceColor());
+                                            movingPiece.getColor());
             result.placePiece(promotedPiece, end);
         }
         
@@ -207,7 +207,7 @@ public class Board {
      * Set the color whose move it is.
      * @return This Board, for daisy chaining.
      */
-    private Board setToMoveColor(PieceColor color) {
+    private Board setToMoveColor(Color color) {
         assertUnfrozen();
         this.toMoveColor = color;
         return this;
@@ -240,7 +240,7 @@ public class Board {
         return enPassantSquare;
     }
 
-    public PieceColor getToMoveColor() {
+    public Color getToMoveColor() {
         return toMoveColor;
     }
 
@@ -285,7 +285,7 @@ public class Board {
 
         switch (movingPiece.getType()) {
             case PAWN:
-                boolean isWhite = movingPiece.getPieceColor() == Piece.PieceColor.WHITE;
+                boolean isWhite = movingPiece.getColor() == Piece.Color.WHITE;
                 Delta fwd = new Delta(0, isWhite? 1 : -1);
                 Collection<Delta> candidateDeltas = new ArrayList<Delta>();
                 // There are at most four possible pawn moves (ignoring promotion choices).
@@ -394,10 +394,10 @@ public class Board {
     }
 
     /** Return the square that the king of some color occupies. */
-    private Square kingSquare(PieceColor kingColor) {
+    private Square kingSquare(Color kingColor) {
         // TODO: Make this more efficient by "caching" the king's position
         // as an attribute of board.
-        Piece king = new Piece(Piece.PieceType.KING, kingColor);
+        Piece king = new Piece(Piece.Type.KING, kingColor);
         
         for (Square possibleKingSquare : Square.ALL){
             if (king.equals(getPiece(possibleKingSquare))) {
@@ -409,7 +409,7 @@ public class Board {
     }
 
     /** Return whether the king of some color is in check. */
-    public boolean checked(PieceColor kingColor) {
+    public boolean checked(Color kingColor) {
         Square kingSquare = kingSquare(kingColor);
         Board trialBoard;
         if (toMoveColor == kingColor) {
@@ -429,10 +429,10 @@ public class Board {
      * TODO: Consider allowing caller to specify attackerColor.   
      */
     public boolean isAttackable(Square target) {
-        Piece.PieceColor attackerColor = toMoveColor;
+        Piece.Color attackerColor = toMoveColor;
         for (Square attackerSquare : Square.ALL) {
             Piece attacker = getPiece(attackerSquare);
-            if (attacker == null || attacker.getPieceColor() != attackerColor) {
+            if (attacker == null || attacker.getColor() != attackerColor) {
                 // No attacker on this square.
                 continue;
             }
@@ -447,12 +447,12 @@ public class Board {
     }
 
     /** Return whether the king is unmoved and the h-rook is unmoved. */
-    public boolean kingCastlePiecesReady(Piece.PieceColor color) {
+    public boolean kingCastlePiecesReady(Piece.Color color) {
         return castlingInfo.kingCastlePiecesReady(color);
     }
 
     /** Return whether the king is unmoved and the a-rook is unmoved. */
-    public boolean queenCastlePiecesReady(Piece.PieceColor color) {
+    public boolean queenCastlePiecesReady(Piece.Color color) {
         return castlingInfo.queenCastlePiecesReady(color);
     }
 }

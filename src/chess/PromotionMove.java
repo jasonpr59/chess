@@ -7,42 +7,42 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import chess.Piece.PieceType;
+import chess.Piece.Type;
 
 public class PromotionMove extends Move {
-    private final PieceType promotedType;
-    private static final Set<PieceType> PROMOTION_TYPES;
+    private final Type promotedType;
+    private static final Set<Type> PROMOTION_TYPES;
     
     static {
-        Set<PieceType> promotionTypes = new HashSet<PieceType>();
-        promotionTypes.add(PieceType.KNIGHT);
-        promotionTypes.add(PieceType.BISHOP);
-        promotionTypes.add(PieceType.ROOK);
-        promotionTypes.add(PieceType.QUEEN);
+        Set<Type> promotionTypes = new HashSet<Type>();
+        promotionTypes.add(Type.KNIGHT);
+        promotionTypes.add(Type.BISHOP);
+        promotionTypes.add(Type.ROOK);
+        promotionTypes.add(Type.QUEEN);
         PROMOTION_TYPES = Collections.unmodifiableSet(promotionTypes);
     }
-    public PromotionMove(Square start, Square end, PieceType promotedType) {
+    public PromotionMove(Square start, Square end, Type promotedType) {
         super(start, end);
         this.promotedType = promotedType;
     }
 
-    public PromotionMove(Square start, Delta delta, PieceType promotedType) {
+    public PromotionMove(Square start, Delta delta, Type promotedType) {
         super(start, delta);
         this.promotedType = promotedType;
     }
     
-    public PromotionMove(Move move, PieceType promotedType) {
+    public PromotionMove(Move move, Type promotedType) {
         super(move.getStart(), move.getEnd());
         this.promotedType = promotedType;
     }
     
-    public PieceType getPromotedType() {
+    public Type getPromotedType() {
         return promotedType;
     }
 
     public static Collection<PromotionMove> allPromotions(Move move) {
         List<PromotionMove> allPromotions = new ArrayList<PromotionMove>();
-        for (PieceType type : PROMOTION_TYPES) {
+        for (Type type : PROMOTION_TYPES) {
             allPromotions.add(new PromotionMove(move, type));
         }
         return allPromotions;
@@ -51,13 +51,13 @@ public class PromotionMove extends Move {
     @Override
     public boolean isSane(Board board) {
         Piece movingPiece = board.getPiece(getStart());
-        if (movingPiece == null || movingPiece.getType() != Piece.PieceType.PAWN ||
+        if (movingPiece == null || movingPiece.getType() != Piece.Type.PAWN ||
             !PROMOTION_TYPES.contains(movingPiece.getType())) {
             return false;
         }
 
         int promotableRank;
-        if (movingPiece.getPieceColor() == Piece.PieceColor.WHITE) {
+        if (movingPiece.getColor() == Piece.Color.WHITE) {
             promotableRank = 8;
         } else {
             promotableRank = 1;

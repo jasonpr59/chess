@@ -68,7 +68,7 @@ public class Move {
      */
     public Square enPassantSquare(Board board) {
         Piece movingPiece = board.getPiece(start);
-        if (movingPiece == null || movingPiece.getType() != Piece.PieceType.PAWN) {
+        if (movingPiece == null || movingPiece.getType() != Piece.Type.PAWN) {
             return null;
         }
         
@@ -93,14 +93,14 @@ public class Move {
         
         Piece movingPiece = board.getPiece(start);
         
-        if (movingPiece == null || movingPiece.getPieceColor() != board.getToMoveColor()) {
+        if (movingPiece == null || movingPiece.getColor() != board.getToMoveColor()) {
             return false;
         }
         
         switch (movingPiece.getType()) {
             case PAWN:
                 // We'll need to know which way is forward for this pawn, later on.
-                boolean isWhite = movingPiece.getPieceColor() == Piece.PieceColor.WHITE;
+                boolean isWhite = movingPiece.getColor() == Piece.Color.WHITE;
                 Delta forward = new Delta(0, isWhite ? 1: -1);
                 Delta doubleForward = forward.scaled(2);
 
@@ -116,7 +116,7 @@ public class Move {
                     if (delta.equals(forward)) {
                         return true;
                     } else if (delta.equals(doubleForward)) {
-                        return (start.isOnPawnHomeRank(movingPiece.getPieceColor()) &&
+                        return (start.isOnPawnHomeRank(movingPiece.getColor()) &&
                                 board.getPiece(start.plus(doubleForward)) == null);
                     } else {
                         return false;
@@ -128,7 +128,7 @@ public class Move {
                     }
                     Piece capturedPiece = board.getPiece(end);
                     boolean normalCapture = (capturedPiece != null &&
-                                             capturedPiece.getPieceColor() != movingPiece.getPieceColor());
+                                             capturedPiece.getColor() != movingPiece.getColor());
                     boolean epCapture = end.equals(board.getEnPassantSquare());
                     return normalCapture || epCapture;
                 } else {
@@ -178,7 +178,7 @@ public class Move {
          return false;
      }
      // If it's castling, make sure it's legal.
-        if (board.getPiece(start).getType() == Piece.PieceType.KING && isCastling(board)) {
+        if (board.getPiece(start).getType() == Piece.Type.KING && isCastling(board)) {
             // assert that king was not checked before moving.
             if (board.checked(board.getToMoveColor())) {
                 return false;
@@ -240,7 +240,7 @@ public class Move {
         Piece movingPiece = board.getPiece(start);
         Piece capturedPiece = board.getPiece(end);
         return (capturedPiece == null ||
-                capturedPiece.getPieceColor() != movingPiece.getPieceColor());
+                capturedPiece.getColor() != movingPiece.getColor());
     }
 
     private boolean isDiagonal() {
@@ -281,7 +281,7 @@ public class Move {
     /** Return whether move makes a pawn do a capture on a Board. */
     private boolean isPawnCapture(Board board) {
         Piece movingPiece = board.getPiece(start);
-        if (movingPiece == null || movingPiece.getType() != Piece.PieceType.PAWN) {
+        if (movingPiece == null || movingPiece.getType() != Piece.Type.PAWN) {
             // Not a pawn.
             return false;
         }
@@ -295,7 +295,7 @@ public class Move {
     public boolean isCastling(Board board) {
         // We already required that the move is sane.
         // So, it's castling if it's a two-step king move.
-        return (board.getPiece(start).getType() == Piece.PieceType.KING &&
+        return (board.getPiece(start).getType() == Piece.Type.KING &&
                 Math.abs(delta.getDeltaFile()) == 2);
     }
 

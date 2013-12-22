@@ -1,8 +1,12 @@
 package chess;
 
-
+/**
+ * A chess piece.
+ * This class is immutable.
+ */
 public class Piece {
-    public enum PieceType{
+    /** The type of this piece: pawn, rook, king, etc. */
+    public enum Type{
         PAWN,
         KNIGHT,
         BISHOP,
@@ -11,45 +15,40 @@ public class Piece {
         KING
     }
     
-    public enum PieceColor{
+    /** The color of this piece: white or black. */
+    public enum Color{
         WHITE,
         BLACK;
 
-        public PieceColor opposite() {
+        public Color opposite() {
             switch (this) {
             case WHITE:
                 return BLACK;
             case BLACK:
                 return WHITE;
             default:
-                throw new RuntimeException("Unexpected PieceColor " + this);
+                throw new RuntimeException("Unexpected Color " + this);
             }
         }
     }
-    
-    public static PieceColor getOppositeColor(PieceColor pieceColor){
-        if (pieceColor == PieceColor.WHITE){
-            return PieceColor.BLACK;
-        } else {
-            return PieceColor.WHITE;
-        }
-    }
 
-    // type is final.  Promoting a pawn must involve destroying the pawn
+    // These fields are final (Piece is immutable).
+    // So, promoting a pawn must involve destroying the pawn
     // and creating a new piece of the promoted type.
-    private final PieceType type;
-    private final PieceColor color;
+    private final Type type;
+    private final Color color;
     
-    public Piece(PieceType type, PieceColor color){
+    /** Construct a new Piece with some type and color. */
+    public Piece(Type type, Color color){
         this.type = type;
         this.color = color;
     }
     
-    public PieceType getType(){
+    public Type getType(){
         return this.type;
     }
     
-    public PieceColor getPieceColor(){
+    public Color getColor(){
         return this.color;
     }
     
@@ -64,7 +63,7 @@ public class Piece {
         }
         
         Piece that = (Piece) obj;
-        return type == that.getType() && color == that.getPieceColor();
+        return type == that.getType() && color == that.getColor();
     }
     
     @Override

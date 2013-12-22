@@ -92,7 +92,7 @@ public class SocketChessServer {
                         default:
                             throw new IllegalArgumentException();
                     }
-                    switch (p.getPieceColor()) {
+                    switch (p.getColor()) {
                         case WHITE:
                             colorCode = "\033[92m";
                             break;

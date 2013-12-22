@@ -101,8 +101,8 @@ public class CastlingInfo {
     /**
      * @return true iff the king is unmoved and the h-rook is unmoved.
      */
-    public boolean kingCastlePiecesReady(Piece.PieceColor color) {
-        if (color == Piece.PieceColor.WHITE){
+    public boolean kingCastlePiecesReady(Piece.Color color) {
+        if (color == Piece.Color.WHITE){
             return !whiteKingMoved && !whiteKingRookMoved;
         } else {
             return !blackKingMoved && !blackKingRookMoved;
@@ -112,8 +112,8 @@ public class CastlingInfo {
     /**
      * @return true iff the king is unmoved and the a-rook is unmoved.
      */
-    public boolean queenCastlePiecesReady(Piece.PieceColor color) {
-        if (color == Piece.PieceColor.WHITE){
+    public boolean queenCastlePiecesReady(Piece.Color color) {
+        if (color == Piece.Color.WHITE){
             return !whiteKingMoved && !whiteQueenRookMoved;
         } else {
             return !blackKingMoved && !blackQueenRookMoved;
