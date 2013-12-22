@@ -26,14 +26,6 @@ public class Piece {
             }
         }
     }
-    
-    public static PieceColor getOppositeColor(PieceColor pieceColor){
-        if (pieceColor == PieceColor.WHITE){
-            return PieceColor.BLACK;
-        } else {
-            return PieceColor.WHITE;
-        }
-    }
 
     // type is final.  Promoting a pawn must involve destroying the pawn
     // and creating a new piece of the promoted type.
