@@ -7,19 +7,19 @@ import exceptions.AlgebraicNotationException;
 import exceptions.InvalidMoveException;
 /** An entire chess game, starting from the initial position. */
 public class Game {
-    
+
     private final List<Board> history;
-    
+
     /**
      * Construct a new Game.
      * At this point, only the initial Board position is in the
-     * Game's history: no Moves have been made. 
+     * Game's history: no Moves have been made.
      */
     public Game() {
         history = new ArrayList<Board>();
         history.add(Board.newGame());
     }
-    
+
     /**
      * Make a Move.
      * The Move is made on the current (last) board, and the
@@ -60,7 +60,7 @@ public class Game {
             return history.get(2 * (move - 1) + ply);
         }
     }
-    
+
     /** Create a Game whose history matches a history in Algebraic notation. */
     public static Game fromMoves(String[] moves) throws AlgebraicNotationException, InvalidMoveException {
         Game g = new Game();

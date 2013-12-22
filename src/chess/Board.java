@@ -11,7 +11,7 @@ import chess.Piece.Color;
 public class Board {
     // Once frozen is true, the board becomes immutable.
     private boolean frozen = false;
-    
+
     // board[file - 1][rank - 1] = the piece with specified rank and file
     // For example, board[1][7] is the piece at b8.
     private final Piece[][] board;
@@ -19,7 +19,7 @@ public class Board {
     private Color toMoveColor;
     // For use in deciding whether castling is legal.
     private CastlingInfo castlingInfo;
-    
+
     /** Construct a new board with no pieces placed. */
     private Board() {
         board = new Piece[8][8];
@@ -27,7 +27,7 @@ public class Board {
         enPassantSquare = null;
         castlingInfo = new CastlingInfo();
     }
-    
+
     /**
      * Create an unfrozen copy of a board.
      *
@@ -67,8 +67,8 @@ public class Board {
         // No en passant square, yet.
         enPassantSquare = null;
         castlingInfo = new CastlingInfo();
-        
-        
+
+
         // Set up the pawns
         for (int file = 1; file <= 8; file++){
             placePiece(new Piece(Piece.Type.PAWN, Piece.Color.WHITE),
@@ -76,51 +76,51 @@ public class Board {
             placePiece(new Piece(Piece.Type.PAWN, Piece.Color.BLACK),
                          Square.squareAt(file, 7));
         }
-        
+
         // Set up the pieces
         placePiece(new Piece(Piece.Type.ROOK, Piece.Color.WHITE),
                    Square.squareAt(1, 1));
         placePiece(new Piece(Piece.Type.ROOK, Piece.Color.BLACK),
                    Square.squareAt(1, 8));
-        
+
         placePiece(new Piece(Piece.Type.KNIGHT, Piece.Color.WHITE),
                    Square.squareAt(2, 1));
         placePiece(new Piece(Piece.Type.KNIGHT, Piece.Color.BLACK),
                    Square.squareAt(2, 8));
-        
+
         placePiece(new Piece(Piece.Type.BISHOP, Piece.Color.WHITE),
                    Square.squareAt(3, 1));
         placePiece(new Piece(Piece.Type.BISHOP, Piece.Color.BLACK),
                    Square.squareAt(3, 8));
-        
+
         placePiece(new Piece(Piece.Type.QUEEN, Piece.Color.WHITE),
                    Square.squareAt(4, 1));
         placePiece(new Piece(Piece.Type.QUEEN, Piece.Color.BLACK),
                    Square.squareAt(4, 8));
-        
+
         placePiece(new Piece(Piece.Type.KING, Piece.Color.WHITE),
                    Square.squareAt(5, 1));
         placePiece(new Piece(Piece.Type.KING, Piece.Color.BLACK),
                    Square.squareAt(5, 8));
-        
+
         placePiece(new Piece(Piece.Type.BISHOP, Piece.Color.WHITE),
                    Square.squareAt(6, 1));
         placePiece(new Piece(Piece.Type.BISHOP, Piece.Color.BLACK),
                    Square.squareAt(6, 8));
-        
+
         placePiece(new Piece(Piece.Type.KNIGHT, Piece.Color.WHITE),
                    Square.squareAt(7, 1));
         placePiece(new Piece(Piece.Type.KNIGHT, Piece.Color.BLACK),
                    Square.squareAt(7, 8));
-        
+
         placePiece(new Piece(Piece.Type.ROOK, Piece.Color.WHITE),
                    Square.squareAt(8, 1));
         placePiece(new Piece(Piece.Type.ROOK, Piece.Color.BLACK),
                    Square.squareAt(8, 8));
-        
+
         setToMoveColor(Piece.Color.WHITE);
     }
-    
+
     /**
      * Get the board that results from a move.
      * @param move A Move object designating which move should be made.
@@ -131,7 +131,7 @@ public class Board {
         Square start = move.getStart();
         Square end = move.getEnd();
         Piece movingPiece = movingPiece(move);
-        
+
         // Make an unfrozen copy that we can modify to effect the move.
         Board result = new Board(this);
 
@@ -146,7 +146,7 @@ public class Board {
         result.placePiece(null, start);
         // ... and put it in its final position.
         result.placePiece(movingPiece, end);
-        
+
         // Move the rook, too, if this is a castling move.
         if (move.isCastling(this)) {
             // Remove the old rook.
@@ -167,12 +167,12 @@ public class Board {
 
         // If this is a promotion, replace the pawn with a new piece.
         if (move instanceof PromotionMove) {
-            PromotionMove promotionMove = (PromotionMove) move; 
+            PromotionMove promotionMove = (PromotionMove) move;
             Piece promotedPiece = new Piece(promotionMove.getPromotedType(),
                                             movingPiece.getColor());
             result.placePiece(promotedPiece, end);
         }
-        
+
         // Update extra board info.
         result.setEnPassantSquare(move.enPassantSquare(this));
         result.setToMoveColor(toMoveColor.opposite());
@@ -182,7 +182,7 @@ public class Board {
 
         return result.freeze();
     }
- 
+
     /**
      * Place a piece on a square.
      * If another piece is already on that square, it is replaced.
@@ -192,7 +192,7 @@ public class Board {
         board[square.getFile() - 1][square.getRank() - 1] = piece;
         return this;
     }
-    
+
     /**
      * Set the square onto which pawns move for an en-passant capture.
      * @return This Board, for daisy chaining.
@@ -202,7 +202,7 @@ public class Board {
         this.enPassantSquare = square;
         return this;
     }
-    
+
     /**
      * Set the color whose move it is.
      * @return This Board, for daisy chaining.
@@ -212,7 +212,7 @@ public class Board {
         this.toMoveColor = color;
         return this;
     }
-    
+
     /**
      * Take note of a move's effect on future castling abilities.
      * For example, if the move moves white's h-rook, then white
@@ -254,8 +254,8 @@ public class Board {
     private Piece movingPiece(Move move) {
         return getPiece(move.getStart());
     }
-    
-    
+
+
     /**
      * Freeze the board, so it becomes immutable.
      * @return This Board, for daisy chaining.
@@ -264,17 +264,17 @@ public class Board {
         frozen = true;
         return this;
     }
-    
+
     private void assertUnfrozen() {
         if (frozen){
             throw new AssertionError("Cannot modify a frozen Board.");
         }
     }
-    
+
     /** Get the set of sane moves available to the piece on a square. */
     public Iterable<Move> saneMoves(Square start) {
         Piece movingPiece = getPiece(start);
-        
+
         if (movingPiece == null) {
             // No piece at that square = no available moves!
             return new HashSet<Move>();
@@ -319,7 +319,7 @@ public class Board {
                 // alignment of the L-shape's long leg.
                 int[] rankDirs = {-1, 1};
                 int[] fileDirs = {-1, 1};
-                int[][] alignments = {{1, 2}, {2, 1}}; 
+                int[][] alignments = {{1, 2}, {2, 1}};
 
                 int dRank;
                 int dFile;
@@ -398,14 +398,14 @@ public class Board {
         // TODO: Make this more efficient by "caching" the king's position
         // as an attribute of board.
         Piece king = new Piece(Piece.Type.KING, kingColor);
-        
+
         for (Square possibleKingSquare : Square.ALL){
             if (king.equals(getPiece(possibleKingSquare))) {
                 return possibleKingSquare;
             }
         }
         // Didn't return anything!
-        throw new RuntimeException("There is no king of color " + kingColor + " on the board!");        
+        throw new RuntimeException("There is no king of color " + kingColor + " on the board!");
     }
 
     /** Return whether the king of some color is in check. */
@@ -426,7 +426,7 @@ public class Board {
      * Return whether the given square is currently under attack.
      * A square is under attack if a piece of the toMoveColor is
      * attacking it.
-     * TODO: Consider allowing caller to specify attackerColor.   
+     * TODO: Consider allowing caller to specify attackerColor.
      */
     public boolean isAttackable(Square target) {
         Piece.Color attackerColor = toMoveColor;

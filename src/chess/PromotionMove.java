@@ -12,7 +12,7 @@ import chess.Piece.Type;
 public class PromotionMove extends Move {
     private final Type promotedType;
     private static final Set<Type> PROMOTION_TYPES;
-    
+
     static {
         Set<Type> promotionTypes = new HashSet<Type>();
         promotionTypes.add(Type.KNIGHT);
@@ -30,12 +30,12 @@ public class PromotionMove extends Move {
         super(start, delta);
         this.promotedType = promotedType;
     }
-    
+
     public PromotionMove(Move move, Type promotedType) {
         super(move.getStart(), move.getEnd());
         this.promotedType = promotedType;
     }
-    
+
     public Type getPromotedType() {
         return promotedType;
     }
@@ -62,11 +62,11 @@ public class PromotionMove extends Move {
         } else {
             promotableRank = 1;
         }
-        
+
         if (getEnd().getRank() != promotableRank) {
             return false;
         }
-        
+
         return super.isSane(board);
     }
 }

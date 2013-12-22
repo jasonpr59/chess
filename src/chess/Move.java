@@ -11,7 +11,7 @@ public class Move {
 
     private final Square start;
     private final Square end;
-    // We'll cache the delta from start to end, since Move is immutable. 
+    // We'll cache the delta from start to end, since Move is immutable.
     private final Delta delta;
 
     /** Construct a Move from one Square to another Square. */
@@ -24,12 +24,12 @@ public class Move {
         this.end = end;
         this.delta = new Delta(start, end);
     }
-    
+
     /** Construct a Move from starting at a Square and moving by a Delta. */
     public Move(Square start, Delta delta) {
         this(start, start.plus(delta));
     }
-    
+
     public Square getStart() {
         return start;
     }
@@ -37,7 +37,7 @@ public class Move {
     public Square getEnd() {
         return end;
     }
-    
+
     public Delta getDelta() {
         return delta;
     }
@@ -47,7 +47,7 @@ public class Move {
      * Return null if no piece is to be captured.
      * Takes en passant into account.
      * @param board The board on which the move is to be made.
-     * Requires that this move is sane. 
+     * Requires that this move is sane.
      */
     public Square capturedSquare(Board board) {
         // TODO(jasonpr): Factor some common code out of here and isSane.
@@ -71,7 +71,7 @@ public class Move {
         if (movingPiece == null || movingPiece.getType() != Piece.Type.PAWN) {
             return null;
         }
-        
+
         if (Math.abs(delta.getDeltaRank()) == 2) {
             return Square.mean(start, end);
         } else {
@@ -81,7 +81,7 @@ public class Move {
 
     /**
      * Return whether this move is sane on a particular board.
-     * 
+     *
      * A move is sane if it is legal, IGNORING the no-check criterion.
      * That is, assert that the move is legal, except that the king might
      * be checked, or might have castled through or out of check.
@@ -90,13 +90,13 @@ public class Move {
         if (!isLandable(board)) {
             return false;
         }
-        
+
         Piece movingPiece = board.getPiece(start);
-        
+
         if (movingPiece == null || movingPiece.getColor() != board.getToMoveColor()) {
             return false;
         }
-        
+
         switch (movingPiece.getType()) {
             case PAWN:
                 // We'll need to know which way is forward for this pawn, later on.
@@ -135,7 +135,7 @@ public class Move {
                     return false;
                 }
             case KNIGHT:
-                return Math.abs(delta.getDeltaRank() * delta.getDeltaFile()) == 2; 
+                return Math.abs(delta.getDeltaRank() * delta.getDeltaFile()) == 2;
             case BISHOP:
                 return isDiagonal() && isOpen(board);
             case ROOK:
@@ -170,7 +170,7 @@ public class Move {
                 throw new RuntimeException("The piece type was not matched in the switch statement.");
         }
     }
-    
+
     /** Return whether a move is legal on a given board. */
     public boolean isLegal(Board board) {
      // All legal Moves are sane.
@@ -186,16 +186,16 @@ public class Move {
             // assert that king did not move through check.
             // Do this by making the king move to that square, and seeing whether it is checked.
             Square transitSquare = start.plus(getDelta().unitized());
-            Move loneKingMove = new Move(start, transitSquare); 
+            Move loneKingMove = new Move(start, transitSquare);
             if (!loneKingMove.isLegal(board)) {
                 return false;
             }
         }
-        
+
         Board resultBoard = board.moveResult(this);
         return !resultBoard.checked(board.getToMoveColor());
     }
-    
+
     /**
      * Return whether a move is open on a given board.
      * A move is open if the Squares between its start and end
@@ -230,7 +230,7 @@ public class Move {
         }
         return squares;
     }
-    
+
     /**
      * Return whether the Piece at the start could land on the end Square.
      * A Piece could land on a Square iff that Square is unoccupied or it is
@@ -277,7 +277,7 @@ public class Move {
     public String toString(){
         return "Move(" + start + ", " + end + ")";
     }
-    
+
     /** Return whether move makes a pawn do a capture on a Board. */
     private boolean isPawnCapture(Board board) {
         Piece movingPiece = board.getPiece(start);
@@ -287,7 +287,7 @@ public class Move {
         }
         return delta.getDeltaFile() != 0;
     }
-    
+
     /**
      * Returns whether this is a castling move on some Board.
      * Requires that the move is sane.
@@ -308,7 +308,7 @@ public class Move {
     public String serialized() {
         return "" + start.getFile() + start.getRank() + end.getFile() + end.getRank();
     }
-    
+
     /** Deserialize this move from a 4-character String. */
     public static Move deserialized(String s) {
         s = s.trim();
@@ -319,6 +319,6 @@ public class Move {
         int endRank = Integer.parseInt(s.substring(3,4));
         return new Move(Square.squareAt(startFile, startRank),
                         Square.squareAt(endFile, endRank));
-        
+
     }
 }
