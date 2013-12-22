@@ -56,10 +56,7 @@ public class Delta{
 
     /** Create the delta between a Move's start and end Squares. */
     public Delta(Move move) {
-        Square start = move.getStart();
-        Square end = move.getEnd();
-        deltaFile = end.getFile() - start.getFile();
-        deltaRank = end.getRank() - start.getRank();
+        this(move.getStart(), move.getEnd());
     }
 
     /** Create a Delta with specified changes in file and rank. */
@@ -70,8 +67,8 @@ public class Delta{
     
     /** Create a delta from one Square to another. */
     public Delta(Square start, Square end) {
-        deltaFile = end.getFile() - start.getFile();
-        deltaRank = end.getRank() - start.getRank();
+        this(end.getFile() - start.getFile(),
+             end.getRank() - start.getRank());
     }
     
     public int getDeltaFile() {
