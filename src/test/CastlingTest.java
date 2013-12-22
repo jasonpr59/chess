@@ -27,8 +27,8 @@ public class CastlingTest {
         
         // Be sure pieces moved around correctly.
         assertEquals(b_good.getPiece(Square.algebraic("e1")), null);
-        assertEquals(b_good.getPiece(Square.algebraic("f1")), new Piece(Piece.PieceType.ROOK, Piece.PieceColor.WHITE));        
-        assertEquals(b_good.getPiece(Square.algebraic("g1")), new Piece(Piece.PieceType.KING, Piece.PieceColor.WHITE));
+        assertEquals(b_good.getPiece(Square.algebraic("f1")), new Piece(Piece.Type.ROOK, Piece.Color.WHITE));        
+        assertEquals(b_good.getPiece(Square.algebraic("g1")), new Piece(Piece.Type.KING, Piece.Color.WHITE));
         assertEquals(b_good.getPiece(Square.algebraic("h1")), null);
                 
         // Be sure black can't castle through his bishop! 
@@ -47,8 +47,8 @@ public class CastlingTest {
         
         // Be sure pieces moved around correctly.
         assertEquals(b_good.getPiece(Square.algebraic("a1")), null);
-        assertEquals(b_good.getPiece(Square.algebraic("c1")), new Piece(Piece.PieceType.KING, Piece.PieceColor.WHITE));
-        assertEquals(b_good.getPiece(Square.algebraic("d1")), new Piece(Piece.PieceType.ROOK, Piece.PieceColor.WHITE));        
+        assertEquals(b_good.getPiece(Square.algebraic("c1")), new Piece(Piece.Type.KING, Piece.Color.WHITE));
+        assertEquals(b_good.getPiece(Square.algebraic("d1")), new Piece(Piece.Type.ROOK, Piece.Color.WHITE));        
         assertEquals(b_good.getPiece(Square.algebraic("e1")), null);
         
         // Be sure black can't castle through his knight.

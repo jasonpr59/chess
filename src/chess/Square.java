@@ -155,8 +155,8 @@ public class Square {
     }
     
     /** Return whether the square is on the color's pawns' home rank. */
-    public boolean isOnPawnHomeRank(Piece.PieceColor color) {
-        if (color == Piece.PieceColor.WHITE) {
+    public boolean isOnPawnHomeRank(Piece.Color color) {
+        if (color == Piece.Color.WHITE) {
             return rank == 2;
         } else {
             return rank == 7;

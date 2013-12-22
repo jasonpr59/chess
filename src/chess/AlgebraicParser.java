@@ -5,25 +5,25 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
-import chess.Piece.PieceType;
+import chess.Piece.Type;
 import exceptions.AlgebraicNotationException;
 
 public class AlgebraicParser {
-    private static final Map<Character, Piece.PieceType> PIECE_NAMES;
-    private static final Map<Piece.PieceColor, Square> KING_SQUARES;
+    private static final Map<Character, Piece.Type> PIECE_NAMES;
+    private static final Map<Piece.Color, Square> KING_SQUARES;
     
     static {
-        Map<Character, Piece.PieceType> pieceNames = new HashMap<Character, Piece.PieceType>();
-        pieceNames.put('N', Piece.PieceType.KNIGHT);
-        pieceNames.put('B', Piece.PieceType.BISHOP);
-        pieceNames.put('R', Piece.PieceType.ROOK);
-        pieceNames.put('Q', Piece.PieceType.QUEEN);
-        pieceNames.put('K', Piece.PieceType.KING);
+        Map<Character, Piece.Type> pieceNames = new HashMap<Character, Piece.Type>();
+        pieceNames.put('N', Piece.Type.KNIGHT);
+        pieceNames.put('B', Piece.Type.BISHOP);
+        pieceNames.put('R', Piece.Type.ROOK);
+        pieceNames.put('Q', Piece.Type.QUEEN);
+        pieceNames.put('K', Piece.Type.KING);
         PIECE_NAMES = Collections.unmodifiableMap(pieceNames);
 
-        Map<Piece.PieceColor, Square> kingSquares = new EnumMap<Piece.PieceColor, Square>(Piece.PieceColor.class);
-        kingSquares.put(Piece.PieceColor.WHITE, Square.squareAt(5, 1));
-        kingSquares.put(Piece.PieceColor.BLACK, Square.squareAt(5, 8));
+        Map<Piece.Color, Square> kingSquares = new EnumMap<Piece.Color, Square>(Piece.Color.class);
+        kingSquares.put(Piece.Color.WHITE, Square.squareAt(5, 1));
+        kingSquares.put(Piece.Color.BLACK, Square.squareAt(5, 8));
         KING_SQUARES = Collections.unmodifiableMap(kingSquares);
     }
     
@@ -52,7 +52,7 @@ public class AlgebraicParser {
         
         // TODO: Implement promotion.
         
-        final PieceType type;
+        final Type type;
         final String endStr;
         // TODO: Check that, if captures, then capture occurs.
         final boolean captures;
@@ -66,7 +66,7 @@ public class AlgebraicParser {
             type = PIECE_NAMES.get(typeChar);
             startFront = 1;
         } else {
-            type = Piece.PieceType.PAWN;
+            type = Piece.Type.PAWN;
             startFront = 0;
         }
         
@@ -108,18 +108,18 @@ public class AlgebraicParser {
     }
     
     
-    private static Square start(Piece.PieceType type, Square end, Board board) throws AlgebraicNotationException {
+    private static Square start(Piece.Type type, Square end, Board board) throws AlgebraicNotationException {
         // TODO: Make more efficient.
         // TODO: Check uniqueness of start square (i.e. that no disambiguation
         // was necessary).
         return startFromSquares(type, Square.ALL, end, board);
     }
     
-    private static Square startFromClue(Piece.PieceType type, char clue, Square end, Board board) throws AlgebraicNotationException {
+    private static Square startFromClue(Piece.Type type, char clue, Square end, Board board) throws AlgebraicNotationException {
         return startFromSquares(type, Square.line(clue), end, board);
     }
     
-    private static Square startFromSquares(Piece.PieceType type, Iterable<Square> candidateStarts,
+    private static Square startFromSquares(Piece.Type type, Iterable<Square> candidateStarts,
                                            Square end, Board board) throws AlgebraicNotationException {
         Piece movingPiece;
         Move candidateMove;
@@ -129,7 +129,7 @@ public class AlgebraicParser {
             }
             movingPiece = board.getPiece(start);
             if (movingPiece == null || movingPiece.getType() != type ||
-                movingPiece.getPieceColor() != board.getToMoveColor()) {
+                movingPiece.getColor() != board.getToMoveColor()) {
                 continue;
             }
             candidateMove = new Move(start, end);

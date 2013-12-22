@@ -26,7 +26,7 @@ public class Minimax {
                     // Checkmated.
                     // TODO(jasonpr): Track mate in 1 vs mate in 2, etc.
                     float mateScore;
-                    if (board.getToMoveColor() == Piece.PieceColor.WHITE) {
+                    if (board.getToMoveColor() == Piece.Color.WHITE) {
                         mateScore = -10000.0f;
                     } else {
                         mateScore = +10000.0f;
@@ -51,7 +51,7 @@ public class Minimax {
             
             // Choose the possible decision that give the optimal score.
             MoveDecision bestDecision;
-            if (board.getToMoveColor() == Piece.PieceColor.WHITE) {
+            if (board.getToMoveColor() == Piece.Color.WHITE) {
                 bestDecision = MoveDecision.highestScored(possibleDecisions);
             } else {
                 bestDecision = MoveDecision.lowestScored(possibleDecisions);

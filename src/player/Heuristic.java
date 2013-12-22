@@ -9,17 +9,17 @@ import chess.Piece;
 import chess.Square;
 
 public class Heuristic {
-    private static final Map<Piece.PieceType, Float> PIECE_VALUES;
+    private static final Map<Piece.Type, Float> PIECE_VALUES;
     
     static {
-        Map<Piece.PieceType, Float> pieceValues = new HashMap<Piece.PieceType, Float>(); 
-        pieceValues.put(Piece.PieceType.PAWN, 1.0f);
-        pieceValues.put(Piece.PieceType.KNIGHT, 3.0f);
-        pieceValues.put(Piece.PieceType.BISHOP, 3.2f);
-        pieceValues.put(Piece.PieceType.ROOK, 5.0f);
-        pieceValues.put(Piece.PieceType.QUEEN, 9.0f);
+        Map<Piece.Type, Float> pieceValues = new HashMap<Piece.Type, Float>(); 
+        pieceValues.put(Piece.Type.PAWN, 1.0f);
+        pieceValues.put(Piece.Type.KNIGHT, 3.0f);
+        pieceValues.put(Piece.Type.BISHOP, 3.2f);
+        pieceValues.put(Piece.Type.ROOK, 5.0f);
+        pieceValues.put(Piece.Type.QUEEN, 9.0f);
         // TODO(jasonpr): Figure out what we should do about King's value.
-        pieceValues.put(Piece.PieceType.KING, 1000.0f);
+        pieceValues.put(Piece.Type.KING, 1000.0f);
         PIECE_VALUES = Collections.unmodifiableMap(pieceValues);
     }
     
@@ -34,7 +34,7 @@ public class Heuristic {
                 continue;
             }
             pieceScore = PIECE_VALUES.get(p.getType());
-            mult = (p.getPieceColor() == Piece.PieceColor.WHITE) ? +1.0f : -1.0f;
+            mult = (p.getColor() == Piece.Color.WHITE) ? +1.0f : -1.0f;
             totalScore += pieceScore * mult;
         }
         return totalScore;
