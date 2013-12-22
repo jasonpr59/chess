@@ -15,7 +15,7 @@ public class Square {
 
     // A grid of all 64 squares.
     // GRID[1][3] = "b4".
-    public static final Square[][] GRID;
+    private static final Square[][] GRID;
     
     // The space of all squares.
     public static final Iterable<Square> ALL;
