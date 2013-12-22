@@ -11,9 +11,6 @@ import chess.Piece;
 // TODO(jasonpr): Make this, and Minimax, share some Interface.
 public class AlphaBeta {
     
-    // TODO(jasonpr): Good god don't do this.
-    private static final float INFINITY = 10000000;
-    
     private static final float EXTENSION_THRESHOLD = 0.7f;
     
     private static MoveDecision alphaBeta(Board board, int depth, float alpha, float beta, float parentScore) {
@@ -87,7 +84,7 @@ public class AlphaBeta {
     
     public static MoveDecision bestMove(Board board, int depth) {
         // TODO(jasonpr): Come up with a better fake parent score.
-        return alphaBeta(board, depth, -INFINITY, INFINITY, 0.0f);
+        return alphaBeta(board, depth, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY, 0.0f);
     }   
     
     private static boolean shouldExtend(float score, float parentScore) {
