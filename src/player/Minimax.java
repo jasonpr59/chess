@@ -54,11 +54,11 @@ public class Minimax<P extends Position<P>> implements Decider<P>{
             
             Collections.shuffle(possibleDecisions);
             for (Decision<P> decision : possibleDecisions) {
-                possibleResult = decision.getFirst().result(position);
+                possibleResult = decision.getFirstMove().result(position);
                 Decision<P> nextDecision = bestMove(possibleResult, depth - 1, heuristic);
                 nextTransitions = new ArrayList<Move<P>>();
-                nextTransitions.add(decision.getFirst());
-                nextTransitions.addAll(nextDecision.getList());
+                nextTransitions.add(decision.getFirstMove());
+                nextTransitions.addAll(nextDecision.getVariation());
                 possibleDecisions.add(new Decision<P>(nextTransitions, nextDecision.getScore()));
             }
             

@@ -56,12 +56,12 @@ public class SocketChessServer {
 
             out.println("Thinking...");
             Decision<ChessPosition> bestDecision = decider.bestMove(board, 3, heuristic);
-            out.println("Making move" + bestDecision.getFirst());
-            board = bestDecision.getFirst().result(board);
+            out.println("Making move" + bestDecision.getFirstMove());
+            board = bestDecision.getFirstMove().result(board);
             
             out.println(colorize(board));
             out.println("H(continuation) = " + bestDecision.getScore());
-            out.println("From sequence: " + Arrays.toString(bestDecision.getList().toArray()));
+            out.println("From sequence: " + Arrays.toString(bestDecision.getVariation().toArray()));
         }
     }
 

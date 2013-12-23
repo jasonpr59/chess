@@ -5,36 +5,43 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * An indication of which Transition is best to make.
+ * An indication of which Move is best to make.
  * In the context of adversarial search, the adversaries
- * take turns changing the game's State via Transitions.
- * @param <S> The type of State this decision is made for.
+ * take turns changing the game's Position via Move.
+ * @param <S> The type of Position this decision is made for.
  */
 public class Decision<S extends Position<S>> {
-    private final List<Move<S>> transitionList;
+    private final List<Move<S>> variation;
     private final float score;
     
-    public Decision(List<Move<S>> transitionList, float score) {
-        this.transitionList = Collections.unmodifiableList(transitionList);
+    /**
+     * Create a decision with a foreseen variation and resulting score.
+     * @param variation This move, and the optimal set of moves that is
+     *      predicted to be made as a response.
+     * @param score The score of the final position reached by the
+     *      continuation, as predicted by some Heuristic.
+     */
+    public Decision(List<Move<S>> variation, float score) {
+        this.variation = Collections.unmodifiableList(variation);
         this.score = score;
     }
     
     /**
-     * Get the list of Transitions this Decision expects to make.
-     * These Transitions lead toward a final state whose score
+     * Get the list of Moves this Decision expects to make.
+     * These Moves lead toward a final state whose score
      * is this Decision's score.
      */
-    public List<Move<S>> getList() {
-        return transitionList;
+    public List<Move<S>> getVariation() {
+        return variation;
     }
     
     /**
-     * Get the first Transition to make.
-     * This Decision indicates that this Transition is the best
+     * Get the first Move to make.
+     * This Decision indicates that this Move is the best
      * one to make, given the expected continuation.
      */
-    public Move<S> getFirst() {
-        return transitionList.get(0);
+    public Move<S> getFirstMove() {
+        return variation.get(0);
     }
     
     /**

@@ -77,7 +77,7 @@ public class AlphaBeta<P extends Position<P>> implements Decider<P>{
                     seenAny = true;
                     nextMoves = new ArrayList<Move<P>>();
                     nextMoves.add(t);
-                    nextMoves.addAll(nextDecision.getList());
+                    nextMoves.addAll(nextDecision.getVariation());
                     bestDecision = new Decision<P>(nextMoves, nextDecision.getScore());
                 }
                 
