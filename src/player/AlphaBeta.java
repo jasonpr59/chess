@@ -14,7 +14,7 @@ public class AlphaBeta {
     private static final float EXTENSION_THRESHOLD = 0.7f;
     
     private static MoveDecision alphaBeta(Board board, int depth, float alpha, float beta, float parentScore) {
-        float score = Heuristic.pieceValueHeuristic(board);
+        float score = BoardPieceValueHeuristic.value(board);
         if (depth > 0 || shouldExtend(score, parentScore)) {
             // Generate all legal moves.
             List<Move> legalMoves = new ArrayList<Move>(board.legalMoves());

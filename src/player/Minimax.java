@@ -14,7 +14,7 @@ public class Minimax {
         if (depth < 0) {
             throw new IllegalArgumentException("Depth cannot be negative.");
         } else if (depth == 0) {
-            return new MoveDecision(nextMoves, Heuristic.pieceValueHeuristic(board));
+            return new MoveDecision(nextMoves, BoardPieceValueHeuristic.value(board));
         } else {
             // Get all possible decisions.
             List<MoveDecision> possibleDecisions = new ArrayList<MoveDecision>();

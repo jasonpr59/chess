@@ -9,7 +9,7 @@ import java.net.Socket;
 import java.util.Arrays;
 
 import player.AlphaBeta;
-import player.Heuristic;
+import player.BoardPieceValueHeuristic;
 import player.MoveDecision;
 import chess.AlgebraicParser;
 import chess.Board;
@@ -47,7 +47,7 @@ public class SocketChessServer {
             }
             
             out.println(colorize(board));
-            out.println("H(board) = " + Heuristic.pieceValueHeuristic(board));
+            out.println("H(board) = " + BoardPieceValueHeuristic.value(board));
 
             out.println("Thinking...");
             MoveDecision bestDecision = AlphaBeta.bestMove(board, 3);
