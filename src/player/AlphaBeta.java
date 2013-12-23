@@ -4,12 +4,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-// TODO(jasonpr): Make this, and Minimax, share some Interface.
-public class AlphaBeta {
+public class AlphaBeta<P extends Position<P>> implements Decider<P>{
     
     private static final float EXTENSION_THRESHOLD = 0.7f;
     
-    private static <P extends Position<P>> Decision<P> alphaBeta(P position, int depth, Heuristic<P> heuristic, float alpha, float beta, float parentScore) {
+    @Override
+    public Decision<P> bestMove(P state, int depth, Heuristic<P> heuristic) {
+        // TODO(jasonpr): Come up with a better fake parent score.
+        return alphaBeta(state, depth, heuristic, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY, 0.0f);
+    }   
+    
+    private Decision<P> alphaBeta(P position, int depth, Heuristic<P> heuristic, float alpha, float beta, float parentScore) {
         float score = heuristic.value(position);
         if (depth > 0 || shouldExtend(score, parentScore)) {
             // Generate all legal transitions.
@@ -93,11 +98,6 @@ public class AlphaBeta {
             return new Decision<P>(new ArrayList<Move<P>>(), score);
         }
     }
-    
-    public static <S extends Position<S>> Decision<S> bestMove(S state, int depth, Heuristic<S> heuristic) {
-        // TODO(jasonpr): Come up with a better fake parent score.
-        return alphaBeta(state, depth, heuristic, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY, 0.0f);
-    }   
     
     private static boolean shouldExtend(float score, float parentScore) {
         return Math.abs(score - parentScore) > EXTENSION_THRESHOLD;

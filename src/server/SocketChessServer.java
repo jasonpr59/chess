@@ -10,11 +10,12 @@ import java.util.Arrays;
 
 import player.AlphaBeta;
 import player.BoardPieceValueHeuristic;
+import player.Decider;
 import player.Decision;
 import player.Heuristic;
 import chess.AlgebraicParser;
-import chess.ChessPosition;
 import chess.ChessMove;
+import chess.ChessPosition;
 import chess.Piece;
 import chess.Square;
 import exceptions.AlgebraicNotationException;
@@ -32,6 +33,7 @@ public class SocketChessServer {
         ChessPosition board = ChessPosition.newGame();
 
         Heuristic<ChessPosition> heuristic = new BoardPieceValueHeuristic();
+        Decider<ChessPosition> decider = new AlphaBeta<ChessPosition>();
         
         String inputLine;
         while ((inputLine = in.readLine()) != null) {
@@ -53,7 +55,7 @@ public class SocketChessServer {
             out.println("H(board) = " + heuristic.value(board));
 
             out.println("Thinking...");
-            Decision<ChessPosition> bestDecision = AlphaBeta.bestMove(board, 3, heuristic);
+            Decision<ChessPosition> bestDecision = decider.bestMove(board, 3, heuristic);
             out.println("Making move" + bestDecision.getFirst());
             board = bestDecision.getFirst().result(board);
             

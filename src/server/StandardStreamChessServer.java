@@ -4,10 +4,11 @@ import java.util.Scanner;
 
 import player.AlphaBeta;
 import player.BoardPieceValueHeuristic;
+import player.Decider;
 import player.Decision;
 import player.Heuristic;
-import chess.ChessPosition;
 import chess.ChessMove;
+import chess.ChessPosition;
 
 public class StandardStreamChessServer {
     
@@ -19,6 +20,7 @@ public class StandardStreamChessServer {
         ChessPosition board = ChessPosition.newGame();
 
         Heuristic<ChessPosition> heuristic = new BoardPieceValueHeuristic();
+        Decider<ChessPosition> decider = new AlphaBeta<ChessPosition>();
         
         Scanner sc = new Scanner(System.in);
         String input;
@@ -43,7 +45,7 @@ public class StandardStreamChessServer {
             }
             
             // Decide a response, and play it on the board.
-            Decision<ChessPosition> bestDecision = AlphaBeta.bestMove(board, DEPTH, heuristic); 
+            Decision<ChessPosition> bestDecision = decider.bestMove(board, DEPTH, heuristic); 
             board  = bestDecision.getFirst().result(board);
             
             // Print the move.

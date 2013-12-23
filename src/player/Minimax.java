@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Minimax {
-    public static <P extends Position<P>> Decision<P> bestMove(P position, int depth, Heuristic<P> heuristic) {
+public class Minimax<P extends Position<P>> implements Decider<P>{
+    @Override
+    public Decision<P> bestMove(P position, int depth, Heuristic<P> heuristic) {
         List<Move<P>> nextTransitions = new ArrayList<Move<P>>();
         if (depth < 0) {
             throw new IllegalArgumentException("Depth cannot be negative.");
