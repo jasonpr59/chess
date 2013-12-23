@@ -4,57 +4,69 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import chess.Board;
-import chess.Move;
-import chess.Piece;
-
 public class Minimax {
-    public static MoveDecision bestMove(Board board, int depth, Heuristic<Board> heuristic) {
-        List<Move> nextMoves = new ArrayList<Move>();
+    public static <P extends Position<P>> Decision<P> bestMove(P position, int depth, Heuristic<P> heuristic) {
+        List<Transition<P>> nextTransitions = new ArrayList<Transition<P>>();
         if (depth < 0) {
             throw new IllegalArgumentException("Depth cannot be negative.");
         } else if (depth == 0) {
-            return new MoveDecision(nextMoves, heuristic.value(board));
+            return new Decision<P>(nextTransitions, heuristic.value(position));
         } else {
             // Get all possible decisions.
-            List<MoveDecision> possibleDecisions = new ArrayList<MoveDecision>();
-            Board possibleResult;
-            List<Move> legalMoves = new ArrayList<Move>(board.legalMoves());
-            if (legalMoves.size() == 0) {
-                // You're checkmated, or stalemated.
-                if (board.checked(board.getToMoveColor())) {
-                    // Checkmated.
-                    // TODO(jasonpr): Track mate in 1 vs mate in 2, etc.
-                    float mateScore;
-                    if (board.getToMoveColor() == Piece.Color.WHITE) {
-                        mateScore = -10000.0f;
+            List<Decision<P>> possibleDecisions = new ArrayList<Decision<P>>();
+            P possibleResult;
+            List<Transition<P>> transitions = new ArrayList<Transition<P>>(position.transitions());
+            if (transitions.size() == 0) {
+                // Any game is either a win, a loss, or a tie if there are no
+                // legal transitions left.
+                
+                Outcome result = position.outcome();
+
+                float outcomeScore;
+                switch (result) {
+                case WIN:
+                    // Never the case: if you have no moves, you are
+                    // either checkmated or stalemated.
+                    throw new AssertionError("You never win if you have no moves!");
+                case DRAW:
+                    // TODO: Decide whether to explicitly define a Draw Score.
+                    outcomeScore = 0.0f;
+                    break;
+                case LOSS:
+                    // FIXME: This seems overly hacky.
+                    // This could probably be fixed by making *every* step
+                    // a "maximizing step," and just negating scores in each
+                    // recursive call.
+                    if (position.shouldMaximize()) {
+                        // The maximizing player lost.
+                        // TODO: Differentiate between "lose now" and "lose in x moves."
+                        outcomeScore = -10000.0f;
                     } else {
-                        mateScore = +10000.0f;
+                        outcomeScore = 10000.0f;
                     }
-                    return new MoveDecision(nextMoves, mateScore);
-                } else {
-                    // Stalemated.
-                    // TODO(jasonpr): Decide whether to explicitly define stalemate.
-                    return new MoveDecision(nextMoves, 0.0f);
+                    break;
+                default:
+                    throw new AssertionError("Result was not a valid value.");
                 }
+                return new Decision<P>(new ArrayList<Transition<P>>(), outcomeScore);
             }
             
-            Collections.shuffle(legalMoves);
-            for (Move m : legalMoves) {
-                possibleResult = board.moveResult(m);
-                MoveDecision nextDecision = bestMove(possibleResult, depth - 1, heuristic);
-                nextMoves = new ArrayList<Move>();
-                nextMoves.add(m);
-                nextMoves.addAll(nextDecision.getMoveList());
-                possibleDecisions.add(new MoveDecision(nextMoves, nextDecision.getScore()));
+            Collections.shuffle(possibleDecisions);
+            for (Decision<P> decision : possibleDecisions) {
+                possibleResult = decision.getFirst().result(position);
+                Decision<P> nextDecision = bestMove(possibleResult, depth - 1, heuristic);
+                nextTransitions = new ArrayList<Transition<P>>();
+                nextTransitions.add(decision.getFirst());
+                nextTransitions.addAll(nextDecision.getList());
+                possibleDecisions.add(new Decision<P>(nextTransitions, nextDecision.getScore()));
             }
             
             // Choose the possible decision that give the optimal score.
-            MoveDecision bestDecision;
-            if (board.getToMoveColor() == Piece.Color.WHITE) {
-                bestDecision = MoveDecision.highestScored(possibleDecisions);
+            Decision<P> bestDecision;
+            if (position.shouldMaximize()) {
+                bestDecision = Decision.highestScored(possibleDecisions);
             } else {
-                bestDecision = MoveDecision.lowestScored(possibleDecisions);
+                bestDecision = Decision.lowestScored(possibleDecisions);
             }
             return bestDecision;
         }
