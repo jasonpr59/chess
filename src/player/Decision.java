@@ -8,10 +8,10 @@ import java.util.List;
  * An indication of which Move is best to make.
  * In the context of adversarial search, the adversaries
  * take turns changing the game's Position via Move.
- * @param <S> The type of Position this decision is made for.
+ * @param <P> The type of Position this decision is made for.
  */
-public class Decision<S extends Position<S>> {
-    private final List<Move<S>> variation;
+public class Decision<P extends Position<P>> {
+    private final List<Move<P>> variation;
     private final float score;
     
     /**
@@ -21,7 +21,7 @@ public class Decision<S extends Position<S>> {
      * @param score The score of the final position reached by the
      *      continuation, as predicted by some Heuristic.
      */
-    public Decision(List<Move<S>> variation, float score) {
+    public Decision(List<Move<P>> variation, float score) {
         this.variation = Collections.unmodifiableList(variation);
         this.score = score;
     }
@@ -31,7 +31,7 @@ public class Decision<S extends Position<S>> {
      * These Moves lead toward a final state whose score
      * is this Decision's score.
      */
-    public List<Move<S>> getVariation() {
+    public List<Move<P>> getVariation() {
         return variation;
     }
     
@@ -40,7 +40,7 @@ public class Decision<S extends Position<S>> {
      * This Decision indicates that this Move is the best
      * one to make, given the expected continuation.
      */
-    public Move<S> getFirstMove() {
+    public Move<P> getFirstMove() {
         return variation.get(0);
     }
     
@@ -60,7 +60,7 @@ public class Decision<S extends Position<S>> {
      * The best score is the highest if highest is true.  Otherwise,
      * the best score is the lowest. 
      */
-    public static <S extends Position<S>> Decision<S> bestScored(Collection<Decision<S>> decisions, boolean highestBest) {
+    public static <P extends Position<P>> Decision<P> bestScored(Collection<Decision<P>> decisions, boolean highestBest) {
         assert decisions.size() > 0;
         
         final float MULTIPLIER = highestBest ? +1.0f : -1.0f;
@@ -68,10 +68,10 @@ public class Decision<S extends Position<S>> {
         boolean seenAny = false;
         // Optimal post-multiplication score.
         float optimalScore = 0.0f;
-        Decision<S> best = null;
+        Decision<P> best = null;
 
         float currentScore; 
-        for (Decision<S> d : decisions) {
+        for (Decision<P> d : decisions) {
             currentScore = d.getScore() * MULTIPLIER;
             if (!seenAny || currentScore > optimalScore ) {
                 best = d;
@@ -83,12 +83,12 @@ public class Decision<S extends Position<S>> {
     }
     
     /** Return the Decision with the highest score. */
-    public static <S extends Position<S>> Decision<S> highestScored(Collection<Decision<S>> decisions) {
+    public static <P extends Position<P>> Decision<P> highestScored(Collection<Decision<P>> decisions) {
         return bestScored(decisions, true);
     }
     
     /** Return the Decision with the lowest score. */
-    public static <S extends Position<S>> Decision<S> lowestScored(Collection<Decision<S>> decisions) {
+    public static <P extends Position<P>> Decision<P> lowestScored(Collection<Decision<P>> decisions) {
         return bestScored(decisions, false);
     }
     
