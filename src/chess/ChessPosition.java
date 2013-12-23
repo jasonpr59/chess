@@ -414,15 +414,15 @@ public class ChessPosition implements Position<ChessPosition> {
     /** Return whether the king of some color is in check. */
     public boolean checked(Color kingColor) {
         Square kingSquare = kingSquare(kingColor);
-        ChessPosition trialBoard;
+        ChessPosition trialPosition;
         if (toMoveColor == kingColor) {
             // Act as though it's the other side's turn, to see if they could attack the king.
-            trialBoard = new ChessPosition(this).setToMoveColor(toMoveColor.opposite()).freeze();
+            trialPosition = new ChessPosition(this).setToMoveColor(toMoveColor.opposite()).freeze();
         } else {
             // It's the other color's turn, so see if they can attack this king.
-            trialBoard = this;
+            trialPosition = this;
         }
-        return trialBoard.isAttackable(kingSquare);
+        return trialPosition.isAttackable(kingSquare);
     }
 
     /**
