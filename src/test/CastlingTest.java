@@ -23,7 +23,7 @@ public class CastlingTest {
         Game g = Game.fromMoves(moves);
 
         // Castle
-        ChessPosition b_good = g.getBoard().moveResult(new ChessMove(Square.algebraic("e1"), Square.algebraic("g1")));
+        ChessPosition b_good = g.getCurrentPosition().moveResult(new ChessMove(Square.algebraic("e1"), Square.algebraic("g1")));
         
         // Be sure pieces moved around correctly.
         assertEquals(b_good.getPiece(Square.algebraic("e1")), null);
@@ -43,7 +43,7 @@ public class CastlingTest {
                           "Nc3", "Qd7",
                           "Qd2", "Nf6"};
         Game g = Game.fromMoves(moves);
-        ChessPosition b_good = g.getBoard().moveResult(new ChessMove(Square.algebraic("e1"), Square.algebraic("c1")));
+        ChessPosition b_good = g.getCurrentPosition().moveResult(new ChessMove(Square.algebraic("e1"), Square.algebraic("c1")));
         
         // Be sure pieces moved around correctly.
         assertEquals(b_good.getPiece(Square.algebraic("a1")), null);
@@ -65,7 +65,7 @@ public class CastlingTest {
         Game g = Game.fromMoves(moves);
         
         ChessMove illegalCastle = new ChessMove(Square.algebraic("e1"), Square.algebraic("g1"));
-        assertFalse(illegalCastle.isLegal(g.getBoard()));
+        assertFalse(illegalCastle.isLegal(g.getCurrentPosition()));
     }
 
     @Test
@@ -77,7 +77,7 @@ public class CastlingTest {
         Game g = Game.fromMoves(moves);
         
         ChessMove illegalCastle = new ChessMove(Square.algebraic("e1"), Square.algebraic("g1"));
-        assertFalse(illegalCastle.isLegal(g.getBoard()));
+        assertFalse(illegalCastle.isLegal(g.getCurrentPosition()));
     }
 
     @Test

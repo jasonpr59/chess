@@ -12,7 +12,7 @@ public class Game {
 
     /**
      * Construct a new Game.
-     * At this point, only the initial Board position is in the
+     * At this point, only the initial Position position is in the
      * Game's history: no Moves have been made.
      */
     public Game() {
@@ -22,19 +22,19 @@ public class Game {
 
     /**
      * Make a Move.
-     * The Move is made on the current (last) board, and the
+     * The Move is made on the current (last) Position, and the
      * result is added to the history. This turns the result
-     * into the new current board.
+     * into the new current Position.
      * @return This Game, for daisy chaining.
      * @throws InvalidMoveException
      */
     public Game makeMove(ChessMove move) throws InvalidMoveException{
-        history.add(getBoard().moveResult(move));
+        history.add(getCurrentPosition().moveResult(move));
         return this;
     }
 
-    /** Get the current (most recent) Board. */
-    public ChessPosition getBoard() {
+    /** Get the current (most recent) Position. */
+    public ChessPosition getCurrentPosition() {
         return history.get(history.size() - 1);
     }
 
@@ -45,9 +45,9 @@ public class Game {
      * @param ply 1 for white's ply, 2 for black's ply.
      *     If move == 0, then ply can be anything-- the initial
      *     position will be returned no matter what.
-     * @return The Board at the given point in the game.
+     * @return The position at the given point in the game.
      */
-    public ChessPosition getBoard(int move, int ply) {
+    public ChessPosition getPosition(int move, int ply) {
         if (move < 0) {
             throw new IllegalArgumentException("Move cannot be negative.");
         } else if (move == 0) {
@@ -65,8 +65,8 @@ public class Game {
     public static Game fromMoves(String[] moves) throws AlgebraicNotationException, InvalidMoveException {
         Game g = new Game();
         for (String move : moves) {
-            ChessMove m = AlgebraicParser.parseAlgebraic(move, g.getBoard());
-            if (m.isLegal(g.getBoard())){
+            ChessMove m = AlgebraicParser.parseAlgebraic(move, g.getCurrentPosition());
+            if (m.isLegal(g.getCurrentPosition())){
                 g.makeMove(m);
             } else {
                 throw new InvalidMoveException();

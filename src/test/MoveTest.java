@@ -18,7 +18,7 @@ public class MoveTest {
         
         ChessMove illegalDoublePush = new ChessMove(Square.algebraic("e4"),
                                           Square.algebraic("e6"));
-        assertFalse(illegalDoublePush.isLegal(g.getBoard()));
+        assertFalse(illegalDoublePush.isLegal(g.getCurrentPosition()));
         
     }
 }
