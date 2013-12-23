@@ -8,14 +8,13 @@ import java.util.List;
  * An indication of which Transition is best to make.
  * In the context of adversarial search, the adversaries
  * take turns changing the game's State via Transitions.
- * @param <T> The type of Transition that changes the game
- *      from one State to another State.
+ * @param <S> The type of State this decision is made for.
  */
-public class Decision<T> {
-    private final List<T> transitionList;
+public class Decision<S extends State<S>> {
+    private final List<Transition<S>> transitionList;
     private final float score;
     
-    public Decision(List<T> transitionList, float score) {
+    public Decision(List<Transition<S>> transitionList, float score) {
         this.transitionList = Collections.unmodifiableList(transitionList);
         this.score = score;
     }
@@ -25,7 +24,7 @@ public class Decision<T> {
      * These Transitions lead toward a final state whose score
      * is this Decision's score.
      */
-    public List<T> getList() {
+    public List<Transition<S>> getList() {
         return transitionList;
     }
     
@@ -34,7 +33,7 @@ public class Decision<T> {
      * This Decision indicates that this Transition is the best
      * one to make, given the expected continuation.
      */
-    public T getFirst() {
+    public Transition<S> getFirst() {
         return transitionList.get(0);
     }
     
@@ -54,7 +53,7 @@ public class Decision<T> {
      * The best score is the highest if highest is true.  Otherwise,
      * the best score is the lowest. 
      */
-    public static <T> Decision<T> bestScored(Collection<Decision<T>> decisions, boolean highestBest) {
+    public static <S extends State<S>> Decision<S> bestScored(Collection<Decision<S>> decisions, boolean highestBest) {
         assert decisions.size() > 0;
         
         final float MULTIPLIER = highestBest ? +1.0f : -1.0f;
@@ -62,10 +61,10 @@ public class Decision<T> {
         boolean seenAny = false;
         // Optimal post-multiplication score.
         float optimalScore = 0.0f;
-        Decision<T> best = null;
+        Decision<S> best = null;
 
         float currentScore; 
-        for (Decision<T> d : decisions) {
+        for (Decision<S> d : decisions) {
             currentScore = d.getScore() * MULTIPLIER;
             if (!seenAny || currentScore > optimalScore ) {
                 best = d;
@@ -77,12 +76,12 @@ public class Decision<T> {
     }
     
     /** Return the Decision with the highest score. */
-    public static <T> Decision<T> highestScored(Collection<Decision<T>> decisions) {
+    public static <S extends State<S>> Decision<S> highestScored(Collection<Decision<S>> decisions) {
         return bestScored(decisions, true);
     }
     
     /** Return the Decision with the lowest score. */
-    public static <T> Decision<T> lowestScored(Collection<Decision<T>> decisions) {
+    public static <S extends State<S>> Decision<S> lowestScored(Collection<Decision<S>> decisions) {
         return bestScored(decisions, false);
     }
     
