@@ -16,7 +16,7 @@ public class Minimax<P extends Position<P>> implements Decider<P>{
             // Get all possible decisions.
             List<Decision<P>> possibleDecisions = new ArrayList<Decision<P>>();
             P possibleResult;
-            List<Move<P>> transitions = new ArrayList<Move<P>>(position.transitions());
+            List<Move<P>> transitions = new ArrayList<Move<P>>(position.moves());
             if (transitions.size() == 0) {
                 // Any game is either a win, a loss, or a tie if there are no
                 // legal transitions left.

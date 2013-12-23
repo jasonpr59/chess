@@ -20,10 +20,10 @@ import java.util.Collection;
  */
 public interface Position<P extends Position<P>> {
     /** Return the set of legal Moves at this position. */ 
-    public Collection<? extends Move<P>> transitions();
+    public Collection<? extends Move<P>> moves();
     /**
      * The outcome of the game that ends in this position.
-     * Requires that there are no legal Transitions out of
+     * Requires that there are no legal Moves out of
      * this Position. 
      */
     public Outcome outcome();

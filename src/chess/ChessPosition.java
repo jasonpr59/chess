@@ -460,7 +460,7 @@ public class ChessPosition implements Position<ChessPosition> {
     }
 
     @Override
-    public Collection<? extends Move<ChessPosition>> transitions() {
+    public Collection<? extends Move<ChessPosition>> moves() {
         // TODO: Move legalMoves to this method.
         return legalMoves();
     }

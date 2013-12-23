@@ -18,12 +18,12 @@ public class AlphaBeta<P extends Position<P>> implements Decider<P>{
         float score = heuristic.value(position);
         if (depth > 0 || shouldExtend(score, parentScore)) {
             // Generate all legal transitions.
-            List<Move<P>> moves = new ArrayList<Move<P>>(position.transitions());
+            List<Move<P>> moves = new ArrayList<Move<P>>(position.moves());
             // TODO(jasonpr): Order nicely.
-            Collections.shuffle(transitions);
+            Collections.shuffle(moves);
             
             // Decide it's checkmate/stalemate.
-            if (transitions.size() == 0) {
+            if (moves.size() == 0) {
                 // Any game is either a win, a loss, or a tie if there are no
                 // legal transitions left.
                 
@@ -67,7 +67,7 @@ public class AlphaBeta<P extends Position<P>> implements Decider<P>{
             boolean seenAny = false;
             P possibleResult;
             List<Move<P>> variation = new ArrayList<Move<P>>();
-            for (Move<P> t : transitions) {
+            for (Move<P> t : moves) {
                 // Get the result, so we can do alphaBeta recursively.
                 possibleResult = t.result(position);
 
