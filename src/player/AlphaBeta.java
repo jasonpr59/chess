@@ -9,7 +9,7 @@ public class AlphaBeta<P extends Position<P>> implements Decider<P>{
     private static final float EXTENSION_THRESHOLD = 0.7f;
     
     @Override
-    public Decision<P> bestMove(P state, int depth, Heuristic<P> heuristic) {
+    public Decision<P> bestDecision(P state, int depth, Heuristic<P> heuristic) {
         // TODO(jasonpr): Come up with a better fake parent score.
         return alphaBeta(state, depth, heuristic, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY, 0.0f);
     }   

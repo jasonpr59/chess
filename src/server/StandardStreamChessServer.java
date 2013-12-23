@@ -45,7 +45,7 @@ public class StandardStreamChessServer {
             }
             
             // Decide a response, and play it on the board.
-            Decision<ChessPosition> bestDecision = decider.bestMove(board, DEPTH, heuristic); 
+            Decision<ChessPosition> bestDecision = decider.bestDecision(board, DEPTH, heuristic); 
             board  = bestDecision.getFirstMove().result(board);
             
             // Print the move.

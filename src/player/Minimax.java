@@ -6,7 +6,7 @@ import java.util.List;
 
 public class Minimax<P extends Position<P>> implements Decider<P>{
     @Override
-    public Decision<P> bestMove(P position, int depth, Heuristic<P> heuristic) {
+    public Decision<P> bestDecision(P position, int depth, Heuristic<P> heuristic) {
         List<Move<P>> nextTransitions = new ArrayList<Move<P>>();
         if (depth < 0) {
             throw new IllegalArgumentException("Depth cannot be negative.");
@@ -55,7 +55,7 @@ public class Minimax<P extends Position<P>> implements Decider<P>{
             Collections.shuffle(possibleDecisions);
             for (Decision<P> decision : possibleDecisions) {
                 possibleResult = decision.getFirstMove().result(position);
-                Decision<P> nextDecision = bestMove(possibleResult, depth - 1, heuristic);
+                Decision<P> nextDecision = bestDecision(possibleResult, depth - 1, heuristic);
                 nextTransitions = new ArrayList<Move<P>>();
                 nextTransitions.add(decision.getFirstMove());
                 nextTransitions.addAll(nextDecision.getVariation());

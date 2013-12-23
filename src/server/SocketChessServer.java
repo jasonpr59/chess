@@ -55,7 +55,7 @@ public class SocketChessServer {
             out.println("H(board) = " + heuristic.value(board));
 
             out.println("Thinking...");
-            Decision<ChessPosition> bestDecision = decider.bestMove(board, 3, heuristic);
+            Decision<ChessPosition> bestDecision = decider.bestDecision(board, 3, heuristic);
             out.println("Making move" + bestDecision.getFirstMove());
             board = bestDecision.getFirstMove().result(board);
             
