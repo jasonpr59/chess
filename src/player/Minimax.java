@@ -9,12 +9,12 @@ import chess.Move;
 import chess.Piece;
 
 public class Minimax {
-    public static MoveDecision bestMove(Board board, int depth) {
+    public static MoveDecision bestMove(Board board, int depth, Heuristic<Board> heuristic) {
         List<Move> nextMoves = new ArrayList<Move>();
         if (depth < 0) {
             throw new IllegalArgumentException("Depth cannot be negative.");
         } else if (depth == 0) {
-            return new MoveDecision(nextMoves, BoardPieceValueHeuristic.value(board));
+            return new MoveDecision(nextMoves, heuristic.value(board));
         } else {
             // Get all possible decisions.
             List<MoveDecision> possibleDecisions = new ArrayList<MoveDecision>();
@@ -42,7 +42,7 @@ public class Minimax {
             Collections.shuffle(legalMoves);
             for (Move m : legalMoves) {
                 possibleResult = board.moveResult(m);
-                MoveDecision nextDecision = bestMove(possibleResult, depth - 1);
+                MoveDecision nextDecision = bestMove(possibleResult, depth - 1, heuristic);
                 nextMoves = new ArrayList<Move>();
                 nextMoves.add(m);
                 nextMoves.addAll(nextDecision.getMoveList());

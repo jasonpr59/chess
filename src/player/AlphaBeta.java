@@ -13,8 +13,8 @@ public class AlphaBeta {
     
     private static final float EXTENSION_THRESHOLD = 0.7f;
     
-    private static MoveDecision alphaBeta(Board board, int depth, float alpha, float beta, float parentScore) {
-        float score = BoardPieceValueHeuristic.value(board);
+    private static MoveDecision alphaBeta(Board board, int depth, Heuristic<Board> heuristic, float alpha, float beta, float parentScore) {
+        float score = heuristic.value(board);
         if (depth > 0 || shouldExtend(score, parentScore)) {
             // Generate all legal moves.
             List<Move> legalMoves = new ArrayList<Move>(board.legalMoves());
@@ -55,7 +55,7 @@ public class AlphaBeta {
                 possibleResult = board.moveResult(m);
 
                 // Get the best decision from this possible result...
-                MoveDecision nextDecision = alphaBeta(possibleResult, depth - 1, alpha, beta, score);
+                MoveDecision nextDecision = alphaBeta(possibleResult, depth - 1, heuristic, alpha, beta, score);
                 if (!seenAny || nextDecision.getScore() * mult > bestDecision.getScore() * mult) {
                     seenAny = true;
                     nextMoves = new ArrayList<Move>();
@@ -82,9 +82,9 @@ public class AlphaBeta {
         }
     }
     
-    public static MoveDecision bestMove(Board board, int depth) {
+    public static MoveDecision bestMove(Board board, int depth, Heuristic<Board> heuristic) {
         // TODO(jasonpr): Come up with a better fake parent score.
-        return alphaBeta(board, depth, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY, 0.0f);
+        return alphaBeta(board, depth, heuristic, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY, 0.0f);
     }   
     
     private static boolean shouldExtend(float score, float parentScore) {

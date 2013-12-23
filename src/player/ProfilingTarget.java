@@ -6,7 +6,8 @@ public class ProfilingTarget {
 
     public static void main(String[] args) {
         // Just run some minimax, so the profiler can do its thing.
-        Minimax.bestMove(Board.newGame(), 3);
+        Heuristic<Board> heuristic = new BoardPieceValueHeuristic();
+        Minimax.bestMove(Board.newGame(), 3, heuristic);
         System.out.println("Done.");
     }
     

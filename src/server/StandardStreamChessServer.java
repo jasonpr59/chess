@@ -3,6 +3,8 @@ package server;
 import java.util.Scanner;
 
 import player.AlphaBeta;
+import player.BoardPieceValueHeuristic;
+import player.Heuristic;
 import player.MoveDecision;
 import chess.Board;
 import chess.Move;
@@ -15,6 +17,8 @@ public class StandardStreamChessServer {
     public static void main(String[] args) {
         // Setup the board.
         Board board = Board.newGame();
+
+        Heuristic<Board> heuristic = new BoardPieceValueHeuristic();
         
         Scanner sc = new Scanner(System.in);
         String input;
@@ -39,7 +43,7 @@ public class StandardStreamChessServer {
             }
             
             // Decide a response.
-            MoveDecision bestDecision = AlphaBeta.bestMove(board, DEPTH); 
+            MoveDecision bestDecision = AlphaBeta.bestMove(board, DEPTH, heuristic); 
             m = bestDecision.getFirstMove();
             
             // Play the response on the board.

@@ -8,7 +8,7 @@ import chess.Board;
 import chess.Piece;
 import chess.Square;
 
-public class BoardPieceValueHeuristic {
+public class BoardPieceValueHeuristic implements Heuristic<Board>{
     private static final Map<Piece.Type, Float> PIECE_VALUES;
     
     static {
@@ -23,7 +23,8 @@ public class BoardPieceValueHeuristic {
         PIECE_VALUES = Collections.unmodifiableMap(pieceValues);
     }
     
-    public static float value(Board board) {
+    @Override
+    public float value(Board board) {
         float totalScore = 0.0f;
         Piece p;
         float pieceScore;
