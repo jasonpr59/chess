@@ -3,12 +3,12 @@ package server;
 import java.util.Scanner;
 
 import player.AlphaBeta;
-import player.BoardPieceValueHeuristic;
 import player.Decider;
 import player.Decision;
 import player.Heuristic;
 import chess.ChessMove;
 import chess.ChessPosition;
+import chess.player.BoardPieceValueHeuristic;
 
 public class StandardStreamChessServer {
     

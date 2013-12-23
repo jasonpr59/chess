@@ -1,5 +1,8 @@
-package player;
+package chess.player;
 
+import player.Decider;
+import player.Heuristic;
+import player.Minimax;
 import chess.ChessPosition;
 
 public class ProfilingTarget {

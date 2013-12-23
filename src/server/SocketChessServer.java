@@ -9,7 +9,6 @@ import java.net.Socket;
 import java.util.Arrays;
 
 import player.AlphaBeta;
-import player.BoardPieceValueHeuristic;
 import player.Decider;
 import player.Decision;
 import player.Heuristic;
@@ -18,6 +17,7 @@ import chess.ChessMove;
 import chess.ChessPosition;
 import chess.Piece;
 import chess.Square;
+import chess.player.BoardPieceValueHeuristic;
 import exceptions.AlgebraicNotationException;
 
 public class SocketChessServer {

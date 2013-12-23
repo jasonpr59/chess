@@ -1,8 +1,10 @@
-package player;
+package chess.player;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import player.Heuristic;
 
 import chess.ChessPosition;
 import chess.Piece;
