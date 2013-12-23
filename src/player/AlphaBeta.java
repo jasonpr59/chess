@@ -66,7 +66,7 @@ public class AlphaBeta<P extends Position<P>> implements Decider<P>{
             Decision<P> bestDecision = null;
             boolean seenAny = false;
             P possibleResult;
-            List<Move<P>> nextMoves = new ArrayList<Move<P>>();
+            List<Move<P>> variation = new ArrayList<Move<P>>();
             for (Move<P> t : transitions) {
                 // Get the result, so we can do alphaBeta recursively.
                 possibleResult = t.result(position);
@@ -75,10 +75,10 @@ public class AlphaBeta<P extends Position<P>> implements Decider<P>{
                 Decision<P> nextDecision = alphaBeta(possibleResult, depth - 1, heuristic, alpha, beta, score);
                 if (!seenAny || nextDecision.getScore() * mult > bestDecision.getScore() * mult) {
                     seenAny = true;
-                    nextMoves = new ArrayList<Move<P>>();
-                    nextMoves.add(t);
-                    nextMoves.addAll(nextDecision.getVariation());
-                    bestDecision = new Decision<P>(nextMoves, nextDecision.getScore());
+                    variation = new ArrayList<Move<P>>();
+                    variation.add(t);
+                    variation.addAll(nextDecision.getVariation());
+                    bestDecision = new Decision<P>(variation, nextDecision.getScore());
                 }
                 
                 // update alpha and beta
