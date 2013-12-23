@@ -10,7 +10,7 @@ import java.util.List;
  * take turns changing the game's State via Transitions.
  * @param <S> The type of State this decision is made for.
  */
-public class Decision<S extends State<S>> {
+public class Decision<S extends Position<S>> {
     private final List<Transition<S>> transitionList;
     private final float score;
     
@@ -53,7 +53,7 @@ public class Decision<S extends State<S>> {
      * The best score is the highest if highest is true.  Otherwise,
      * the best score is the lowest. 
      */
-    public static <S extends State<S>> Decision<S> bestScored(Collection<Decision<S>> decisions, boolean highestBest) {
+    public static <S extends Position<S>> Decision<S> bestScored(Collection<Decision<S>> decisions, boolean highestBest) {
         assert decisions.size() > 0;
         
         final float MULTIPLIER = highestBest ? +1.0f : -1.0f;
@@ -76,12 +76,12 @@ public class Decision<S extends State<S>> {
     }
     
     /** Return the Decision with the highest score. */
-    public static <S extends State<S>> Decision<S> highestScored(Collection<Decision<S>> decisions) {
+    public static <S extends Position<S>> Decision<S> highestScored(Collection<Decision<S>> decisions) {
         return bestScored(decisions, true);
     }
     
     /** Return the Decision with the lowest score. */
-    public static <S extends State<S>> Decision<S> lowestScored(Collection<Decision<S>> decisions) {
+    public static <S extends Position<S>> Decision<S> lowestScored(Collection<Decision<S>> decisions) {
         return bestScored(decisions, false);
     }
     

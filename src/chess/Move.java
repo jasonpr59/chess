@@ -3,11 +3,13 @@ package chess;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import player.Transition;
+
 /**
  * A move from one Square to another Square.
  *  This class is immutable.
  */
-public class Move {
+public class Move implements Transition<Board>{
 
     private final Square start;
     private final Square end;
@@ -320,5 +322,14 @@ public class Move {
         return new Move(Square.squareAt(startFile, startRank),
                         Square.squareAt(endFile, endRank));
 
+    }
+
+    @Override
+    public Board result(Board position) {
+        // FIXME: This seems weird and underhanded.
+        // But, it also kind of reminds me of the Visitor pattern.
+        // Figure out a clearer way to do this, or, find a nice way
+        // to explain what's happening.
+        return position.moveResult(this);
     }
 }

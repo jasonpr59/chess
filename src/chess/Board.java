@@ -5,10 +5,13 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import player.Outcome;
+import player.Position;
+import player.Transition;
 import chess.Piece.Color;
 
 /** A chess board at a specific position. */
-public class Board {
+public class Board implements Position<Board> {
     // Once frozen is true, the board becomes immutable.
     private boolean frozen = false;
 
@@ -454,5 +457,26 @@ public class Board {
     /** Return whether the king is unmoved and the a-rook is unmoved. */
     public boolean queenCastlePiecesReady(Piece.Color color) {
         return castlingInfo.queenCastlePiecesReady(color);
+    }
+
+    @Override
+    public Collection<? extends Transition<Board>> transitions() {
+        // TODO: Move legalMoves to this method.
+        return legalMoves();
+    }
+
+
+    @Override
+    public Outcome outcome() {
+        if (checked(toMoveColor)) {
+            return Outcome.LOSS;
+        } else {
+            return Outcome.DRAW;
+        }
+    }
+
+    @Override
+    public boolean shouldMaximize() {
+        return (toMoveColor == Piece.Color.WHITE);
     }
 }

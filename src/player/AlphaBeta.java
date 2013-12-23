@@ -4,64 +4,76 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import chess.Board;
-import chess.Move;
-import chess.Piece;
-
 // TODO(jasonpr): Make this, and Minimax, share some Interface.
 public class AlphaBeta {
     
     private static final float EXTENSION_THRESHOLD = 0.7f;
     
-    private static MoveDecision alphaBeta(Board board, int depth, Heuristic<Board> heuristic, float alpha, float beta, float parentScore) {
-        float score = heuristic.value(board);
+    private static <P extends Position<P>> Decision<P> alphaBeta(P position, int depth, Heuristic<P> heuristic, float alpha, float beta, float parentScore) {
+        float score = heuristic.value(position);
         if (depth > 0 || shouldExtend(score, parentScore)) {
-            // Generate all legal moves.
-            List<Move> legalMoves = new ArrayList<Move>(board.legalMoves());
+            // Generate all legal transitions.
+            List<Transition<P>> transitions = new ArrayList<Transition<P>>(position.transitions());
             // TODO(jasonpr): Order nicely.
-            Collections.shuffle(legalMoves);
+            Collections.shuffle(transitions);
             
             // Decide it's checkmate/stalemate.
-            if (legalMoves.size() == 0) {
-                // You're checkmated, or stalemated.
-                if (board.checked(board.getToMoveColor())) {
-                    // Checkmated.
-                    // TODO(jasonpr): Track mate in 1 vs mate in 2, etc.
-                    float mateScore;
-                    if (board.getToMoveColor() == Piece.Color.WHITE) {
-                        mateScore = -10000.0f;
+            if (transitions.size() == 0) {
+                // Any game is either a win, a loss, or a tie if there are no
+                // legal transitions left.
+                
+                Outcome result = position.outcome();
+
+                float outcomeScore;
+                switch (result) {
+                case WIN:
+                    // Never the case: if you have no moves, you are
+                    // either checkmated or stalemated.
+                    throw new AssertionError("You never win if you have no moves!");
+                case DRAW:
+                    // TODO: Decide whether to explicitly define a Draw Score.
+                    outcomeScore = 0.0f;
+                    break;
+                case LOSS:
+                    // FIXME: This seems overly hacky.
+                    // This could probably be fixed by making *every* step
+                    // a "maximizing step," and just negating scores in each
+                    // recursive call.
+                    if (position.shouldMaximize()) {
+                        // The maximizing player lost.
+                        // TODO: Differentiate between "lose now" and "lose in x moves."
+                        outcomeScore = -10000.0f;
                     } else {
-                        mateScore = +10000.0f;
+                        outcomeScore = 10000.0f;
                     }
-                    return new MoveDecision(new ArrayList<Move>(), mateScore);
-                } else {
-                    // Stalemated.
-                    // TODO(jasonpr): Decide whether to explicitly define stalemate.
-                    return new MoveDecision(new ArrayList<Move>(), 0.0f);
+                    break;
+                default:
+                    throw new AssertionError("Result was not a valid value.");
                 }
+                return new Decision<P>(new ArrayList<Transition<P>>(), outcomeScore);
             }
-            final boolean isMaxStep = board.getToMoveColor() == Piece.Color.WHITE; 
+            final boolean isMaxStep = position.shouldMaximize(); 
             final float mult = isMaxStep? 1.0f : -1.0f;
             
             // We'll never actually return null:
             // bestDecision is ALWAYS set in the legalMoves loop.
             // (since we've gotten this far, legalMoves.size() >= 1.)
-            MoveDecision bestDecision = null;
+            Decision<P> bestDecision = null;
             boolean seenAny = false;
-            Board possibleResult;
-            List<Move> nextMoves = new ArrayList<Move>();
-            for (Move m : legalMoves) {
+            P possibleResult;
+            List<Transition<P>> nextMoves = new ArrayList<Transition<P>>();
+            for (Transition<P> t : transitions) {
                 // Get the result, so we can do alphaBeta recursively.
-                possibleResult = board.moveResult(m);
+                possibleResult = t.result(position);
 
                 // Get the best decision from this possible result...
-                MoveDecision nextDecision = alphaBeta(possibleResult, depth - 1, heuristic, alpha, beta, score);
+                Decision<P> nextDecision = alphaBeta(possibleResult, depth - 1, heuristic, alpha, beta, score);
                 if (!seenAny || nextDecision.getScore() * mult > bestDecision.getScore() * mult) {
                     seenAny = true;
-                    nextMoves = new ArrayList<Move>();
-                    nextMoves.add(m);
-                    nextMoves.addAll(nextDecision.getMoveList());
-                    bestDecision = new MoveDecision(nextMoves, nextDecision.getScore());
+                    nextMoves = new ArrayList<Transition<P>>();
+                    nextMoves.add(t);
+                    nextMoves.addAll(nextDecision.getList());
+                    bestDecision = new Decision<P>(nextMoves, nextDecision.getScore());
                 }
                 
                 // update alpha and beta
@@ -78,13 +90,13 @@ public class AlphaBeta {
             }
             return bestDecision;
         } else {
-            return new MoveDecision(new ArrayList<Move>(), score);
+            return new Decision<P>(new ArrayList<Transition<P>>(), score);
         }
     }
     
-    public static MoveDecision bestMove(Board board, int depth, Heuristic<Board> heuristic) {
+    public static <S extends Position<S>> Decision<S> bestMove(S state, int depth, Heuristic<S> heuristic) {
         // TODO(jasonpr): Come up with a better fake parent score.
-        return alphaBeta(board, depth, heuristic, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY, 0.0f);
+        return alphaBeta(state, depth, heuristic, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY, 0.0f);
     }   
     
     private static boolean shouldExtend(float score, float parentScore) {

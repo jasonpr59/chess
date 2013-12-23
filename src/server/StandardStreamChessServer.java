@@ -4,8 +4,8 @@ import java.util.Scanner;
 
 import player.AlphaBeta;
 import player.BoardPieceValueHeuristic;
+import player.Decision;
 import player.Heuristic;
-import player.MoveDecision;
 import chess.Board;
 import chess.Move;
 
@@ -42,13 +42,10 @@ public class StandardStreamChessServer {
                 continue;
             }
             
-            // Decide a response.
-            MoveDecision bestDecision = AlphaBeta.bestMove(board, DEPTH, heuristic); 
-            m = bestDecision.getFirstMove();
+            // Decide a response, and play it on the board.
+            Decision<Board> bestDecision = AlphaBeta.bestMove(board, DEPTH, heuristic); 
+            board  = bestDecision.getFirst().result(board);
             
-            // Play the response on the board.
-            board = board.moveResult(m);
-
             // Print the move.
             System.out.println(m.serialized());
         }

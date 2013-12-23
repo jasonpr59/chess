@@ -10,8 +10,8 @@ import java.util.Arrays;
 
 import player.AlphaBeta;
 import player.BoardPieceValueHeuristic;
+import player.Decision;
 import player.Heuristic;
-import player.MoveDecision;
 import chess.AlgebraicParser;
 import chess.Board;
 import chess.Move;
@@ -53,13 +53,13 @@ public class SocketChessServer {
             out.println("H(board) = " + heuristic.value(board));
 
             out.println("Thinking...");
-            MoveDecision bestDecision = AlphaBeta.bestMove(board, 3, heuristic);
-            out.println("Making move" + bestDecision.getFirstMove());
-            board = board.moveResult(bestDecision.getFirstMove());
+            Decision<Board> bestDecision = AlphaBeta.bestMove(board, 3, heuristic);
+            out.println("Making move" + bestDecision.getFirst());
+            board = bestDecision.getFirst().result(board);
             
             out.println(colorize(board));
             out.println("H(continuation) = " + bestDecision.getScore());
-            out.println("From sequence: " + Arrays.toString(bestDecision.getMoveList().toArray()));
+            out.println("From sequence: " + Arrays.toString(bestDecision.getList().toArray()));
         }
     }
 
