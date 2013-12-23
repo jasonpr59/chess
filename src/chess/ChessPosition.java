@@ -7,7 +7,7 @@ import java.util.Set;
 
 import player.Outcome;
 import player.Position;
-import player.Transition;
+import player.Move;
 import chess.Piece.Color;
 
 /** A chess board at a specific position. */
@@ -460,7 +460,7 @@ public class ChessPosition implements Position<ChessPosition> {
     }
 
     @Override
-    public Collection<? extends Transition<ChessPosition>> transitions() {
+    public Collection<? extends Move<ChessPosition>> transitions() {
         // TODO: Move legalMoves to this method.
         return legalMoves();
     }

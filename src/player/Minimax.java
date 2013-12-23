@@ -6,7 +6,7 @@ import java.util.List;
 
 public class Minimax {
     public static <P extends Position<P>> Decision<P> bestMove(P position, int depth, Heuristic<P> heuristic) {
-        List<Transition<P>> nextTransitions = new ArrayList<Transition<P>>();
+        List<Move<P>> nextTransitions = new ArrayList<Move<P>>();
         if (depth < 0) {
             throw new IllegalArgumentException("Depth cannot be negative.");
         } else if (depth == 0) {
@@ -15,7 +15,7 @@ public class Minimax {
             // Get all possible decisions.
             List<Decision<P>> possibleDecisions = new ArrayList<Decision<P>>();
             P possibleResult;
-            List<Transition<P>> transitions = new ArrayList<Transition<P>>(position.transitions());
+            List<Move<P>> transitions = new ArrayList<Move<P>>(position.transitions());
             if (transitions.size() == 0) {
                 // Any game is either a win, a loss, or a tie if there are no
                 // legal transitions left.
@@ -48,14 +48,14 @@ public class Minimax {
                 default:
                     throw new AssertionError("Result was not a valid value.");
                 }
-                return new Decision<P>(new ArrayList<Transition<P>>(), outcomeScore);
+                return new Decision<P>(new ArrayList<Move<P>>(), outcomeScore);
             }
             
             Collections.shuffle(possibleDecisions);
             for (Decision<P> decision : possibleDecisions) {
                 possibleResult = decision.getFirst().result(position);
                 Decision<P> nextDecision = bestMove(possibleResult, depth - 1, heuristic);
-                nextTransitions = new ArrayList<Transition<P>>();
+                nextTransitions = new ArrayList<Move<P>>();
                 nextTransitions.add(decision.getFirst());
                 nextTransitions.addAll(nextDecision.getList());
                 possibleDecisions.add(new Decision<P>(nextTransitions, nextDecision.getScore()));

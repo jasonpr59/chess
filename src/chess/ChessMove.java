@@ -3,13 +3,13 @@ package chess;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import player.Transition;
+import player.Move;
 
 /**
  * A move from one Square to another Square.
  *  This class is immutable.
  */
-public class ChessMove implements Transition<ChessPosition>{
+public class ChessMove implements Move<ChessPosition>{
 
     private final Square start;
     private final Square end;

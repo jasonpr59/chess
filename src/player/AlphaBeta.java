@@ -13,7 +13,7 @@ public class AlphaBeta {
         float score = heuristic.value(position);
         if (depth > 0 || shouldExtend(score, parentScore)) {
             // Generate all legal transitions.
-            List<Transition<P>> transitions = new ArrayList<Transition<P>>(position.transitions());
+            List<Move<P>> transitions = new ArrayList<Move<P>>(position.transitions());
             // TODO(jasonpr): Order nicely.
             Collections.shuffle(transitions);
             
@@ -50,7 +50,7 @@ public class AlphaBeta {
                 default:
                     throw new AssertionError("Result was not a valid value.");
                 }
-                return new Decision<P>(new ArrayList<Transition<P>>(), outcomeScore);
+                return new Decision<P>(new ArrayList<Move<P>>(), outcomeScore);
             }
             final boolean isMaxStep = position.shouldMaximize(); 
             final float mult = isMaxStep? 1.0f : -1.0f;
@@ -61,8 +61,8 @@ public class AlphaBeta {
             Decision<P> bestDecision = null;
             boolean seenAny = false;
             P possibleResult;
-            List<Transition<P>> nextMoves = new ArrayList<Transition<P>>();
-            for (Transition<P> t : transitions) {
+            List<Move<P>> nextMoves = new ArrayList<Move<P>>();
+            for (Move<P> t : transitions) {
                 // Get the result, so we can do alphaBeta recursively.
                 possibleResult = t.result(position);
 
@@ -70,7 +70,7 @@ public class AlphaBeta {
                 Decision<P> nextDecision = alphaBeta(possibleResult, depth - 1, heuristic, alpha, beta, score);
                 if (!seenAny || nextDecision.getScore() * mult > bestDecision.getScore() * mult) {
                     seenAny = true;
-                    nextMoves = new ArrayList<Transition<P>>();
+                    nextMoves = new ArrayList<Move<P>>();
                     nextMoves.add(t);
                     nextMoves.addAll(nextDecision.getList());
                     bestDecision = new Decision<P>(nextMoves, nextDecision.getScore());
@@ -90,7 +90,7 @@ public class AlphaBeta {
             }
             return bestDecision;
         } else {
-            return new Decision<P>(new ArrayList<Transition<P>>(), score);
+            return new Decision<P>(new ArrayList<Move<P>>(), score);
         }
     }
     

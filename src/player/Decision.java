@@ -11,10 +11,10 @@ import java.util.List;
  * @param <S> The type of State this decision is made for.
  */
 public class Decision<S extends Position<S>> {
-    private final List<Transition<S>> transitionList;
+    private final List<Move<S>> transitionList;
     private final float score;
     
-    public Decision(List<Transition<S>> transitionList, float score) {
+    public Decision(List<Move<S>> transitionList, float score) {
         this.transitionList = Collections.unmodifiableList(transitionList);
         this.score = score;
     }
@@ -24,7 +24,7 @@ public class Decision<S extends Position<S>> {
      * These Transitions lead toward a final state whose score
      * is this Decision's score.
      */
-    public List<Transition<S>> getList() {
+    public List<Move<S>> getList() {
         return transitionList;
     }
     
@@ -33,7 +33,7 @@ public class Decision<S extends Position<S>> {
      * This Decision indicates that this Transition is the best
      * one to make, given the expected continuation.
      */
-    public Transition<S> getFirst() {
+    public Move<S> getFirst() {
         return transitionList.get(0);
     }
     
