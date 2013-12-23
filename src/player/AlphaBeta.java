@@ -99,6 +99,18 @@ public class AlphaBeta<P extends Position<P>> implements Decider<P>{
         }
     }
     
+    /**
+     * Return whether to search deeper, even once the required depth has been reached.
+     * If the score changed drastically in the last Move, there might be a response that
+     * will swing the score back in the opposite direction.  So, if there was a drastic
+     * score change, we return "true, search deeper," so that we can continue searching
+     * until the drastic moves stop coming.  At that point, the dust has settled, and
+     * there's a better chance that the Position's score is an accurate representation
+     * of the Position's value.
+     * 
+     * @param score The Position's current score.
+     * @param parentScore The score of the Position that led to this one.
+     */
     private static boolean shouldExtend(float score, float parentScore) {
         return Math.abs(score - parentScore) > EXTENSION_THRESHOLD;
     }
