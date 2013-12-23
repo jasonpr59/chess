@@ -18,7 +18,7 @@ public class AlphaBeta<P extends Position<P>> implements Decider<P>{
         float score = heuristic.value(position);
         if (depth > 0 || shouldExtend(score, parentScore)) {
             // Generate all legal transitions.
-            List<Move<P>> transitions = new ArrayList<Move<P>>(position.transitions());
+            List<Move<P>> moves = new ArrayList<Move<P>>(position.transitions());
             // TODO(jasonpr): Order nicely.
             Collections.shuffle(transitions);
             
