@@ -5,27 +5,27 @@ import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
 
-import chess.Board;
-import chess.Move;
+import chess.ChessPosition;
+import chess.ChessMove;
 import chess.Square;
 import exceptions.InvalidMoveException;
 
 public class BoardTest {
     @Test
     public void testLegalMoves() throws InvalidMoveException {
-        Board b = Board.newGame();
+        ChessPosition b = ChessPosition.newGame();
         // 1. e3
-        Move m1a = new Move(Square.algebraic("e2"), Square.algebraic("e3"));
+        ChessMove m1a = new ChessMove(Square.algebraic("e2"), Square.algebraic("e3"));
         // ... d6
-        Move m1b = new Move(Square.algebraic("d7"), Square.algebraic("d6"));
+        ChessMove m1b = new ChessMove(Square.algebraic("d7"), Square.algebraic("d6"));
         // 2. Bb5#
-        Move m2a = new Move(Square.algebraic("f1"), Square.algebraic("b5"));
+        ChessMove m2a = new ChessMove(Square.algebraic("f1"), Square.algebraic("b5"));
         // 2. ... Bd7 is legal.
-        Move m2b_legal = new Move(Square.algebraic("c8"), Square.algebraic("d7"));
+        ChessMove m2b_legal = new ChessMove(Square.algebraic("c8"), Square.algebraic("d7"));
         // 2. ... h6 is illegal, because it would leave the Black king in check.
-        Move m2b_illegal = new Move(Square.algebraic("h7"), Square.algebraic("h6"));
+        ChessMove m2b_illegal = new ChessMove(Square.algebraic("h7"), Square.algebraic("h6"));
 
-        Board blackChecked = b.moveResult(m1a).moveResult(m1b).moveResult(m2a);
+        ChessPosition blackChecked = b.moveResult(m1a).moveResult(m1b).moveResult(m2a);
 
         // The legal response should be playable with no issue:
         blackChecked.moveResult(m2b_legal);

@@ -9,7 +9,7 @@ import java.util.Set;
 
 import chess.Piece.Type;
 
-public class PromotionMove extends Move {
+public class PromotionMove extends ChessMove {
     private final Type promotedType;
     private static final Set<Type> PROMOTION_TYPES;
 
@@ -31,7 +31,7 @@ public class PromotionMove extends Move {
         this.promotedType = promotedType;
     }
 
-    public PromotionMove(Move move, Type promotedType) {
+    public PromotionMove(ChessMove move, Type promotedType) {
         super(move.getStart(), move.getEnd());
         this.promotedType = promotedType;
     }
@@ -40,7 +40,7 @@ public class PromotionMove extends Move {
         return promotedType;
     }
 
-    public static Collection<PromotionMove> allPromotions(Move move) {
+    public static Collection<PromotionMove> allPromotions(ChessMove move) {
         List<PromotionMove> allPromotions = new ArrayList<PromotionMove>();
         for (Type type : PROMOTION_TYPES) {
             allPromotions.add(new PromotionMove(move, type));
@@ -49,7 +49,7 @@ public class PromotionMove extends Move {
     }
 
     @Override
-    public boolean isSane(Board board) {
+    public boolean isSane(ChessPosition board) {
         Piece movingPiece = board.getPiece(getStart());
         if (movingPiece == null || movingPiece.getType() != Piece.Type.PAWN ||
             !PROMOTION_TYPES.contains(movingPiece.getType())) {

@@ -13,8 +13,8 @@ import player.BoardPieceValueHeuristic;
 import player.Decision;
 import player.Heuristic;
 import chess.AlgebraicParser;
-import chess.Board;
-import chess.Move;
+import chess.ChessPosition;
+import chess.ChessMove;
 import chess.Piece;
 import chess.Square;
 import exceptions.AlgebraicNotationException;
@@ -29,13 +29,13 @@ public class SocketChessServer {
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(handler.getInputStream()));
 
-        Board board = Board.newGame();
+        ChessPosition board = ChessPosition.newGame();
 
-        Heuristic<Board> heuristic = new BoardPieceValueHeuristic();
+        Heuristic<ChessPosition> heuristic = new BoardPieceValueHeuristic();
         
         String inputLine;
         while ((inputLine = in.readLine()) != null) {
-            Move m;
+            ChessMove m;
             try {
                 m = AlgebraicParser.parseAlgebraic(inputLine, board);
             } catch (AlgebraicNotationException e) {
@@ -53,7 +53,7 @@ public class SocketChessServer {
             out.println("H(board) = " + heuristic.value(board));
 
             out.println("Thinking...");
-            Decision<Board> bestDecision = AlphaBeta.bestMove(board, 3, heuristic);
+            Decision<ChessPosition> bestDecision = AlphaBeta.bestMove(board, 3, heuristic);
             out.println("Making move" + bestDecision.getFirst());
             board = bestDecision.getFirst().result(board);
             
@@ -63,7 +63,7 @@ public class SocketChessServer {
         }
     }
 
-    private static String colorize(Board board) {
+    private static String colorize(ChessPosition board) {
         StringBuilder sb = new StringBuilder();
         String pieceLetter;
         String colorCode;

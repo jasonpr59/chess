@@ -55,7 +55,7 @@ public class Delta{
     }
 
     /** Create the delta between a Move's start and end Squares. */
-    public Delta(Move move) {
+    public Delta(ChessMove move) {
         this(move.getStart(), move.getEnd());
     }
 

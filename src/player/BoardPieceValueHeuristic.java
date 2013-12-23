@@ -4,11 +4,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import chess.Board;
+import chess.ChessPosition;
 import chess.Piece;
 import chess.Square;
 
-public class BoardPieceValueHeuristic implements Heuristic<Board>{
+public class BoardPieceValueHeuristic implements Heuristic<ChessPosition>{
     private static final Map<Piece.Type, Float> PIECE_VALUES;
     
     static {
@@ -24,7 +24,7 @@ public class BoardPieceValueHeuristic implements Heuristic<Board>{
     }
     
     @Override
-    public float value(Board board) {
+    public float value(ChessPosition board) {
         float totalScore = 0.0f;
         Piece p;
         float pieceScore;

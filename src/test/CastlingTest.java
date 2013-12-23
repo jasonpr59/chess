@@ -5,9 +5,9 @@ import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
 
-import chess.Board;
+import chess.ChessPosition;
 import chess.Game;
-import chess.Move;
+import chess.ChessMove;
 import chess.Piece;
 import chess.Square;
 import exceptions.AlgebraicNotationException;
@@ -23,7 +23,7 @@ public class CastlingTest {
         Game g = Game.fromMoves(moves);
 
         // Castle
-        Board b_good = g.getBoard().moveResult(new Move(Square.algebraic("e1"), Square.algebraic("g1")));
+        ChessPosition b_good = g.getBoard().moveResult(new ChessMove(Square.algebraic("e1"), Square.algebraic("g1")));
         
         // Be sure pieces moved around correctly.
         assertEquals(b_good.getPiece(Square.algebraic("e1")), null);
@@ -32,7 +32,7 @@ public class CastlingTest {
         assertEquals(b_good.getPiece(Square.algebraic("h1")), null);
                 
         // Be sure black can't castle through his bishop! 
-        Move illegalCastle = new Move(Square.algebraic("e8"), Square.algebraic("g8"));
+        ChessMove illegalCastle = new ChessMove(Square.algebraic("e8"), Square.algebraic("g8"));
         assertFalse(illegalCastle.isLegal(b_good));
     }
     
@@ -43,7 +43,7 @@ public class CastlingTest {
                           "Nc3", "Qd7",
                           "Qd2", "Nf6"};
         Game g = Game.fromMoves(moves);
-        Board b_good = g.getBoard().moveResult(new Move(Square.algebraic("e1"), Square.algebraic("c1")));
+        ChessPosition b_good = g.getBoard().moveResult(new ChessMove(Square.algebraic("e1"), Square.algebraic("c1")));
         
         // Be sure pieces moved around correctly.
         assertEquals(b_good.getPiece(Square.algebraic("a1")), null);
@@ -52,7 +52,7 @@ public class CastlingTest {
         assertEquals(b_good.getPiece(Square.algebraic("e1")), null);
         
         // Be sure black can't castle through his knight.
-        Move illegalCastle = new Move(Square.algebraic("e8"), Square.algebraic("c8"));
+        ChessMove illegalCastle = new ChessMove(Square.algebraic("e8"), Square.algebraic("c8"));
         assertFalse(illegalCastle.isLegal(b_good));
     }
     
@@ -64,7 +64,7 @@ public class CastlingTest {
                           "e3", "g6"};
         Game g = Game.fromMoves(moves);
         
-        Move illegalCastle = new Move(Square.algebraic("e1"), Square.algebraic("g1"));
+        ChessMove illegalCastle = new ChessMove(Square.algebraic("e1"), Square.algebraic("g1"));
         assertFalse(illegalCastle.isLegal(g.getBoard()));
     }
 
@@ -76,7 +76,7 @@ public class CastlingTest {
                           "Bb5", "Bb4"};
         Game g = Game.fromMoves(moves);
         
-        Move illegalCastle = new Move(Square.algebraic("e1"), Square.algebraic("g1"));
+        ChessMove illegalCastle = new ChessMove(Square.algebraic("e1"), Square.algebraic("g1"));
         assertFalse(illegalCastle.isLegal(g.getBoard()));
     }
 

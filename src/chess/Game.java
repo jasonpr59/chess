@@ -8,7 +8,7 @@ import exceptions.InvalidMoveException;
 /** An entire chess game, starting from the initial position. */
 public class Game {
 
-    private final List<Board> history;
+    private final List<ChessPosition> history;
 
     /**
      * Construct a new Game.
@@ -16,8 +16,8 @@ public class Game {
      * Game's history: no Moves have been made.
      */
     public Game() {
-        history = new ArrayList<Board>();
-        history.add(Board.newGame());
+        history = new ArrayList<ChessPosition>();
+        history.add(ChessPosition.newGame());
     }
 
     /**
@@ -28,13 +28,13 @@ public class Game {
      * @return This Game, for daisy chaining.
      * @throws InvalidMoveException
      */
-    public Game makeMove(Move move) throws InvalidMoveException{
+    public Game makeMove(ChessMove move) throws InvalidMoveException{
         history.add(getBoard().moveResult(move));
         return this;
     }
 
     /** Get the current (most recent) Board. */
-    public Board getBoard() {
+    public ChessPosition getBoard() {
         return history.get(history.size() - 1);
     }
 
@@ -47,7 +47,7 @@ public class Game {
      *     position will be returned no matter what.
      * @return The Board at the given point in the game.
      */
-    public Board getBoard(int move, int ply) {
+    public ChessPosition getBoard(int move, int ply) {
         if (move < 0) {
             throw new IllegalArgumentException("Move cannot be negative.");
         } else if (move == 0) {
@@ -65,7 +65,7 @@ public class Game {
     public static Game fromMoves(String[] moves) throws AlgebraicNotationException, InvalidMoveException {
         Game g = new Game();
         for (String move : moves) {
-            Move m = AlgebraicParser.parseAlgebraic(move, g.getBoard());
+            ChessMove m = AlgebraicParser.parseAlgebraic(move, g.getBoard());
             if (m.isLegal(g.getBoard())){
                 g.makeMove(m);
             } else {

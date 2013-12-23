@@ -6,8 +6,8 @@ import player.AlphaBeta;
 import player.BoardPieceValueHeuristic;
 import player.Decision;
 import player.Heuristic;
-import chess.Board;
-import chess.Move;
+import chess.ChessPosition;
+import chess.ChessMove;
 
 public class StandardStreamChessServer {
     
@@ -16,19 +16,19 @@ public class StandardStreamChessServer {
     
     public static void main(String[] args) {
         // Setup the board.
-        Board board = Board.newGame();
+        ChessPosition board = ChessPosition.newGame();
 
-        Heuristic<Board> heuristic = new BoardPieceValueHeuristic();
+        Heuristic<ChessPosition> heuristic = new BoardPieceValueHeuristic();
         
         Scanner sc = new Scanner(System.in);
         String input;
-        Move m;
+        ChessMove m;
         // TODO(jasonpr): Make sure this is the right way to loop
         // on Scanner input.
         while ((input = sc.next()) != null) {
             // Get move from input line.
             try {
-                m = Move.deserialized(input);
+                m = ChessMove.deserialized(input);
             } catch (ArrayIndexOutOfBoundsException e) {
                 System.out.println(ERROR_TOKEN + ": cannot deseralize.");
                 continue;
@@ -43,7 +43,7 @@ public class StandardStreamChessServer {
             }
             
             // Decide a response, and play it on the board.
-            Decision<Board> bestDecision = AlphaBeta.bestMove(board, DEPTH, heuristic); 
+            Decision<ChessPosition> bestDecision = AlphaBeta.bestMove(board, DEPTH, heuristic); 
             board  = bestDecision.getFirst().result(board);
             
             // Print the move.

@@ -41,13 +41,13 @@ public class AlgebraicParser {
      * @return
      * @throws AlgebraicNotationException
      */
-    public static Move parseAlgebraic(String alg, Board board) throws AlgebraicNotationException {
+    public static ChessMove parseAlgebraic(String alg, ChessPosition board) throws AlgebraicNotationException {
         if (alg.equals("O-O")) {
-            return new Move(KING_SQUARES.get(board.getToMoveColor()), new Delta(2, 0));
+            return new ChessMove(KING_SQUARES.get(board.getToMoveColor()), new Delta(2, 0));
         }
 
         if (alg.equals("O-O-O")) {
-            return new Move(KING_SQUARES.get(board.getToMoveColor()), new Delta(-2, 0));
+            return new ChessMove(KING_SQUARES.get(board.getToMoveColor()), new Delta(-2, 0));
         }
 
         // TODO: Implement promotion.
@@ -96,7 +96,7 @@ public class AlgebraicParser {
             start = start(type, end, board);
         }
 
-        Move move = new Move(start, end);
+        ChessMove move = new ChessMove(start, end);
 
         // TODO(jasonpr): Do some more sanity checks
         if (captures == (move.capturedSquare(board) == null)) {
@@ -108,21 +108,21 @@ public class AlgebraicParser {
     }
 
 
-    private static Square start(Piece.Type type, Square end, Board board) throws AlgebraicNotationException {
+    private static Square start(Piece.Type type, Square end, ChessPosition board) throws AlgebraicNotationException {
         // TODO: Make more efficient.
         // TODO: Check uniqueness of start square (i.e. that no disambiguation
         // was necessary).
         return startFromSquares(type, Square.ALL, end, board);
     }
 
-    private static Square startFromClue(Piece.Type type, char clue, Square end, Board board) throws AlgebraicNotationException {
+    private static Square startFromClue(Piece.Type type, char clue, Square end, ChessPosition board) throws AlgebraicNotationException {
         return startFromSquares(type, Square.line(clue), end, board);
     }
 
     private static Square startFromSquares(Piece.Type type, Iterable<Square> candidateStarts,
-                                           Square end, Board board) throws AlgebraicNotationException {
+                                           Square end, ChessPosition board) throws AlgebraicNotationException {
         Piece movingPiece;
-        Move candidateMove;
+        ChessMove candidateMove;
         for (Square start : candidateStarts) {
             if (start.equals(end)) {
                 continue;
@@ -132,7 +132,7 @@ public class AlgebraicParser {
                 movingPiece.getColor() != board.getToMoveColor()) {
                 continue;
             }
-            candidateMove = new Move(start, end);
+            candidateMove = new ChessMove(start, end);
 
             if (candidateMove.isLegal(board)) {
                 return start;
