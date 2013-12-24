@@ -83,7 +83,7 @@ public class CastlingInfo {
      * Requires that the move is legal for the board that this CastlingInfo pertains to.
      * @param move The move to account for.
      */
-    public void update(Move move) {
+    public void update(ChessMove move) {
         // If any move starts or ends at a square of interest, then the
         // piece whose home was that square has either moved (in this move
         // or a previous move), or been captured.  In any such case, it means

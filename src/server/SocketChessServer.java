@@ -9,13 +9,15 @@ import java.net.Socket;
 import java.util.Arrays;
 
 import player.AlphaBeta;
+import player.Decider;
+import player.Decision;
 import player.Heuristic;
-import player.MoveDecision;
 import chess.AlgebraicParser;
-import chess.Board;
-import chess.Move;
+import chess.ChessMove;
+import chess.ChessPosition;
 import chess.Piece;
 import chess.Square;
+import chess.player.BoardPieceValueHeuristic;
 import exceptions.AlgebraicNotationException;
 
 public class SocketChessServer {
@@ -28,11 +30,14 @@ public class SocketChessServer {
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(handler.getInputStream()));
 
-        Board board = Board.newGame();
+        ChessPosition board = ChessPosition.newGame();
 
+        Heuristic<ChessPosition> heuristic = new BoardPieceValueHeuristic();
+        Decider<ChessPosition> decider = new AlphaBeta<ChessPosition>(heuristic);
+        
         String inputLine;
         while ((inputLine = in.readLine()) != null) {
-            Move m;
+            ChessMove m;
             try {
                 m = AlgebraicParser.parseAlgebraic(inputLine, board);
             } catch (AlgebraicNotationException e) {
@@ -47,20 +52,20 @@ public class SocketChessServer {
             }
             
             out.println(colorize(board));
-            out.println("H(board) = " + Heuristic.pieceValueHeuristic(board));
+            out.println("H(board) = " + heuristic.value(board));
 
             out.println("Thinking...");
-            MoveDecision bestDecision = AlphaBeta.bestMove(board, 3);
+            Decision<ChessPosition> bestDecision = decider.bestDecision(board, 3);
             out.println("Making move" + bestDecision.getFirstMove());
-            board = board.moveResult(bestDecision.getFirstMove());
+            board = bestDecision.getFirstMove().result(board);
             
             out.println(colorize(board));
             out.println("H(continuation) = " + bestDecision.getScore());
-            out.println("From sequence: " + Arrays.toString(bestDecision.getMoveList().toArray()));
+            out.println("From sequence: " + Arrays.toString(bestDecision.getVariation().toArray()));
         }
     }
 
-    private static String colorize(Board board) {
+    private static String colorize(ChessPosition board) {
         StringBuilder sb = new StringBuilder();
         String pieceLetter;
         String colorCode;

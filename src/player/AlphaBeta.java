@@ -4,64 +4,55 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import chess.Board;
-import chess.Move;
-import chess.Piece;
-
-// TODO(jasonpr): Make this, and Minimax, share some Interface.
-public class AlphaBeta {
+public class AlphaBeta<P extends Position<P>> extends AbstractDecider<P>{
     
     private static final float EXTENSION_THRESHOLD = 0.7f;
+    private final Heuristic<P> heuristic;
     
-    private static MoveDecision alphaBeta(Board board, int depth, float alpha, float beta, float parentScore) {
-        float score = Heuristic.pieceValueHeuristic(board);
+    public AlphaBeta(Heuristic<P> heuristic) {
+        this.heuristic = heuristic;
+    }
+    
+    @Override
+    public Decision<P> bestDecision(P state, int depth) {
+        // TODO(jasonpr): Come up with a better fake parent score.
+        return alphaBeta(state, depth, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY, 0.0f);
+    }   
+    
+    private Decision<P> alphaBeta(P position, int depth, float alpha, float beta, float parentScore) {
+        float score = heuristic.value(position);
         if (depth > 0 || shouldExtend(score, parentScore)) {
-            // Generate all legal moves.
-            List<Move> legalMoves = new ArrayList<Move>(board.legalMoves());
+            // Generate all legal transitions.
+            List<Move<P>> moves = new ArrayList<Move<P>>(position.moves());
             // TODO(jasonpr): Order nicely.
-            Collections.shuffle(legalMoves);
+            Collections.shuffle(moves);
             
             // Decide it's checkmate/stalemate.
-            if (legalMoves.size() == 0) {
-                // You're checkmated, or stalemated.
-                if (board.checked(board.getToMoveColor())) {
-                    // Checkmated.
-                    // TODO(jasonpr): Track mate in 1 vs mate in 2, etc.
-                    float mateScore;
-                    if (board.getToMoveColor() == Piece.Color.WHITE) {
-                        mateScore = -10000.0f;
-                    } else {
-                        mateScore = +10000.0f;
-                    }
-                    return new MoveDecision(new ArrayList<Move>(), mateScore);
-                } else {
-                    // Stalemated.
-                    // TODO(jasonpr): Decide whether to explicitly define stalemate.
-                    return new MoveDecision(new ArrayList<Move>(), 0.0f);
-                }
+            if (moves.size() == 0) {
+                return AbstractDecider.terminalDecision(position);
             }
-            final boolean isMaxStep = board.getToMoveColor() == Piece.Color.WHITE; 
+            final boolean isMaxStep = position.shouldMaximize(); 
             final float mult = isMaxStep? 1.0f : -1.0f;
             
             // We'll never actually return null:
             // bestDecision is ALWAYS set in the legalMoves loop.
             // (since we've gotten this far, legalMoves.size() >= 1.)
-            MoveDecision bestDecision = null;
+            Decision<P> bestDecision = null;
             boolean seenAny = false;
-            Board possibleResult;
-            List<Move> nextMoves = new ArrayList<Move>();
-            for (Move m : legalMoves) {
+            P possibleResult;
+            List<Move<P>> variation = new ArrayList<Move<P>>();
+            for (Move<P> t : moves) {
                 // Get the result, so we can do alphaBeta recursively.
-                possibleResult = board.moveResult(m);
+                possibleResult = t.result(position);
 
                 // Get the best decision from this possible result...
-                MoveDecision nextDecision = alphaBeta(possibleResult, depth - 1, alpha, beta, score);
+                Decision<P> nextDecision = alphaBeta(possibleResult, depth - 1, alpha, beta, score);
                 if (!seenAny || nextDecision.getScore() * mult > bestDecision.getScore() * mult) {
                     seenAny = true;
-                    nextMoves = new ArrayList<Move>();
-                    nextMoves.add(m);
-                    nextMoves.addAll(nextDecision.getMoveList());
-                    bestDecision = new MoveDecision(nextMoves, nextDecision.getScore());
+                    variation = new ArrayList<Move<P>>();
+                    variation.add(t);
+                    variation.addAll(nextDecision.getVariation());
+                    bestDecision = new Decision<P>(variation, nextDecision.getScore());
                 }
                 
                 // update alpha and beta
@@ -78,15 +69,22 @@ public class AlphaBeta {
             }
             return bestDecision;
         } else {
-            return new MoveDecision(new ArrayList<Move>(), score);
+            return new Decision<P>(new ArrayList<Move<P>>(), score);
         }
     }
     
-    public static MoveDecision bestMove(Board board, int depth) {
-        // TODO(jasonpr): Come up with a better fake parent score.
-        return alphaBeta(board, depth, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY, 0.0f);
-    }   
-    
+    /**
+     * Return whether to search deeper, even once the required depth has been reached.
+     * If the score changed drastically in the last Move, there might be a response that
+     * will swing the score back in the opposite direction.  So, if there was a drastic
+     * score change, we return "true, search deeper," so that we can continue searching
+     * until the drastic moves stop coming.  At that point, the dust has settled, and
+     * there's a better chance that the Position's score is an accurate representation
+     * of the Position's value.
+     * 
+     * @param score The Position's current score.
+     * @param parentScore The score of the Position that led to this one.
+     */
     private static boolean shouldExtend(float score, float parentScore) {
         return Math.abs(score - parentScore) > EXTENSION_THRESHOLD;
     }

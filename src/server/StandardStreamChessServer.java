@@ -3,9 +3,12 @@ package server;
 import java.util.Scanner;
 
 import player.AlphaBeta;
-import player.MoveDecision;
-import chess.Board;
-import chess.Move;
+import player.Decider;
+import player.Decision;
+import player.Heuristic;
+import chess.ChessMove;
+import chess.ChessPosition;
+import chess.player.BoardPieceValueHeuristic;
 
 public class StandardStreamChessServer {
     
@@ -14,17 +17,20 @@ public class StandardStreamChessServer {
     
     public static void main(String[] args) {
         // Setup the board.
-        Board board = Board.newGame();
+        ChessPosition board = ChessPosition.newGame();
+
+        Heuristic<ChessPosition> heuristic = new BoardPieceValueHeuristic();
+        Decider<ChessPosition> decider = new AlphaBeta<ChessPosition>(heuristic);
         
         Scanner sc = new Scanner(System.in);
         String input;
-        Move m;
+        ChessMove m;
         // TODO(jasonpr): Make sure this is the right way to loop
         // on Scanner input.
         while ((input = sc.next()) != null) {
             // Get move from input line.
             try {
-                m = Move.deserialized(input);
+                m = ChessMove.deserialized(input);
             } catch (ArrayIndexOutOfBoundsException e) {
                 System.out.println(ERROR_TOKEN + ": cannot deseralize.");
                 continue;
@@ -38,13 +44,10 @@ public class StandardStreamChessServer {
                 continue;
             }
             
-            // Decide a response.
-            MoveDecision bestDecision = AlphaBeta.bestMove(board, DEPTH); 
-            m = bestDecision.getFirstMove();
+            // Decide a response, and play it on the board.
+            Decision<ChessPosition> bestDecision = decider.bestDecision(board, DEPTH); 
+            board  = bestDecision.getFirstMove().result(board);
             
-            // Play the response on the board.
-            board = board.moveResult(m);
-
             // Print the move.
             System.out.println(m.serialized());
         }

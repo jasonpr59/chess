@@ -5,10 +5,13 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import player.Outcome;
+import player.Position;
+import player.Move;
 import chess.Piece.Color;
 
 /** A chess board at a specific position. */
-public class Board {
+public class ChessPosition implements Position<ChessPosition> {
     // Once frozen is true, the board becomes immutable.
     private boolean frozen = false;
 
@@ -21,7 +24,7 @@ public class Board {
     private CastlingInfo castlingInfo;
 
     /** Construct a new board with no pieces placed. */
-    private Board() {
+    private ChessPosition() {
         board = new Piece[8][8];
         // No en passant square, yet.
         enPassantSquare = null;
@@ -39,7 +42,7 @@ public class Board {
      * existing board, it makes sense to create an unfrozen copy from
      * which to work.
      */
-    private Board(Board source) {
+    private ChessPosition(ChessPosition source) {
         this();
         for (Square sq : Square.ALL) {
             placePiece(source.getPiece(sq), sq);
@@ -50,8 +53,8 @@ public class Board {
     }
 
     /** Construct a new board in the default chess starting position. */
-    public static Board newGame() {
-        Board b = new Board();
+    public static ChessPosition newGame() {
+        ChessPosition b = new ChessPosition();
         b.setupNewGame();
         return b.freeze();
     }
@@ -127,13 +130,13 @@ public class Board {
      * @return A frozen board that is the result of making the move on
      *     this board.
      */
-    public Board moveResult(Move move){
+    public ChessPosition moveResult(ChessMove move){
         Square start = move.getStart();
         Square end = move.getEnd();
         Piece movingPiece = movingPiece(move);
 
         // Make an unfrozen copy that we can modify to effect the move.
-        Board result = new Board(this);
+        ChessPosition result = new ChessPosition(this);
 
         // The captured square might not be in the end square (in the case of en passant).
         Square capturedSquare = move.capturedSquare(this);
@@ -187,7 +190,7 @@ public class Board {
      * Place a piece on a square.
      * If another piece is already on that square, it is replaced.
      */
-    private Board placePiece(Piece piece, Square square){
+    private ChessPosition placePiece(Piece piece, Square square){
         assertUnfrozen();
         board[square.getFile() - 1][square.getRank() - 1] = piece;
         return this;
@@ -197,7 +200,7 @@ public class Board {
      * Set the square onto which pawns move for an en-passant capture.
      * @return This Board, for daisy chaining.
      */
-    private Board setEnPassantSquare(Square square) {
+    private ChessPosition setEnPassantSquare(Square square) {
         assertUnfrozen();
         this.enPassantSquare = square;
         return this;
@@ -207,7 +210,7 @@ public class Board {
      * Set the color whose move it is.
      * @return This Board, for daisy chaining.
      */
-    private Board setToMoveColor(Color color) {
+    private ChessPosition setToMoveColor(Color color) {
         assertUnfrozen();
         this.toMoveColor = color;
         return this;
@@ -219,7 +222,7 @@ public class Board {
      * will no longer be able to castle kingside henceforth.
      * @return This Board, for daisy chaining.
      */
-    private Board updateCastlingInfo(Move move) {
+    private ChessPosition updateCastlingInfo(ChessMove move) {
         assertUnfrozen();
         this.castlingInfo.update(move);
         return this;
@@ -251,7 +254,7 @@ public class Board {
     }
 
     /** Return the piece that would move if this move were performed. */
-    private Piece movingPiece(Move move) {
+    private Piece movingPiece(ChessMove move) {
         return getPiece(move.getStart());
     }
 
@@ -260,7 +263,7 @@ public class Board {
      * Freeze the board, so it becomes immutable.
      * @return This Board, for daisy chaining.
      */
-    private Board freeze() {
+    private ChessPosition freeze() {
         frozen = true;
         return this;
     }
@@ -272,16 +275,16 @@ public class Board {
     }
 
     /** Get the set of sane moves available to the piece on a square. */
-    public Iterable<Move> saneMoves(Square start) {
+    public Iterable<ChessMove> saneMoves(Square start) {
         Piece movingPiece = getPiece(start);
 
         if (movingPiece == null) {
             // No piece at that square = no available moves!
-            return new HashSet<Move>();
+            return new HashSet<ChessMove>();
         }
 
         Collection<Square> candidateEnds;
-        Collection<Move> candidateMoves;
+        Collection<ChessMove> candidateMoves;
 
         switch (movingPiece.getType()) {
             case PAWN:
@@ -295,11 +298,11 @@ public class Board {
                 candidateDeltas.add(Delta.sum(fwd, new Delta(1, 0)));
                 candidateDeltas.add(Delta.sum(fwd,  new Delta(-1, 0)));
 
-                candidateMoves = new ArrayList<Move>();
-                Move candidateMove;
+                candidateMoves = new ArrayList<ChessMove>();
+                ChessMove candidateMove;
                 for (Delta delta : candidateDeltas) {
                     try {
-                        candidateMove = new Move(start, delta);
+                        candidateMove = new ChessMove(start, delta);
                     } catch (ArrayIndexOutOfBoundsException e) {
                         continue;
                     }
@@ -324,7 +327,7 @@ public class Board {
                 int dRank;
                 int dFile;
                 Delta delta;
-                candidateMoves = new ArrayList<Move>();
+                candidateMoves = new ArrayList<ChessMove>();
                 for (int rankDir : rankDirs) {
                     for (int fileDir : fileDirs) {
                         for (int[] alignment : alignments) {
@@ -332,7 +335,7 @@ public class Board {
                             dFile = fileDir * alignment[1];
                             delta = new Delta(dFile, dRank);
                             try {
-                                candidateMoves.add(new Move(start, delta));
+                                candidateMoves.add(new ChessMove(start, delta));
                             } catch (ArrayIndexOutOfBoundsException e) {
                                 // Swallow it. (See explanation in PAWN case).
                             }
@@ -370,9 +373,9 @@ public class Board {
     }
 
     /** Return the subset of sane moves from a set of moves. */
-    private Collection<Move> filterSane(Collection<Move> candidates) {
-        Set<Move> saneMoves = new HashSet<Move>();
-        for (Move c : candidates) {
+    private Collection<ChessMove> filterSane(Collection<ChessMove> candidates) {
+        Set<ChessMove> saneMoves = new HashSet<ChessMove>();
+        for (ChessMove c : candidates) {
             if (c.isSane(this)) {
                 saneMoves.add(c);
             }
@@ -381,10 +384,10 @@ public class Board {
     }
 
     /** Return all legal moves. */
-    public Collection<Move> legalMoves() {
-        Collection<Move> legalMoves = new ArrayList<Move>();
+    public Collection<ChessMove> legalMoves() {
+        Collection<ChessMove> legalMoves = new ArrayList<ChessMove>();
         for (Square start : Square.ALL) {
-            for (Move saneMove : saneMoves(start)) {
+            for (ChessMove saneMove : saneMoves(start)) {
                 if (saneMove.isLegal(this)) {
                     legalMoves.add(saneMove);
                 }
@@ -411,15 +414,15 @@ public class Board {
     /** Return whether the king of some color is in check. */
     public boolean checked(Color kingColor) {
         Square kingSquare = kingSquare(kingColor);
-        Board trialBoard;
+        ChessPosition trialPosition;
         if (toMoveColor == kingColor) {
             // Act as though it's the other side's turn, to see if they could attack the king.
-            trialBoard = new Board(this).setToMoveColor(toMoveColor.opposite()).freeze();
+            trialPosition = new ChessPosition(this).setToMoveColor(toMoveColor.opposite()).freeze();
         } else {
             // It's the other color's turn, so see if they can attack this king.
-            trialBoard = this;
+            trialPosition = this;
         }
-        return trialBoard.isAttackable(kingSquare);
+        return trialPosition.isAttackable(kingSquare);
     }
 
     /**
@@ -436,7 +439,7 @@ public class Board {
                 // No attacker on this square.
                 continue;
             }
-            for (Move m: saneMoves(attackerSquare)) {
+            for (ChessMove m: saneMoves(attackerSquare)) {
                 if (m.getEnd().equals(target)) {
                     return true;
                 }
@@ -454,5 +457,26 @@ public class Board {
     /** Return whether the king is unmoved and the a-rook is unmoved. */
     public boolean queenCastlePiecesReady(Piece.Color color) {
         return castlingInfo.queenCastlePiecesReady(color);
+    }
+
+    @Override
+    public Collection<? extends Move<ChessPosition>> moves() {
+        // TODO: Move legalMoves to this method.
+        return legalMoves();
+    }
+
+
+    @Override
+    public Outcome outcome() {
+        if (checked(toMoveColor)) {
+            return Outcome.LOSS;
+        } else {
+            return Outcome.DRAW;
+        }
+    }
+
+    @Override
+    public boolean shouldMaximize() {
+        return (toMoveColor == Piece.Color.WHITE);
     }
 }

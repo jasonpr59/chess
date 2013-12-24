@@ -1,42 +1,22 @@
 package player;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import chess.Board;
-import chess.Piece;
-import chess.Square;
-
-public class Heuristic {
-    private static final Map<Piece.Type, Float> PIECE_VALUES;
-    
-    static {
-        Map<Piece.Type, Float> pieceValues = new HashMap<Piece.Type, Float>(); 
-        pieceValues.put(Piece.Type.PAWN, 1.0f);
-        pieceValues.put(Piece.Type.KNIGHT, 3.0f);
-        pieceValues.put(Piece.Type.BISHOP, 3.2f);
-        pieceValues.put(Piece.Type.ROOK, 5.0f);
-        pieceValues.put(Piece.Type.QUEEN, 9.0f);
-        // TODO(jasonpr): Figure out what we should do about King's value.
-        pieceValues.put(Piece.Type.KING, 1000.0f);
-        PIECE_VALUES = Collections.unmodifiableMap(pieceValues);
-    }
-    
-    public static float pieceValueHeuristic(Board board) {
-        float totalScore = 0.0f;
-        Piece p;
-        float pieceScore;
-        float mult;
-        for (Square square : Square.ALL) {
-            p = board.getPiece(square);
-            if (p == null) {
-                continue;
-            }
-            pieceScore = PIECE_VALUES.get(p.getType());
-            mult = (p.getColor() == Piece.Color.WHITE) ? +1.0f : -1.0f;
-            totalScore += pieceScore * mult;
-        }
-        return totalScore;
-    }
+/**
+ * A heuristic function for some type of Position.
+ * 
+ * Heuristic functions, a.k.a. static evaluation functions,
+ * are used to estimate who is winning a game based on a
+ * single board position.
+ * 
+ * A simple chess heuristic function might just add up the
+ * value of white pieces in a position, and subtract the
+ * value of the black pieces.  A more nuanced heuristic might
+ * consider features like king safety, central dominance, pawn
+ * structure, etc.
+ * 
+ * @param <P> The type of positions this Heuristic will evaluate.
+ */
+public interface Heuristic<P extends Position<P>> {
+    // TODO: Figure out a legal alternative to making this a static method.
+    /** Evaluate the position according to this Heuristic. */
+    public float value(P position);
 }

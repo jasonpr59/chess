@@ -3,11 +3,13 @@ package chess;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import player.Move;
+
 /**
  * A move from one Square to another Square.
  *  This class is immutable.
  */
-public class Move {
+public class ChessMove implements Move<ChessPosition>{
 
     private final Square start;
     private final Square end;
@@ -15,7 +17,7 @@ public class Move {
     private final Delta delta;
 
     /** Construct a Move from one Square to another Square. */
-    public Move(Square start, Square end) {
+    public ChessMove(Square start, Square end) {
         if (start.equals(end)) {
             throw new IllegalArgumentException("A move cannot start and end on the same square.");
         }
@@ -26,7 +28,7 @@ public class Move {
     }
 
     /** Construct a Move from starting at a Square and moving by a Delta. */
-    public Move(Square start, Delta delta) {
+    public ChessMove(Square start, Delta delta) {
         this(start, start.plus(delta));
     }
 
@@ -49,7 +51,7 @@ public class Move {
      * @param board The board on which the move is to be made.
      * Requires that this move is sane.
      */
-    public Square capturedSquare(Board board) {
+    public Square capturedSquare(ChessPosition board) {
         // TODO(jasonpr): Factor some common code out of here and isSane.
         if (board.getPiece(end) != null) {
             // There's something in the landing square, so that's what's captured.
@@ -66,7 +68,7 @@ public class Move {
      * Return the en passant Square produced by this move, or null if there isn't one.
      * @param board The board on which the move is to be made.
      */
-    public Square enPassantSquare(Board board) {
+    public Square enPassantSquare(ChessPosition board) {
         Piece movingPiece = board.getPiece(start);
         if (movingPiece == null || movingPiece.getType() != Piece.Type.PAWN) {
             return null;
@@ -86,7 +88,7 @@ public class Move {
      * That is, assert that the move is legal, except that the king might
      * be checked, or might have castled through or out of check.
      */
-    public boolean isSane(Board board) {
+    public boolean isSane(ChessPosition board) {
         if (!isLandable(board)) {
             return false;
         }
@@ -172,7 +174,7 @@ public class Move {
     }
 
     /** Return whether a move is legal on a given board. */
-    public boolean isLegal(Board board) {
+    public boolean isLegal(ChessPosition board) {
      // All legal Moves are sane.
      if (!isSane(board)) {
          return false;
@@ -186,13 +188,13 @@ public class Move {
             // assert that king did not move through check.
             // Do this by making the king move to that square, and seeing whether it is checked.
             Square transitSquare = start.plus(getDelta().unitized());
-            Move loneKingMove = new Move(start, transitSquare);
+            ChessMove loneKingMove = new ChessMove(start, transitSquare);
             if (!loneKingMove.isLegal(board)) {
                 return false;
             }
         }
 
-        Board resultBoard = board.moveResult(this);
+        ChessPosition resultBoard = board.moveResult(this);
         return !resultBoard.checked(board.getToMoveColor());
     }
 
@@ -204,7 +206,7 @@ public class Move {
      * Requires that the move is basic or diagonal: for other moves,
      * there is no definition of Squares "between" the start and end.
      */
-    private boolean isOpen(Board board) {
+    private boolean isOpen(ChessPosition board) {
         for (Square s : between()) {
             if (board.getPiece(s) != null) {
                 return false;
@@ -236,7 +238,7 @@ public class Move {
      * A Piece could land on a Square iff that Square is unoccupied or it is
      * occupied by a piece of the opposite color.
      */
-    private boolean isLandable(Board board) {
+    private boolean isLandable(ChessPosition board) {
         Piece movingPiece = board.getPiece(start);
         Piece capturedPiece = board.getPiece(end);
         return (capturedPiece == null ||
@@ -264,7 +266,7 @@ public class Move {
         if (getClass() != obj.getClass())
             return false;
 
-        Move that = (Move) obj;
+        ChessMove that = (ChessMove) obj;
         return start.equals(that.getStart()) && end.equals(that.getEnd());
     }
 
@@ -279,7 +281,7 @@ public class Move {
     }
 
     /** Return whether move makes a pawn do a capture on a Board. */
-    private boolean isPawnCapture(Board board) {
+    private boolean isPawnCapture(ChessPosition board) {
         Piece movingPiece = board.getPiece(start);
         if (movingPiece == null || movingPiece.getType() != Piece.Type.PAWN) {
             // Not a pawn.
@@ -292,7 +294,7 @@ public class Move {
      * Returns whether this is a castling move on some Board.
      * Requires that the move is sane.
      */
-    public boolean isCastling(Board board) {
+    public boolean isCastling(ChessPosition board) {
         // We already required that the move is sane.
         // So, it's castling if it's a two-step king move.
         return (board.getPiece(start).getType() == Piece.Type.KING &&
@@ -310,15 +312,24 @@ public class Move {
     }
 
     /** Deserialize this move from a 4-character String. */
-    public static Move deserialized(String s) {
+    public static ChessMove deserialized(String s) {
         s = s.trim();
         assert s.length() == 4;
         int startFile = Integer.parseInt(s.substring(0,1));
         int startRank = Integer.parseInt(s.substring(1,2));
         int endFile = Integer.parseInt(s.substring(2,3));
         int endRank = Integer.parseInt(s.substring(3,4));
-        return new Move(Square.squareAt(startFile, startRank),
+        return new ChessMove(Square.squareAt(startFile, startRank),
                         Square.squareAt(endFile, endRank));
 
+    }
+
+    @Override
+    public ChessPosition result(ChessPosition position) {
+        // FIXME: This seems weird and underhanded.
+        // But, it also kind of reminds me of the Visitor pattern.
+        // Figure out a clearer way to do this, or, find a nice way
+        // to explain what's happening.
+        return position.moveResult(this);
     }
 }

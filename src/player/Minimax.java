@@ -4,57 +4,46 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import chess.Board;
-import chess.Move;
-import chess.Piece;
-
-public class Minimax {
-    public static MoveDecision bestMove(Board board, int depth) {
-        List<Move> nextMoves = new ArrayList<Move>();
+public class Minimax<P extends Position<P>> extends AbstractDecider<P>{
+    
+    private final Heuristic<P> heuristic;
+    
+    public Minimax(Heuristic<P> heuristic) {
+        this.heuristic = heuristic;
+    }
+    
+    @Override
+    public Decision<P> bestDecision(P position, int depth) {
+        List<Move<P>> nextTransitions = new ArrayList<Move<P>>();
         if (depth < 0) {
             throw new IllegalArgumentException("Depth cannot be negative.");
         } else if (depth == 0) {
-            return new MoveDecision(nextMoves, Heuristic.pieceValueHeuristic(board));
+            return new Decision<P>(nextTransitions, heuristic.value(position));
         } else {
             // Get all possible decisions.
-            List<MoveDecision> possibleDecisions = new ArrayList<MoveDecision>();
-            Board possibleResult;
-            List<Move> legalMoves = new ArrayList<Move>(board.legalMoves());
-            if (legalMoves.size() == 0) {
-                // You're checkmated, or stalemated.
-                if (board.checked(board.getToMoveColor())) {
-                    // Checkmated.
-                    // TODO(jasonpr): Track mate in 1 vs mate in 2, etc.
-                    float mateScore;
-                    if (board.getToMoveColor() == Piece.Color.WHITE) {
-                        mateScore = -10000.0f;
-                    } else {
-                        mateScore = +10000.0f;
-                    }
-                    return new MoveDecision(nextMoves, mateScore);
-                } else {
-                    // Stalemated.
-                    // TODO(jasonpr): Decide whether to explicitly define stalemate.
-                    return new MoveDecision(nextMoves, 0.0f);
-                }
+            List<Decision<P>> possibleDecisions = new ArrayList<Decision<P>>();
+            P possibleResult;
+            List<Move<P>> transitions = new ArrayList<Move<P>>(position.moves());
+            if (transitions.size() == 0) {
+                return AbstractDecider.terminalDecision(position);
             }
             
-            Collections.shuffle(legalMoves);
-            for (Move m : legalMoves) {
-                possibleResult = board.moveResult(m);
-                MoveDecision nextDecision = bestMove(possibleResult, depth - 1);
-                nextMoves = new ArrayList<Move>();
-                nextMoves.add(m);
-                nextMoves.addAll(nextDecision.getMoveList());
-                possibleDecisions.add(new MoveDecision(nextMoves, nextDecision.getScore()));
+            Collections.shuffle(possibleDecisions);
+            for (Decision<P> decision : possibleDecisions) {
+                possibleResult = decision.getFirstMove().result(position);
+                Decision<P> nextDecision = bestDecision(possibleResult, depth - 1);
+                nextTransitions = new ArrayList<Move<P>>();
+                nextTransitions.add(decision.getFirstMove());
+                nextTransitions.addAll(nextDecision.getVariation());
+                possibleDecisions.add(new Decision<P>(nextTransitions, nextDecision.getScore()));
             }
             
             // Choose the possible decision that give the optimal score.
-            MoveDecision bestDecision;
-            if (board.getToMoveColor() == Piece.Color.WHITE) {
-                bestDecision = MoveDecision.highestScored(possibleDecisions);
+            Decision<P> bestDecision;
+            if (position.shouldMaximize()) {
+                bestDecision = Decision.highestScored(possibleDecisions);
             } else {
-                bestDecision = MoveDecision.lowestScored(possibleDecisions);
+                bestDecision = Decision.lowestScored(possibleDecisions);
             }
             return bestDecision;
         }
