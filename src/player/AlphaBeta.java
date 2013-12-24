@@ -7,14 +7,19 @@ import java.util.List;
 public class AlphaBeta<P extends Position<P>> implements Decider<P>{
     
     private static final float EXTENSION_THRESHOLD = 0.7f;
+    private final Heuristic<P> heuristic;
+    
+    public AlphaBeta(Heuristic<P> heuristic) {
+        this.heuristic = heuristic;
+    }
     
     @Override
-    public Decision<P> bestDecision(P state, int depth, Heuristic<P> heuristic) {
+    public Decision<P> bestDecision(P state, int depth) {
         // TODO(jasonpr): Come up with a better fake parent score.
-        return alphaBeta(state, depth, heuristic, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY, 0.0f);
+        return alphaBeta(state, depth, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY, 0.0f);
     }   
     
-    private Decision<P> alphaBeta(P position, int depth, Heuristic<P> heuristic, float alpha, float beta, float parentScore) {
+    private Decision<P> alphaBeta(P position, int depth, float alpha, float beta, float parentScore) {
         float score = heuristic.value(position);
         if (depth > 0 || shouldExtend(score, parentScore)) {
             // Generate all legal transitions.
@@ -72,7 +77,7 @@ public class AlphaBeta<P extends Position<P>> implements Decider<P>{
                 possibleResult = t.result(position);
 
                 // Get the best decision from this possible result...
-                Decision<P> nextDecision = alphaBeta(possibleResult, depth - 1, heuristic, alpha, beta, score);
+                Decision<P> nextDecision = alphaBeta(possibleResult, depth - 1, alpha, beta, score);
                 if (!seenAny || nextDecision.getScore() * mult > bestDecision.getScore() * mult) {
                     seenAny = true;
                     variation = new ArrayList<Move<P>>();

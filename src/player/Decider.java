@@ -16,5 +16,5 @@ public interface Decider<P extends Position<P>> {
      * @param heuristic The heuristic function with which to evaluate
      *      continuations.
      */
-    public Decision<P> bestDecision(P position, int depth, Heuristic<P> heuristic);
+    public Decision<P> bestDecision(P position, int depth);
 }

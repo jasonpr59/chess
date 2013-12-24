@@ -33,7 +33,7 @@ public class SocketChessServer {
         ChessPosition board = ChessPosition.newGame();
 
         Heuristic<ChessPosition> heuristic = new BoardPieceValueHeuristic();
-        Decider<ChessPosition> decider = new AlphaBeta<ChessPosition>();
+        Decider<ChessPosition> decider = new AlphaBeta<ChessPosition>(heuristic);
         
         String inputLine;
         while ((inputLine = in.readLine()) != null) {
@@ -55,7 +55,7 @@ public class SocketChessServer {
             out.println("H(board) = " + heuristic.value(board));
 
             out.println("Thinking...");
-            Decision<ChessPosition> bestDecision = decider.bestDecision(board, 3, heuristic);
+            Decision<ChessPosition> bestDecision = decider.bestDecision(board, 3);
             out.println("Making move" + bestDecision.getFirstMove());
             board = bestDecision.getFirstMove().result(board);
             

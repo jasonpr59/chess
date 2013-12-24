@@ -20,7 +20,7 @@ public class StandardStreamChessServer {
         ChessPosition board = ChessPosition.newGame();
 
         Heuristic<ChessPosition> heuristic = new BoardPieceValueHeuristic();
-        Decider<ChessPosition> decider = new AlphaBeta<ChessPosition>();
+        Decider<ChessPosition> decider = new AlphaBeta<ChessPosition>(heuristic);
         
         Scanner sc = new Scanner(System.in);
         String input;
@@ -45,7 +45,7 @@ public class StandardStreamChessServer {
             }
             
             // Decide a response, and play it on the board.
-            Decision<ChessPosition> bestDecision = decider.bestDecision(board, DEPTH, heuristic); 
+            Decision<ChessPosition> bestDecision = decider.bestDecision(board, DEPTH); 
             board  = bestDecision.getFirstMove().result(board);
             
             // Print the move.
