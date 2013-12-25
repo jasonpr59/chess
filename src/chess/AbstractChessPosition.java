@@ -27,10 +27,18 @@ public abstract class AbstractChessPosition implements ChessPosition {
         return getPiece(move.getStart());
     }
     
+    // TODO: Make sure the generics magic allows both PromotionMove and ChessMove.
     @Override
-    public Collection<? extends Move<ChessPosition>> moves() {
-        // TODO: Move legalMoves to this method.
-        return legalMoves();
+    public Collection<Move<ChessPosition>> moves() {
+        Collection<Move<ChessPosition>> legalMoves = new ArrayList<Move<ChessPosition>>();
+        for (Square start : Square.ALL) {
+            for (ChessMove saneMove : saneMoves(start)) {
+                if (saneMove.isLegal(this)) {
+                    legalMoves.add(saneMove);
+                }
+            }
+        }
+        return legalMoves;
     }
 
 
@@ -75,19 +83,6 @@ public abstract class AbstractChessPosition implements ChessPosition {
         }
         // Didn't return anything!
         throw new RuntimeException("There is no king of color " + kingColor + " on the board!");
-    }
-    
-    @Override
-    public Collection<ChessMove> legalMoves() {
-        Collection<ChessMove> legalMoves = new ArrayList<ChessMove>();
-        for (Square start : Square.ALL) {
-            for (ChessMove saneMove : saneMoves(start)) {
-                if (saneMove.isLegal(this)) {
-                    legalMoves.add(saneMove);
-                }
-            }
-        }
-        return legalMoves;
     }
 
     @Override

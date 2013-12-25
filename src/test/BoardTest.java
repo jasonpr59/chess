@@ -34,6 +34,6 @@ public class BoardTest {
         // The illegal response should throw an exception
         assertFalse(m2b_illegal.isLegal(blackChecked));
 
-        assertEquals(5, blackChecked.legalMoves().size());
+        assertEquals(5, blackChecked.moves().size());
     }
 }

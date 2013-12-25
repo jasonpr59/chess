@@ -32,9 +32,6 @@ public interface ChessPosition extends Position<ChessPosition> {
     /** Return the square that the king of some color occupies. */
     public Square kingSquare(Piece.Color kingColor);
 
-    /** Return all legal moves. */
-    public Collection<ChessMove> legalMoves();
-
     /** Return the subset of sane moves from a set of moves. */
     public Collection<ChessMove> filterSane(Collection<ChessMove> candidates);
 
