@@ -2,6 +2,21 @@ package chess;
 
 import chess.Piece.Color;
 
+/**
+ * A One-time-use Builder for ChessPositions.
+ *
+ * ChessPositions are immutable, but it would be convenient for them
+ * to have mutator-like methods for creating new ChessPositions, or
+ * for creating modified copies of ChessPositions.  ChessPositionBuidler
+ * solves this problem by being a mutable object that can create
+ * immutable ChessPositions.
+ *
+ * A ChessPositionBuilder's build() method can only be called once.
+ * (This allows the ChessPositionBuilder and the built ChessPosition
+ * to share state, without risking mutating the ChessPosition.  It's
+ * a bit strange, but it prevents a bunch of usually useless copies
+ * of the Piece[][] array.)
+ */
 public class ChessPositionBuilder {
 
     // A ChessPositionBuilder may only build one ChessPosition.
@@ -17,6 +32,7 @@ public class ChessPositionBuilder {
     // For use in deciding whether castling is legal.
     private CastlingInfo castlingInfo;
     
+    /** Create a new ChessPositionBuilder with an empty board. */
     public ChessPositionBuilder() {
         board = new Piece[8][8];
         setEnPassantSquare(null);
@@ -24,6 +40,12 @@ public class ChessPositionBuilder {
         setCastlingInfo(new CastlingInfo());
     }
     
+    /**
+     * Create a new ChessPositionBuilder from some source ChessPosition.
+     * If the build() method were called immediately after running this
+     * constructor, the resulting board would represent the exact same
+     * position as the source.
+     */
     public ChessPositionBuilder(ChessPosition source) {
         board = new Piece[8][8];
         for (Square s : Square.ALL) {
@@ -34,7 +56,15 @@ public class ChessPositionBuilder {
         setCastlingInfo(source.getCastlingInfo());
     }
     
-    /** Put the board in the default chess starting position. */
+    /**
+     * Put the position in the default chess starting position.
+     * That is:
+     *   All pieces in their home squares.
+     *   White to move.
+     *   No en passant square.
+     *   No restrictions on castling (besides the presence
+     *   of pieces which occupy the castling squares!).
+     */
     public ChessPositionBuilder setupNewGame() {
         assertUnbuilt();
 
@@ -100,7 +130,6 @@ public class ChessPositionBuilder {
         return this;
     }
     
-
     private void assertUnbuilt() {
         if (built){
             throw new AssertionError("This ChessPositionBuilder already built its " +
@@ -160,6 +189,7 @@ public class ChessPositionBuilder {
         }
     }
     
+    /** Return the ChessPosition currently represented by this ChessPositionBuilder. */
     public ChessPosition build() {
         assertUnbuilt();
         built = true;
@@ -169,6 +199,7 @@ public class ChessPositionBuilder {
     /**
      * Place a piece on a square.
      * If another piece is already on that square, it is replaced.
+     * @return This ChessPositionBuilder, for daisy chaining.
      */
     public ChessPositionBuilder placePiece(Piece piece, Square square){
         assertUnbuilt();
@@ -196,7 +227,6 @@ public class ChessPositionBuilder {
         return this;
     }
 
-    
     /**
      * Set the color whose move it is.
      * @return This ChessPositionBuilder, for daisy chaining.
@@ -217,9 +247,8 @@ public class ChessPositionBuilder {
      */
     public ChessPositionBuilder updateCastlingInfo(ChessMove move) {
         assertUnbuilt();
+        // TODO: Replace the following line once CastlingInfo becomes immutable.
         this.castlingInfo.update(move);
         return this;
     }
-    
-    
 }
