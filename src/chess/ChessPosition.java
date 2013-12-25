@@ -4,7 +4,10 @@ import java.util.Collection;
 
 import player.Position;
 
-/** A chess board at a specific position. */
+/**
+ * A chess board at a specific position.
+ * Implementations must be immutable.
+ */
 public interface ChessPosition extends Position<ChessPosition> {
 
     /** Get the piece at a square, or null if the square is empty. */

@@ -108,6 +108,19 @@ public class ChessPositionBuilder {
         }
     }
     
+    /**
+     * Simple private ChessPosition implementation.
+     * 
+     * We use this private class so that we don't need to duplicate
+     * the board in the constructor.  This allows us to just guarantee,
+     * inside of ChessPositionBuilder, that we'll never modify that
+     * board once we pass it into a ChessPositionImpl.
+     * 
+     * If we exposed this class and its constructor publicly, we would
+     * run the risk of somebody passing in a board Piece[][] array, then
+     * mutating that array and violating the immutability condition.
+     *
+     */
     private class ChessPositionImpl extends AbstractChessPosition {
         
         private final Piece[][] board;
