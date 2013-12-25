@@ -19,4 +19,21 @@ public interface Heuristic<P extends Position<P>> {
     // TODO: Figure out a legal alternative to making this a static method.
     /** Evaluate the position according to this Heuristic. */
     public float value(P position);
+
+    /**
+     * Return the score of this terminal Position.
+     * Requires that the Position is terminal, that is, that there are no
+     * Moves from this Position.
+     * 
+     * Sometimes the value of a Position is strongly affected by whether
+     * the position is terminal.  For example, in a chess position, white
+     * could have two extra queens, but still be checkmated!  A Heuristic
+     * could choose not to check whether a Position is terminal, because
+     * Move-generation is often expensive.  But, a Decider would commonly
+     * enumerate moves from this position.  So, a Decider could detect
+     * that a Position is terminal, and request a terminalValue, if
+     * it wanted to.
+     * 
+     */
+    public float terminalValue(P position);
 }

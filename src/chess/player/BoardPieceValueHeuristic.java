@@ -1,16 +1,20 @@
 package chess.player;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import player.AbstractHeuristic;
 import player.Heuristic;
+import player.Move;
 
 import chess.ChessPosition;
 import chess.Piece;
 import chess.Square;
 
-public class BoardPieceValueHeuristic implements Heuristic<ChessPosition>{
+public class BoardPieceValueHeuristic extends AbstractHeuristic<ChessPosition>{
     private static final Map<Piece.Type, Float> PIECE_VALUES;
     
     static {
@@ -24,7 +28,7 @@ public class BoardPieceValueHeuristic implements Heuristic<ChessPosition>{
         pieceValues.put(Piece.Type.KING, 1000.0f);
         PIECE_VALUES = Collections.unmodifiableMap(pieceValues);
     }
-    
+
     @Override
     public float value(ChessPosition board) {
         float totalScore = 0.0f;
