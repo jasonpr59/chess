@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Minimax<P extends Position<P>> extends AbstractDecider<P>{
+public class Minimax<P extends Position<P>> implements Decider<P>{
     
     private final Heuristic<P> heuristic;
     
@@ -25,7 +25,7 @@ public class Minimax<P extends Position<P>> extends AbstractDecider<P>{
             P possibleResult;
             List<Move<P>> transitions = new ArrayList<Move<P>>(position.moves());
             if (transitions.size() == 0) {
-                return AbstractDecider.terminalDecision(position);
+                return new Decision<P>(new ArrayList<Move<P>>(), heuristic.terminalValue(position));
             }
             
             Collections.shuffle(possibleDecisions);

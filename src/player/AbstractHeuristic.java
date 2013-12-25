@@ -1,30 +1,18 @@
 package player;
 
-import java.util.ArrayList;
-// TODO: Determine whether this class should exist.
-// The fact that it's an abstract class with no instance methods is
-// one strike against it.
 /**
- * A convenience parent class for Decider implementations.
- * Used for storing methods that might be useful for many Deciders. 
+ * A partial helper implementation of the Heuristic interface.
  *
- * AbstractDecider implements Decider, but does not implement its methods.
- * So, descendants of AbstractDecider must implement the methods defined
- * in Decider.
- *
- * @param <P> The type of Position for which decisions will be made.
+ * Implementers must implement Heuristic.value.
  */
-public abstract class AbstractDecider<P extends Position<P>> implements Decider<P>{
-    // TODO: Decide whether this method belongs here.  It could belong in Heuristic...
-    // or maybe some AbstractHeuristic.
+public abstract class AbstractHeuristic<P extends Position<P>> implements Heuristic<P> {
+
     /**
-     * Return the Decision that would be made by a terminal Position.
+     * Return the score of this terminal Position.
      * Requires that the Position is terminal, that is, that there are no
      * Moves from this Position.
-     * @param position
-     * @return
      */
-    public static <P extends Position<P>> Decision<P> terminalDecision(P position){
+    public float terminalValue(P position){
         // Any game is either a win, a loss, or a tie if there are no
         // legal transitions left.
         
@@ -56,6 +44,6 @@ public abstract class AbstractDecider<P extends Position<P>> implements Decider<
         default:
             throw new AssertionError("Result was not a valid value.");
         }
-        return new Decision<P>(new ArrayList<Move<P>>(), outcomeScore);
+        return outcomeScore;
     }
 }

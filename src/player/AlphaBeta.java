@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class AlphaBeta<P extends Position<P>> extends AbstractDecider<P>{
+public class AlphaBeta<P extends Position<P>> implements Decider<P>{
     
     private static final float EXTENSION_THRESHOLD = 0.7f;
     private final Heuristic<P> heuristic;
@@ -29,7 +29,7 @@ public class AlphaBeta<P extends Position<P>> extends AbstractDecider<P>{
             
             // Decide it's checkmate/stalemate.
             if (moves.size() == 0) {
-                return AbstractDecider.terminalDecision(position);
+                return new Decision<P>(new ArrayList<Move<P>>(), heuristic.terminalValue(position));
             }
             final boolean isMaxStep = position.shouldMaximize(); 
             final float mult = isMaxStep? 1.0f : -1.0f;
