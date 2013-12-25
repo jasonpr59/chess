@@ -39,7 +39,7 @@ public class StandardStreamChessServer {
             
             // Play it on the board.
             if (m.isLegal(board)) {
-                board = board.moveResult(m);
+                board = m.result(board);
             } else {
                 System.out.println(ERROR_TOKEN + ": illegal move!");
                 continue;

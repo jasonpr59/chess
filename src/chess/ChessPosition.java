@@ -51,13 +51,4 @@ public interface ChessPosition extends Position<ChessPosition> {
 
     /** Return whether the king is unmoved and the a-rook is unmoved. */
     public boolean queenCastlePiecesReady(Piece.Color color);
-
-    /**
-     * Get the ChessPosition that results from a move.
-     * @param move A Move object designating which move should be made.
-     * @return A ChessPosition that is the result of making the move on
-     *     this ChessPosition.
-     */
-    public ChessPosition moveResult(ChessMove move);
-
 }

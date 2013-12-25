@@ -69,4 +69,20 @@ public class PromotionMove extends ChessMove {
 
         return super.isSane(board);
     }
+
+    @Override
+    public ChessPosition result(ChessPosition position) {
+        // Make the pawn move to the last rank, normally.
+        ChessPosition partlyMoved = super.result(position);
+
+        // Convert it to its promoted type.
+        // TODO: Do this without creating a second builder for the promotion
+        // step.  (The first one was in the super.result step.)
+        ChessPositionBuilder builder = new ChessPositionBuilder(partlyMoved);
+        Piece promotedPiece = new Piece(getPromotedType(),
+                                        partlyMoved.getPiece(getEnd()).getColor());
+        builder.placePiece(promotedPiece, getEnd());
+
+        return builder.build();
+    }
 }

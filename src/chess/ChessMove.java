@@ -194,7 +194,7 @@ public class ChessMove implements Move<ChessPosition>{
             }
         }
 
-        ChessPosition resultBoard = board.moveResult(this);
+        ChessPosition resultBoard = result(board);
         return !resultBoard.checked(board.getToMoveColor());
     }
 
@@ -326,10 +326,51 @@ public class ChessMove implements Move<ChessPosition>{
 
     @Override
     public ChessPosition result(ChessPosition position) {
-        // FIXME: This seems weird and underhanded.
-        // But, it also kind of reminds me of the Visitor pattern.
-        // Figure out a clearer way to do this, or, find a nice way
-        // to explain what's happening.
-        return position.moveResult(this);
+            Square start = getStart();
+            Square end = getEnd();
+            Piece movingPiece = position.movingPiece(this);
+
+            // Make an unfrozen copy that we can modify to effect the move.
+            ChessPositionBuilder builder = new ChessPositionBuilder(position);
+
+            // The captured square might not be in the end square (in the case of en passant).
+            Square capturedSquare = capturedSquare(position);
+            if (capturedSquare != null) {
+                // Remove the captured piece.
+                builder.placePiece(null, capturedSquare);
+            }
+
+            // Remove the piece from its starting position...
+            builder.placePiece(null, start);
+            // ... and put it in its final position.
+            builder.placePiece(movingPiece, end);
+
+            // TODO: Factor this behavior into a CastlingMove class.
+            // Move the rook, too, if this is a castling move.
+            if (isCastling(position)) {
+                // Remove the old rook.
+                Square rookStart;
+                if (getDelta().getDeltaFile() > 0) {
+                    // King Castle
+                    rookStart = start.plus(new Delta(3, 0));
+                } else {
+                    // Queen Castle
+                    rookStart = start.plus(new Delta(-4, 0));
+                }
+                builder.placePiece(null, rookStart);
+
+                // Place the rook in its new spot.
+                Square rookEnd= start.plus(getDelta().unitized());
+                builder.placePiece(new Piece(Piece.Type.ROOK, position.getToMoveColor()), rookEnd);
+            }
+
+            // Update extra board info.
+            builder.setEnPassantSquare(enPassantSquare(position));
+            builder.flipToMoveColor();
+            // Keep track of whether castling will be allowable
+            // in future moves.
+            builder.updateCastlingInfo(this);
+
+            return builder.build();
     }
 }
