@@ -1,6 +1,10 @@
 package player;
 
-
+/**
+ * A partial helper implementation of the Heuristic interface.
+ *
+ * Implementers must implement Heuristic.value.
+ */
 public abstract class AbstractHeuristic<P extends Position<P>> implements Heuristic<P> {
 
     /**
