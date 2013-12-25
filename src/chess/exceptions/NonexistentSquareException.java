@@ -8,7 +8,7 @@ public class NonexistentSquareException extends RuntimeException {
         super();
     }
     
-    public NonexistentSquareException(String message) {
-        super(message);
+    public NonexistentSquareException(String msg) {
+        super(msg);
     }
 }
