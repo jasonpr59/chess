@@ -228,6 +228,16 @@ public class ChessPositionBuilder {
     }
 
     /**
+     * Flip the to-move color from white to black, or vice versa.
+     * @return This ChessPositionBuilder, for daisy chaining.
+     */
+    public ChessPositionBuilder flipToMoveColor() {
+        assertUnbuilt();
+        toMoveColor = toMoveColor.opposite();
+        return this;
+    }
+
+    /**
      * Set the color whose move it is.
      * @return This ChessPositionBuilder, for daisy chaining.
      */

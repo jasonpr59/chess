@@ -23,7 +23,8 @@ public class CastlingTest {
         Game g = Game.fromMoves(moves);
 
         // Castle
-        ChessPosition b_good = g.getCurrentPosition().moveResult(new ChessMove(Square.algebraic("e1"), Square.algebraic("g1")));
+        ChessMove castlingMove = new ChessMove(Square.algebraic("e1"), Square.algebraic("g1"));
+        ChessPosition b_good = castlingMove.result(g.getCurrentPosition());
         
         // Be sure pieces moved around correctly.
         assertEquals(b_good.getPiece(Square.algebraic("e1")), null);
@@ -43,7 +44,8 @@ public class CastlingTest {
                           "Nc3", "Qd7",
                           "Qd2", "Nf6"};
         Game g = Game.fromMoves(moves);
-        ChessPosition b_good = g.getCurrentPosition().moveResult(new ChessMove(Square.algebraic("e1"), Square.algebraic("c1")));
+        ChessMove castlingMove = new ChessMove(Square.algebraic("e1"), Square.algebraic("c1"));
+        ChessPosition b_good = castlingMove.result(g.getCurrentPosition());
         
         // Be sure pieces moved around correctly.
         assertEquals(b_good.getPiece(Square.algebraic("a1")), null);

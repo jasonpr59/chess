@@ -30,7 +30,7 @@ public class Game {
      * @throws IllegalMoveException
      */
     public Game makeMove(ChessMove move) throws IllegalMoveException{
-        history.add(getCurrentPosition().moveResult(move));
+        history.add(move.result(getCurrentPosition()));
         return this;
     }
 
