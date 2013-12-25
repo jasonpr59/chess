@@ -1,4 +1,4 @@
-package exceptions;
+package chess.exceptions;
 
 /** Indicates that a String is not a legal ChesMove in algebraic notation. */
 public class AlgebraicNotationException extends ChessException {

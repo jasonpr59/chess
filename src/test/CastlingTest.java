@@ -10,8 +10,8 @@ import chess.Game;
 import chess.ChessMove;
 import chess.Piece;
 import chess.Square;
-import exceptions.AlgebraicNotationException;
-import exceptions.InvalidMoveException;
+import chess.exceptions.AlgebraicNotationException;
+import chess.exceptions.InvalidMoveException;
 
 public class CastlingTest {
     @Test

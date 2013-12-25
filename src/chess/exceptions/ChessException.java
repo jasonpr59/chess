@@ -1,4 +1,4 @@
-package exceptions;
+package chess.exceptions;
 
 /** Superclass of Exceptions related to the chess package.*/
 public class ChessException extends Exception {

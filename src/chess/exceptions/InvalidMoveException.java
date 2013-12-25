@@ -1,4 +1,4 @@
-package exceptions;
+package chess.exceptions;
 
 public class InvalidMoveException extends ChessException {
 

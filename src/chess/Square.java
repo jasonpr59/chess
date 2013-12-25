@@ -5,7 +5,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import exceptions.NonexistantSquareException;
+import chess.exceptions.NonexistantSquareException;
+
 
 /**
  * A square on a chess board.

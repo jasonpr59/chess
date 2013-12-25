@@ -3,8 +3,9 @@ package chess;
 import java.util.ArrayList;
 import java.util.List;
 
-import exceptions.AlgebraicNotationException;
-import exceptions.InvalidMoveException;
+import chess.exceptions.AlgebraicNotationException;
+import chess.exceptions.InvalidMoveException;
+
 /** An entire chess game, starting from the initial position. */
 public class Game {
 

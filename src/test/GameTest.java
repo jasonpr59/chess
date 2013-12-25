@@ -3,8 +3,8 @@ package test;
 import org.junit.Test;
 
 import chess.Game;
-import exceptions.AlgebraicNotationException;
-import exceptions.InvalidMoveException;
+import chess.exceptions.AlgebraicNotationException;
+import chess.exceptions.InvalidMoveException;
 
 public class GameTest {
     

@@ -1,4 +1,4 @@
-package exceptions;
+package chess.exceptions;
 
 public class NonexistantSquareException extends RuntimeException {
     private static final long serialVersionUID = 1L;

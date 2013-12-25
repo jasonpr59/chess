@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import chess.Piece.Type;
-import exceptions.AlgebraicNotationException;
+import chess.exceptions.AlgebraicNotationException;
 
 public class AlgebraicParser {
     private static final Map<Character, Piece.Type> PIECE_NAMES;

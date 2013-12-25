@@ -8,7 +8,7 @@ import org.junit.Test;
 import chess.ChessPosition;
 import chess.ChessMove;
 import chess.Square;
-import exceptions.InvalidMoveException;
+import chess.exceptions.InvalidMoveException;
 
 public class BoardTest {
     @Test
