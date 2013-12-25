@@ -8,6 +8,7 @@ import player.Decision;
 import player.Heuristic;
 import chess.ChessMove;
 import chess.ChessPosition;
+import chess.ChessPositionBuilder;
 import chess.player.BoardPieceValueHeuristic;
 
 public class StandardStreamChessServer {
@@ -17,7 +18,7 @@ public class StandardStreamChessServer {
     
     public static void main(String[] args) {
         // Setup the board.
-        ChessPosition board = ChessPosition.newGame();
+        ChessPosition board = new ChessPositionBuilder().setupNewGame().build();
 
         Heuristic<ChessPosition> heuristic = new BoardPieceValueHeuristic();
         Decider<ChessPosition> decider = new AlphaBeta<ChessPosition>(heuristic);

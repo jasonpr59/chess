@@ -18,7 +18,7 @@ public class Game {
      */
     public Game() {
         history = new ArrayList<ChessPosition>();
-        history.add(ChessPosition.newGame());
+        history.add(new ChessPositionBuilder().setupNewGame().build());
     }
 
     /**
