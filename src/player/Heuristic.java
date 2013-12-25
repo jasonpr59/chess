@@ -30,7 +30,7 @@ public interface Heuristic<P extends Position<P>> {
      * could have two extra queens, but still be checkmated!  A Heuristic
      * could choose not to check whether a Position is terminal, because
      * Move-generation is often expensive.  But, a Decider would commonly
-     * enumerate moves from this position.  So, a Decider could detect
+     * enumerate moves from Positions.  So, a Decider could detect
      * that a Position is terminal, and request a terminalValue, if
      * it wanted to.
      * 
