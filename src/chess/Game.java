@@ -3,8 +3,9 @@ package chess;
 import java.util.ArrayList;
 import java.util.List;
 
-import exceptions.AlgebraicNotationException;
-import exceptions.InvalidMoveException;
+import chess.exceptions.AlgebraicNotationException;
+import chess.exceptions.IllegalMoveException;
+
 /** An entire chess game, starting from the initial position. */
 public class Game {
 
@@ -26,9 +27,9 @@ public class Game {
      * result is added to the history. This turns the result
      * into the new current Position.
      * @return This Game, for daisy chaining.
-     * @throws InvalidMoveException
+     * @throws IllegalMoveException
      */
-    public Game makeMove(ChessMove move) throws InvalidMoveException{
+    public Game makeMove(ChessMove move) throws IllegalMoveException{
         history.add(getCurrentPosition().moveResult(move));
         return this;
     }
@@ -62,14 +63,14 @@ public class Game {
     }
 
     /** Create a Game whose history matches a history in Algebraic notation. */
-    public static Game fromMoves(String[] moves) throws AlgebraicNotationException, InvalidMoveException {
+    public static Game fromMoves(String[] moves) throws AlgebraicNotationException, IllegalMoveException {
         Game g = new Game();
         for (String move : moves) {
             ChessMove m = AlgebraicParser.parseAlgebraic(move, g.getCurrentPosition());
             if (m.isLegal(g.getCurrentPosition())){
                 g.makeMove(m);
             } else {
-                throw new InvalidMoveException();
+                throw new IllegalMoveException();
             }
         }
         return g;

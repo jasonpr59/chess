@@ -8,11 +8,11 @@ import org.junit.Test;
 import chess.ChessPosition;
 import chess.ChessMove;
 import chess.Square;
-import exceptions.InvalidMoveException;
+import chess.exceptions.IllegalMoveException;
 
 public class BoardTest {
     @Test
-    public void testLegalMoves() throws InvalidMoveException {
+    public void testLegalMoves() throws IllegalMoveException {
         ChessPosition b = ChessPosition.newGame();
         // 1. e3
         ChessMove m1a = new ChessMove(Square.algebraic("e2"), Square.algebraic("e3"));

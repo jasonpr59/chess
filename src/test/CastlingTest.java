@@ -10,12 +10,12 @@ import chess.Game;
 import chess.ChessMove;
 import chess.Piece;
 import chess.Square;
-import exceptions.AlgebraicNotationException;
-import exceptions.InvalidMoveException;
+import chess.exceptions.AlgebraicNotationException;
+import chess.exceptions.IllegalMoveException;
 
 public class CastlingTest {
     @Test
-    public void testKingCastling() throws InvalidMoveException, AlgebraicNotationException {
+    public void testKingCastling() throws IllegalMoveException, AlgebraicNotationException {
         // Get in castle-able position.
         String[] moves = {"e4", "e5",
                           "Bc4", "Nf6",
@@ -37,7 +37,7 @@ public class CastlingTest {
     }
     
     @Test
-    public void testQueenCastling() throws InvalidMoveException, AlgebraicNotationException {
+    public void testQueenCastling() throws IllegalMoveException, AlgebraicNotationException {
         String[] moves = {"d3", "d6",
                           "Be3", "Be6",
                           "Nc3", "Qd7",
@@ -57,7 +57,7 @@ public class CastlingTest {
     }
     
     @Test
-    public void testNoCastleThroughCheck() throws InvalidMoveException, AlgebraicNotationException {
+    public void testNoCastleThroughCheck() throws IllegalMoveException, AlgebraicNotationException {
         String[] moves = {"Nf3", "Nf6",
                           "g3", "b6",
                           "Bg2", "Ba6",
@@ -69,7 +69,7 @@ public class CastlingTest {
     }
 
     @Test
-    public void testNoCastleOutOfCheck() throws InvalidMoveException, AlgebraicNotationException {
+    public void testNoCastleOutOfCheck() throws IllegalMoveException, AlgebraicNotationException {
         String[] moves = {"e4", "e5",
                           "d4", "Nf6",
                           "Nf3", "Nc6",
@@ -81,7 +81,7 @@ public class CastlingTest {
     }
 
     @Test
-    public void testLegalKingCastle() throws InvalidMoveException, AlgebraicNotationException {
+    public void testLegalKingCastle() throws IllegalMoveException, AlgebraicNotationException {
         String[] moves = {"e4", "e5",
                           "Nf3", "Nf6",
                           "Bc4", "Bc5",
