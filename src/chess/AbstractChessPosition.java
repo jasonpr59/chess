@@ -11,22 +11,12 @@ import player.Outcome;
 
 /**
  * Abstract implementation of most of the ChessPosition interface.
- * 
+ *
  * Subclasses of AbstractChessPosition must define their getters,
  * such as getPiece and getToMoveColor.
  */
 public abstract class AbstractChessPosition implements ChessPosition {
 
-    @Override
-    public boolean isEmpty(Square square) {
-        return getPiece(square) == null;
-    }
-
-    @Override
-    public Piece movingPiece(ChessMove move) {
-        return getPiece(move.getStart());
-    }
-    
     // TODO: Make sure the generics magic allows both PromotionMove and ChessMove.
     @Override
     public Collection<Move<ChessPosition>> moves() {
@@ -41,7 +31,6 @@ public abstract class AbstractChessPosition implements ChessPosition {
         return legalMoves;
     }
 
-
     @Override
     public Outcome outcome() {
         if (checked(getToMoveColor())) {
@@ -55,45 +44,15 @@ public abstract class AbstractChessPosition implements ChessPosition {
     public boolean shouldMaximize() {
         return (getToMoveColor() == Piece.Color.WHITE);
     }
-    
-    @Override
-    public boolean checked(Piece.Color kingColor) {
-        Square kingSquare = kingSquare(kingColor);
-        ChessPosition trialPosition;
-        if (getToMoveColor() == kingColor) {
-            // Act as though it's the other side's turn, to see if they could attack the king.
-            trialPosition = new ChessPositionBuilder(this).setToMoveColor(getToMoveColor().opposite()).build();
-        } else {
-            // It's the other color's turn, so see if they can attack this king.
-            trialPosition = this;
-        }
-        return trialPosition.isAttackable(kingSquare);
-    }
-    
-    @Override
-    public Square kingSquare(Piece.Color kingColor) {
-        // TODO: Make this more efficient by "caching" the king's position
-        // as an attribute of board.
-        Piece king = new Piece(Piece.Type.KING, kingColor);
 
-        for (Square possibleKingSquare : Square.ALL){
-            if (king.equals(getPiece(possibleKingSquare))) {
-                return possibleKingSquare;
-            }
-        }
-        // Didn't return anything!
-        throw new RuntimeException("There is no king of color " + kingColor + " on the board!");
+    @Override
+    public boolean isEmpty(Square square) {
+        return getPiece(square) == null;
     }
 
     @Override
-    public Collection<ChessMove> filterSane(Collection<ChessMove> candidates) {
-        Set<ChessMove> saneMoves = new HashSet<ChessMove>();
-        for (ChessMove c : candidates) {
-            if (c.isSane(this)) {
-                saneMoves.add(c);
-            }
-        }
-        return saneMoves;
+    public Piece movingPiece(ChessMove move) {
+        return getPiece(move.getStart());
     }
 
     @Override
@@ -114,7 +73,36 @@ public abstract class AbstractChessPosition implements ChessPosition {
         // Nobody attacks the target.
         return false;
     }
-    
+
+    @Override
+    public Square kingSquare(Piece.Color kingColor) {
+        // TODO: Make this more efficient by "caching" the king's position
+        // as an attribute of board.
+        Piece king = new Piece(Piece.Type.KING, kingColor);
+
+        for (Square possibleKingSquare : Square.ALL){
+            if (king.equals(getPiece(possibleKingSquare))) {
+                return possibleKingSquare;
+            }
+        }
+        // Didn't return anything!
+        throw new RuntimeException("There is no king of color " + kingColor + " on the board!");
+    }
+
+    @Override
+    public boolean checked(Piece.Color kingColor) {
+        Square kingSquare = kingSquare(kingColor);
+        ChessPosition trialPosition;
+        if (getToMoveColor() == kingColor) {
+            // Act as though it's the other side's turn, to see if they could attack the king.
+            trialPosition = new ChessPositionBuilder(this).setToMoveColor(getToMoveColor().opposite()).build();
+        } else {
+            // It's the other color's turn, so see if they can attack this king.
+            trialPosition = this;
+        }
+        return trialPosition.isAttackable(kingSquare);
+    }
+
     @Override
     public Iterable<ChessMove> saneMoves(Square start) {
         Piece movingPiece = getPiece(start);
@@ -212,7 +200,18 @@ public abstract class AbstractChessPosition implements ChessPosition {
         }
         return filterSane(candidateMoves);
     }
-    
+
+    @Override
+    public Collection<ChessMove> filterSane(Collection<ChessMove> candidates) {
+        Set<ChessMove> saneMoves = new HashSet<ChessMove>();
+        for (ChessMove c : candidates) {
+            if (c.isSane(this)) {
+                saneMoves.add(c);
+            }
+        }
+        return saneMoves;
+    }
+
     @Override
     public boolean kingCastlePiecesReady(Piece.Color color) {
         return getCastlingInfo().kingCastlePiecesReady(color);

@@ -26,15 +26,6 @@ public interface ChessPosition extends Position<ChessPosition> {
     /** Return the piece that would move if this move were performed. */
     public Piece movingPiece(ChessMove move);
 
-    /** Return whether the king of some color is in check. */
-    public boolean checked(Piece.Color kingColor);
-
-    /** Return the square that the king of some color occupies. */
-    public Square kingSquare(Piece.Color kingColor);
-
-    /** Return the subset of sane moves from a set of moves. */
-    public Collection<ChessMove> filterSane(Collection<ChessMove> candidates);
-
     /**
      * Return whether the given square is currently under attack.
      * A square is under attack if a piece of the toMoveColor is
@@ -43,15 +34,24 @@ public interface ChessPosition extends Position<ChessPosition> {
      */
     public boolean isAttackable(Square target);
 
+    /** Return the square that the king of some color occupies. */
+    public Square kingSquare(Piece.Color kingColor);
+
+    /** Return whether the king of some color is in check. */
+    public boolean checked(Piece.Color kingColor);
+
     /** Get the set of sane moves available to the piece on a square. */
     public Iterable<ChessMove> saneMoves(Square start);
-    
+
+    /** Return the subset of sane moves from a set of moves. */
+    public Collection<ChessMove> filterSane(Collection<ChessMove> candidates);
+
     /** Return whether the king is unmoved and the h-rook is unmoved. */
     public boolean kingCastlePiecesReady(Piece.Color color);
 
     /** Return whether the king is unmoved and the a-rook is unmoved. */
     public boolean queenCastlePiecesReady(Piece.Color color);
-    
+
     /**
      * Get the ChessPosition that results from a move.
      * @param move A Move object designating which move should be made.
