@@ -17,13 +17,11 @@ import player.Outcome;
  */
 public abstract class AbstractChessPosition implements ChessPosition {
 
-    /** Return whether a square is empty. */
     @Override
     public boolean isEmpty(Square square) {
         return getPiece(square) == null;
     }
 
-    /** Return the piece that would move if this move were performed. */
     @Override
     public Piece movingPiece(ChessMove move) {
         return getPiece(move.getStart());
@@ -50,7 +48,6 @@ public abstract class AbstractChessPosition implements ChessPosition {
         return (getToMoveColor() == Piece.Color.WHITE);
     }
     
-    /** Return whether the king of some color is in check. */
     @Override
     public boolean checked(Piece.Color kingColor) {
         Square kingSquare = kingSquare(kingColor);
@@ -65,7 +62,6 @@ public abstract class AbstractChessPosition implements ChessPosition {
         return trialPosition.isAttackable(kingSquare);
     }
     
-    /** Return the square that the king of some color occupies. */
     @Override
     public Square kingSquare(Piece.Color kingColor) {
         // TODO: Make this more efficient by "caching" the king's position
@@ -81,7 +77,6 @@ public abstract class AbstractChessPosition implements ChessPosition {
         throw new RuntimeException("There is no king of color " + kingColor + " on the board!");
     }
     
-    /** Return all legal moves. */
     @Override
     public Collection<ChessMove> legalMoves() {
         Collection<ChessMove> legalMoves = new ArrayList<ChessMove>();
@@ -95,7 +90,6 @@ public abstract class AbstractChessPosition implements ChessPosition {
         return legalMoves;
     }
 
-    /** Return the subset of sane moves from a set of moves. */
     @Override
     public Collection<ChessMove> filterSane(Collection<ChessMove> candidates) {
         Set<ChessMove> saneMoves = new HashSet<ChessMove>();
@@ -106,14 +100,7 @@ public abstract class AbstractChessPosition implements ChessPosition {
         }
         return saneMoves;
     }
-    
-    
-    /**
-     * Return whether the given square is currently under attack.
-     * A square is under attack if a piece of the toMoveColor is
-     * attacking it.
-     * TODO: Consider allowing caller to specify attackerColor.
-     */
+
     @Override
     public boolean isAttackable(Square target) {
         Piece.Color attackerColor = getToMoveColor();
@@ -133,7 +120,6 @@ public abstract class AbstractChessPosition implements ChessPosition {
         return false;
     }
     
-    /** Get the set of sane moves available to the piece on a square. */
     @Override
     public Iterable<ChessMove> saneMoves(Square start) {
         Piece movingPiece = getPiece(start);
@@ -237,18 +223,11 @@ public abstract class AbstractChessPosition implements ChessPosition {
         return getCastlingInfo().kingCastlePiecesReady(color);
     }
 
-    /** Return whether the king is unmoved and the a-rook is unmoved. */
     @Override
     public boolean queenCastlePiecesReady(Piece.Color color) {
         return getCastlingInfo().queenCastlePiecesReady(color);
     }
-    
-    /**
-     * Get the board that results from a move.
-     * @param move A Move object designating which move should be made.
-     * @return A frozen board that is the result of making the move on
-     *     this board.
-     */
+
     @Override
     public ChessPosition moveResult(ChessMove move){
         Square start = move.getStart();
