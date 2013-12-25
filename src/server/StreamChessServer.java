@@ -62,10 +62,11 @@ public class StreamChessServer {
 
         // Decide a response, and play it on the board.
         Decision<ChessPosition> bestDecision = decider.bestDecision(position, DEPTH);
-        position  = bestDecision.getFirstMove().result(position);
+        ChessMove response = (ChessMove) bestDecision.getFirstMove();
+        position  = response.result(position);
 
         // Print the move.
-        out.println(m.serialized());
+        out.println(response.serialized());
     }
 
     public void run() {
