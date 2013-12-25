@@ -4,12 +4,12 @@ import org.junit.Test;
 
 import chess.Game;
 import chess.exceptions.AlgebraicNotationException;
-import chess.exceptions.InvalidMoveException;
+import chess.exceptions.IllegalMoveException;
 
 public class GameTest {
     
     @Test
-    public void testGame() throws InvalidMoveException, AlgebraicNotationException {
+    public void testGame() throws IllegalMoveException, AlgebraicNotationException {
         // Fried liver attack!
         // Used because it's somewhat varied:
         // Different pieces, different captures,
