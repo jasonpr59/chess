@@ -5,15 +5,16 @@ import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
 
-import chess.ChessPosition;
 import chess.ChessMove;
+import chess.ChessPosition;
+import chess.ChessPositionBuilder;
 import chess.Square;
 import chess.exceptions.IllegalMoveException;
 
 public class BoardTest {
     @Test
     public void testLegalMoves() throws IllegalMoveException {
-        ChessPosition b = ChessPosition.newGame();
+        ChessPosition b = new ChessPositionBuilder().setupNewGame().build();
         // 1. e3
         ChessMove m1a = new ChessMove(Square.algebraic("e2"), Square.algebraic("e3"));
         // ... d6
@@ -33,6 +34,6 @@ public class BoardTest {
         // The illegal response should throw an exception
         assertFalse(m2b_illegal.isLegal(blackChecked));
 
-        assertEquals(5, blackChecked.legalMoves().size());
+        assertEquals(5, blackChecked.moves().size());
     }
 }
