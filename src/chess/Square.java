@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import chess.exceptions.NonexistantSquareException;
+import chess.exceptions.NonexistentSquareException;
 
 
 /**
@@ -55,11 +55,11 @@ public class Square {
      * @throws NonexistantSquareException If the rank or file
      *     falls outside the legal range.
      */
-    private Square(int file, int rank) throws NonexistantSquareException{
+    private Square(int file, int rank) throws NonexistentSquareException{
         if (rank < 1 || rank > 8){
-            throw new NonexistantSquareException("Illegal rank: " + rank);
+            throw new NonexistentSquareException("Illegal rank: " + rank);
         } else if (file < 1 || file >8) {
-            throw new NonexistantSquareException("Illegal file: " + file);
+            throw new NonexistentSquareException("Illegal file: " + file);
         }
         this.rank = rank;
         this.file = file;
