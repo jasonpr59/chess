@@ -1,15 +1,10 @@
 package chess.player;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import player.AbstractHeuristic;
-import player.Heuristic;
-import player.Move;
-
 import chess.ChessPosition;
 import chess.Piece;
 import chess.Square;
