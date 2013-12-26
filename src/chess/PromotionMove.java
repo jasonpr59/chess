@@ -52,7 +52,7 @@ public class PromotionMove extends ChessMove {
     public boolean isSane(ChessPosition board) {
         Piece movingPiece = board.getPiece(getStart());
         if (movingPiece == null || movingPiece.getType() != Piece.Type.PAWN ||
-            !PROMOTION_TYPES.contains(movingPiece.getType())) {
+                !PROMOTION_TYPES.contains(getPromotedType())) {
             return false;
         }
 
