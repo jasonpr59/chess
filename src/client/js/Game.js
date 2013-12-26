@@ -693,5 +693,25 @@ Game.prototype.makeServerMove = function(moveString) {
   var startRank = parseInt(moveString.charAt(1), 10);
   var endFile = parseInt(moveString.charAt(2), 10);
   var endRank = parseInt(moveString.charAt(3), 10);
-  this.move(startFile, startRank, endFile, endRank);
+  if (moveString.length == 5) {
+    var typeChar = moveString.charAt(4);
+    var type;
+    if (typeChar == "N") {
+      type = "knight";
+    } else if (typeChar == "B") {
+      type = "bishop";
+    } else if (typeChar == "R") {
+      type = "rook";
+    } else if (typeChar == "Q") {
+      type = "queen";
+    } else {
+      throw "Invalid promotion type.";
+    }
+    var promotionCallback = function() {
+      return type;
+    };
+    this.move(startFile, startRank, endFile, endRank, promotionCallback);
+  } else {
+    this.move(startFile, startRank, endFile, endRank);
+  }
 };
