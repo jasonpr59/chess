@@ -26,10 +26,14 @@ GameUI.prototype.click = function(x, y, width){
   if (this.currentlyMoving){
     //This click indicates the end of a move.
     try {
-      this.game.move(this.currentx, this.currenty, row, col, function(x_o, y_o, x_d, y_d, isWhite){return prompt("Promote to 'queen', 'rook', 'bishop', or 'knight'?");});
-
+      var promotionType;
+      this.game.move(this.currentx, this.currenty, row, col,
+                     function(x_o, y_o, x_d, y_d, isWhite){
+                       promotionType = prompt("Promote to 'queen', 'rook', 'bishop', or 'knight'?");
+                       return promotionType;
+                     });
       // Send to server.
-      this.serverLink.sendMove(this.currentx, this.currenty, row, col);
+      this.serverLink.sendMove(this.currentx, this.currenty, row, col, promotionType);
     } finally {
       this.currentlyMoving = false;
       this.currentx = null;

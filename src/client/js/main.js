@@ -23,7 +23,22 @@ function ServerLink(moveCallback) {
 };
 
 ServerLink.prototype.sendMove = function(startFile, startRank,
-                                         endFile, endRank) {
+                                         endFile, endRank, promotionType) {
   var message = "" + startFile + startRank + endFile + endRank;
+  if (promotionType) {
+    var typeLetter;
+    if (promotionType == "knight") {
+      typeLetter = "N";
+    } else if (promotionType == "bishop") {
+      typeLetter = "B";
+    } else if (promotionType == "rook") {
+      typeLetter = "R";
+    } else if (promotionType == "queen") {
+      typeLetter = "Q";
+    } else {
+      throw "Invalid promotion type.";
+    }
+    message += typeLetter;
+  }
   this.ws.send(message);
 };
