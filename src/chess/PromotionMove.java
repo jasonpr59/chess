@@ -52,7 +52,7 @@ public class PromotionMove extends ChessMove {
     public boolean isSane(ChessPosition board) {
         Piece movingPiece = board.getPiece(getStart());
         if (movingPiece == null || movingPiece.getType() != Piece.Type.PAWN ||
-            !PROMOTION_TYPES.contains(movingPiece.getType())) {
+                !PROMOTION_TYPES.contains(getPromotedType())) {
             return false;
         }
 
@@ -84,5 +84,49 @@ public class PromotionMove extends ChessMove {
         builder.placePiece(promotedPiece, getEnd());
 
         return builder.build();
+    }
+
+    /** Serialize this PromotionMove as a 5-character string. */
+    @Override
+    public String serialized() {
+        String coords = super.serialized();
+        String type;
+        switch (getPromotedType()) {
+        case KNIGHT:
+            type = "N";
+            break;
+        case BISHOP:
+            type = "B";
+            break;
+        case ROOK:
+            type = "R";
+            break;
+        case QUEEN:
+            type = "Q";
+            break;
+        default:
+            throw new RuntimeException("Invalid promotion type.");
+        }
+        return coords + type;
+    }
+
+    public static PromotionMove deserialized(String s) {
+        assert s.length() == 5;
+        char typeChar = s.charAt(4);
+        Piece.Type type;
+        if (typeChar == 'N') {
+            type = Piece.Type.KNIGHT;
+        } else if (typeChar == 'B') {
+            type = Piece.Type.BISHOP;
+        } else if (typeChar == 'R') {
+            type = Piece.Type.ROOK;
+        } else if (typeChar == 'Q') {
+            type = Piece.Type.QUEEN;
+        } else {
+            throw new RuntimeException("Invalid promotion type.");
+        }
+
+        ChessMove basicMove = ChessMove.deserialized(s.substring(0, 4));
+        return new PromotionMove(basicMove, type);
     }
 }
