@@ -1,2 +1,11 @@
 #!/bin/bash
-websocketd --port=8080 java -jar build/jar/player.jar
+pushd src/client
+python -m SimpleHTTPServer 8079 &
+popd
+
+websocketd --port=8080 java -jar build/jar/player.jar &
+
+# Kill children on SIGTERM.
+trap "kill 0" SIGINT SIGTERM EXIT
+
+wait
