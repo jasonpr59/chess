@@ -131,12 +131,7 @@ public class Square {
 
     @Override
     public String toString(){
-        // TODO(jasonpr): Do this in one line,
-        // without making Java angry about int vs. char types.
-        char fileChar = 'a';
-        fileChar -= 1;
-        fileChar += file;
-
+        char fileChar = (char) ('a' - 1 + file);
         return Character.toString(fileChar) + rank;
     }
 
