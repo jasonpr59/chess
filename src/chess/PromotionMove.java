@@ -21,15 +21,6 @@ public class PromotionMove extends ChessMove {
         promotionTypes.add(Type.QUEEN);
         PROMOTION_TYPES = Collections.unmodifiableSet(promotionTypes);
     }
-    public PromotionMove(Square start, Square end, Type promotedType) {
-        super(start, end);
-        this.promotedType = promotedType;
-    }
-
-    public PromotionMove(Square start, Delta delta, Type promotedType) {
-        super(start, delta);
-        this.promotedType = promotedType;
-    }
 
     public PromotionMove(ChessMove move, Type promotedType) {
         super(move.getStart(), move.getEnd());
