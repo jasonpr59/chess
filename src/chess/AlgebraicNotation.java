@@ -116,36 +116,59 @@ public class AlgebraicNotation {
         return move;
     }
 
-    /** Get the only possible starting square for a move. */
-    private static Square start(Piece.Type type, Square end, ChessPosition board) throws AlgebraicNotationException {
+    /**
+     * Return the only possible starting square for a move.
+     * @param type The type of the moving piece.
+     * @param end The move's ending square.
+     * @param position The position from which the move is to be made.
+     * @throws AlgebraicNotationException if there is no possible starting square.
+     */
+    private static Square start(Piece.Type type, Square end, ChessPosition position) throws AlgebraicNotationException {
         // TODO: Make more efficient.
         // TODO: Check uniqueness of start square (i.e. that no disambiguation
         // was necessary).
-        return startFromSquares(type, Square.ALL, end, board);
+        return startFromSquares(type, Square.ALL, end, position);
     }
 
-    /** Get the only possible starting square for a move, given some rank or file clue. */
-    private static Square startFromClue(Piece.Type type, char clue, Square end, ChessPosition board) throws AlgebraicNotationException {
-        return startFromSquares(type, Square.line(clue), end, board);
+    /**
+     * Get the only possible starting square for a move, given some rank or file clue.
+     * @param type The type of the moving piece.
+     * @param clue The rank or file from which to select the starting square,
+     *      in ['a', 'h'] or ['1', '8'].  (This comes from, say, the 'b' in "Rbe5".)
+     * @param end The move's ending square.
+     * @param position The position from which the move is to be made.
+     * @throws AlgebraicNotationException if there is no possible starting square.
+     */
+    private static Square startFromClue(Piece.Type type, char clue, Square end, ChessPosition position) throws AlgebraicNotationException {
+        return startFromSquares(type, Square.line(clue), end, position);
     }
 
-    /** Get the only possible starting square for a move, given some optional starting squares. */
+    /**
+     * Get the only possible starting square for a move, given some optional starting squares.
+     * @param type The type of the moving piece.
+     * @param candidateStarts All the start squares to choose from.  Usually, this is the set
+     *      of all Squares in a rank or file, or Squares.ALL.
+     * @param end The move's ending square.
+     * @param position The position from which the move is to be made.
+     * @throws AlgebraicNotationException if there is no possible starting
+     *      square in candidateSqarues.
+     */
     private static Square startFromSquares(Piece.Type type, Iterable<Square> candidateStarts,
-                                           Square end, ChessPosition board) throws AlgebraicNotationException {
+                                           Square end, ChessPosition position) throws AlgebraicNotationException {
         Piece movingPiece;
         ChessMove candidateMove;
         for (Square start : candidateStarts) {
             if (start.equals(end)) {
                 continue;
             }
-            movingPiece = board.getPiece(start);
+            movingPiece = position.getPiece(start);
             if (movingPiece == null || movingPiece.getType() != type ||
-                movingPiece.getColor() != board.getToMoveColor()) {
+                movingPiece.getColor() != position.getToMoveColor()) {
                 continue;
             }
             candidateMove = new ChessMove(start, end);
 
-            if (candidateMove.isLegal(board)) {
+            if (candidateMove.isLegal(position)) {
                 return start;
             }
         }
