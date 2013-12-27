@@ -9,6 +9,7 @@ import java.util.Set;
 
 import chess.Piece.Type;
 
+/** A pawn-promotion chess move. */
 public class PromotionMove extends ChessMove {
     private final Type promotedType;
     private static final Set<Type> PROMOTION_TYPES;
@@ -22,6 +23,7 @@ public class PromotionMove extends ChessMove {
         PROMOTION_TYPES = Collections.unmodifiableSet(promotionTypes);
     }
 
+    /** Create a PromotionMove from a normal move and a promoted Piece.Type. */
     public PromotionMove(ChessMove move, Type promotedType) {
         super(move.getStart(), move.getEnd());
         this.promotedType = promotedType;
@@ -31,6 +33,11 @@ public class PromotionMove extends ChessMove {
         return promotedType;
     }
 
+    /**
+     * Return all PromotionMoves that a Move could beget.
+     * That is, create four PromotionMoves from one ChessMove,
+     * one for each promotion type (knight, bishop, rook, queen).
+     */
     public static Collection<PromotionMove> allPromotions(ChessMove move) {
         List<PromotionMove> allPromotions = new ArrayList<PromotionMove>();
         for (Type type : PROMOTION_TYPES) {
@@ -101,6 +108,7 @@ public class PromotionMove extends ChessMove {
         return coords + type;
     }
 
+    /** Deserialize this move from a 5-character String. */
     public static PromotionMove deserialized(String s) {
         assert s.length() == 5;
         char typeChar = s.charAt(4);
