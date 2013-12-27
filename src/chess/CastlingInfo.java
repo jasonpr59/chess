@@ -27,6 +27,7 @@ public class CastlingInfo {
         }
     }
 
+    // The six booleans that completely define the CastlingInfo.
     private final boolean whiteKingMoved;
     private final boolean blackKingMoved;
     private final boolean whiteKingRookMoved;
@@ -34,17 +35,31 @@ public class CastlingInfo {
     private final boolean whiteQueenRookMoved;
     private final boolean blackQueenRookMoved;
 
+    // Flags used for computing ids from "moved values."
+    // WKM = "white king moved", etc.
+    // One might argue that these abbreviations are unacceptable,
+    // but if you're using these flags anywhere except *right* next
+    // to the unabbreviated boolean value names, you're doing something
+    // wrong.
+    private static final int WKM_FLAG = 1;
+    private static final int BKM_FLAG = 2;
+    private static final int WKRM_FLAG = 4;
+    private static final int BKRM_FLAG = 8;
+    private static final int WQRM_FLAG = 16;
+    private static final int BQRM_FLAG = 32;
+
+
     /** Create the CastlingInfo with the specified id. */
     private CastlingInfo(byte id) {
         if (id < 0 || id >= 64) {
             throw new IllegalArgumentException();
         }
-        whiteKingMoved = (id & 1) != 0;
-        blackKingMoved = (id & 2) != 0;
-        whiteKingRookMoved = (id & 4) != 0;
-        blackKingRookMoved = (id & 8) != 0;
-        whiteQueenRookMoved = (id & 16) != 0;
-        blackQueenRookMoved = (id & 32) != 0;
+        whiteKingMoved = (id & WKM_FLAG) != 0;
+        blackKingMoved = (id & BKM_FLAG) != 0;
+        whiteKingRookMoved = (id & WKRM_FLAG) != 0;
+        blackKingRookMoved = (id & BKRM_FLAG) != 0;
+        whiteQueenRookMoved = (id & WQRM_FLAG) != 0;
+        blackQueenRookMoved = (id & BQRM_FLAG) != 0;
     }
 
     /** Return a CastlingInfo with the specified "moved values." */
@@ -67,12 +82,12 @@ public class CastlingInfo {
                            final boolean blackKingRookMoved,
                            final boolean whiteQueenRookMoved,
                            final boolean blackQueenRookMoved) {
-        return (byte) ((whiteKingMoved ? 1 : 0) +
-                       (blackKingMoved ? 2 : 0) +
-                       (whiteKingRookMoved ? 4 : 0) +
-                       (blackKingRookMoved ? 8 : 0) +
-                       (whiteQueenRookMoved ? 16 : 0) +
-                       (blackQueenRookMoved ? 32 : 0));
+        return (byte) ((whiteKingMoved ? WKM_FLAG : 0) +
+                       (blackKingMoved ? BKM_FLAG : 0) +
+                       (whiteKingRookMoved ? WKRM_FLAG : 0) +
+                       (blackKingRookMoved ? BKRM_FLAG : 0) +
+                       (whiteQueenRookMoved ? WQRM_FLAG : 0) +
+                       (blackQueenRookMoved ? BQRM_FLAG : 0));
     }
 
     /** Return the CastlingInfo with the specified id. */
