@@ -45,10 +45,4 @@ public interface ChessPosition extends Position<ChessPosition> {
 
     /** Return the subset of sane moves from a set of moves. */
     public Collection<ChessMove> filterSane(Collection<ChessMove> candidates);
-
-    /** Return whether the king is unmoved and the h-rook is unmoved. */
-    public boolean kingCastlePiecesReady(Piece.Color color);
-
-    /** Return whether the king is unmoved and the a-rook is unmoved. */
-    public boolean queenCastlePiecesReady(Piece.Color color);
 }

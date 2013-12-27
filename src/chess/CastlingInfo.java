@@ -5,6 +5,9 @@ package chess;
  * This class is immutable.
  */
 public class CastlingInfo {
+
+    public enum Side { KINGSIDE, QUEENSIDE; }
+
     // There are only 2^6 = 64 possible CastlingInfos, since
     // a CastlingInfo is defined by 6 booleans.  We generate
     // all of them statically, then pass around references to
@@ -152,20 +155,19 @@ public class CastlingInfo {
     }
 
     /** Return whether the king is unmoved AND the h-rook is unmoved. */
-    public boolean kingCastlePiecesReady(Piece.Color color) {
-        if (color == Piece.Color.WHITE){
-            return !whiteKingMoved && !whiteKingRookMoved;
+    public boolean castlePiecesReady(Piece.Color color, Side side) {
+        if (side == Side.KINGSIDE){
+            if (color == Piece.Color.WHITE){
+                return !whiteKingMoved && !whiteKingRookMoved;
+            } else {
+                return !blackKingMoved && !blackKingRookMoved;
+            }
         } else {
-            return !blackKingMoved && !blackKingRookMoved;
-        }
-    }
-
-    /** Return whether the king is unmoved AND the a-rook is unmoved. */
-    public boolean queenCastlePiecesReady(Piece.Color color) {
-        if (color == Piece.Color.WHITE){
-            return !whiteKingMoved && !whiteQueenRookMoved;
-        } else {
-            return !blackKingMoved && !blackQueenRookMoved;
+            if (color == Piece.Color.WHITE){
+                return !whiteKingMoved && !whiteQueenRookMoved;
+            } else {
+                return !blackKingMoved && !blackQueenRookMoved;
+            }
         }
     }
 }
