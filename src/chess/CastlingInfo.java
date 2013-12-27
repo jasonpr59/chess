@@ -1,26 +1,15 @@
 package chess;
 
+/**
+ * Stores whether certain pieces have moved, for deciding whether castling is legal.
+ * This class is immutable.
+ */
 public class CastlingInfo {
-    // TODO: Cache all 2^6 possible CastlingInfos,
-    // just pass around references to immutable instances.
-    // (The fact that this is mutable is unsettling, since "immutable"
-    // Boards keep a reference to a CastlingInfo.)
-    private boolean whiteKingMoved = false;
-    private boolean blackKingMoved = false;
-
-
-    // These values are guaranteed to be correct whenever
-    // the same-colored king has not moved.
-    // (If the same-colored king *has* moved, then castling will
-    // be illegal no matter whether the rook has moved, so we no
-    // longer care whether the rooks have moved, and their values
-    // are unspecified.)
-    private boolean whiteKingRookMoved = false;
-    private boolean blackKingRookMoved = false;
-
-    private boolean whiteQueenRookMoved = false;
-    private boolean blackQueenRookMoved = false;
-
+    // There are only 2^6 = 64 possible CastlingInfos, since
+    // a CastlingInfo is defined by 6 booleans.  We generate
+    // all of them statically, then pass around references to
+    // these (immutable) CastlingInfos.
+    private static CastlingInfo[] ALL;
 
     // Convenience squares, for deciding whether kings/rooks have moved.
     private static final Square E1 = Square.squareAt(5, 1);
@@ -32,26 +21,87 @@ public class CastlingInfo {
     private static final Square A1 = Square.squareAt(1, 1);
     private static final Square A8 = Square.squareAt(1, 8);
 
+    static {
+        // Generate all the possible CastlingInfos, ahead of time.
+        // Each one
+        ALL = new CastlingInfo[64];
+        for (byte id = 0; id < 64; id++) {
+            ALL[id] = new CastlingInfo(id);
+        }
+    }
 
-    /**
-     * Construct a CastlingInfo with no moved kings or rooks.
-     */
-    public CastlingInfo() {
+    // The six booleans that completely define the CastlingInfo.
+    private final boolean whiteKingMoved;
+    private final boolean blackKingMoved;
+    private final boolean whiteKingRookMoved;
+    private final boolean blackKingRookMoved;
+    private final boolean whiteQueenRookMoved;
+    private final boolean blackQueenRookMoved;
+
+    // Flags used for computing ids from "moved values."
+    // WKM = "white king moved", etc.
+    // One might argue that these abbreviations are unacceptable,
+    // but if you're using these flags anywhere except *right* next
+    // to the unabbreviated boolean value names, you're doing something
+    // wrong.
+    private static final int WKM_FLAG = 1;
+    private static final int BKM_FLAG = 2;
+    private static final int WKRM_FLAG = 4;
+    private static final int BKRM_FLAG = 8;
+    private static final int WQRM_FLAG = 16;
+    private static final int BQRM_FLAG = 32;
+
+    /** Create the CastlingInfo with the specified id. */
+    private CastlingInfo(byte id) {
+        if (id < 0 || id >= 64) {
+            throw new IllegalArgumentException();
+        }
+        whiteKingMoved = (id & WKM_FLAG) != 0;
+        blackKingMoved = (id & BKM_FLAG) != 0;
+        whiteKingRookMoved = (id & WKRM_FLAG) != 0;
+        blackKingRookMoved = (id & BKRM_FLAG) != 0;
+        whiteQueenRookMoved = (id & WQRM_FLAG) != 0;
+        blackQueenRookMoved = (id & BQRM_FLAG) != 0;
+    }
+
+    /** Return a CastlingInfo with the specified "moved values." */
+    private static CastlingInfo fromValues(final boolean whiteKingMoved,
+                                           final boolean blackKingMoved,
+                                           final boolean whiteKingRookMoved,
+                                           final boolean blackKingRookMoved,
+                                           final boolean whiteQueenRookMoved,
+                                           final boolean blackQueenRookMoved) {
+        byte id = id(whiteKingMoved, blackKingMoved,
+                     whiteKingRookMoved, blackKingRookMoved,
+                     whiteQueenRookMoved, blackQueenRookMoved);
+        return fromId(id);
+    }
+
+    /** Return the id of the CastlingInfo with the specified "moved values." */
+    private static byte id(final boolean whiteKingMoved,
+                           final boolean blackKingMoved,
+                           final boolean whiteKingRookMoved,
+                           final boolean blackKingRookMoved,
+                           final boolean whiteQueenRookMoved,
+                           final boolean blackQueenRookMoved) {
+        return (byte) ((whiteKingMoved ? WKM_FLAG : 0) +
+                       (blackKingMoved ? BKM_FLAG : 0) +
+                       (whiteKingRookMoved ? WKRM_FLAG : 0) +
+                       (blackKingRookMoved ? BKRM_FLAG : 0) +
+                       (whiteQueenRookMoved ? WQRM_FLAG : 0) +
+                       (blackQueenRookMoved ? BQRM_FLAG : 0));
+    }
+
+    /** Return the CastlingInfo with the specified id. */
+    private static CastlingInfo fromId(byte id) {
+        return ALL[id];
     }
 
     /**
-     * Construct a CastlingInfo identical to some source CastlingInfo.
-     * @param that The source CastlingInfo.
+     * Return a CastlingInfo with no moved kings or rooks.
      */
-    public CastlingInfo(CastlingInfo that) {
-        this.whiteKingMoved = that.isWhiteKingMoved();
-        this.blackKingMoved = that.isBlackKingMoved();
-
-        this.whiteKingRookMoved = that.isWhiteKingRookMoved();
-        this.blackKingRookMoved = that.isBlackKingRookMoved();
-
-        this.whiteQueenRookMoved = that.isWhiteQueenRookMoved();
-        this.blackQueenRookMoved = that.isBlackQueenRookMoved();
+    public static CastlingInfo allowAll() {
+        return fromValues(false, false, false, false, false, false);
     }
 
     public boolean isWhiteKingMoved() {
@@ -79,28 +129,29 @@ public class CastlingInfo {
     }
 
     /**
-     * MODIFY this CastlingInfo to reflect the king/rook movements induced by a move.
+     * Get a copy of this CastlingInfo that reflects the king/rook movements induced by a move.
      * Requires that the move is legal for the board that this CastlingInfo pertains to.
      * @param move The move to account for.
      */
-    public void update(ChessMove move) {
+    public CastlingInfo updated(ChessMove move) {
         // If any move starts or ends at a square of interest, then the
         // piece whose home was that square has either moved (in this move
         // or a previous move), or been captured.  In any such case, it means
         // the piece whose home was that square has moved in some way or another.
-        whiteKingMoved |= move.startsOrEndsAt(E1);
-        blackKingMoved |= move.startsOrEndsAt(E8);
+        boolean whiteKingMoved = this.whiteKingMoved || move.startsOrEndsAt(E1);
+        boolean blackKingMoved = this.blackKingMoved || move.startsOrEndsAt(E8);
 
-        whiteKingRookMoved |= move.startsOrEndsAt(H1);
-        blackKingRookMoved |= move.startsOrEndsAt(H8);
+        boolean whiteKingRookMoved = this.whiteKingRookMoved || move.startsOrEndsAt(H1);
+        boolean blackKingRookMoved = this.blackKingRookMoved || move.startsOrEndsAt(H8);
 
-        whiteQueenRookMoved |= move.startsOrEndsAt(A1);
-        blackQueenRookMoved |= move.startsOrEndsAt(A8);
+        boolean whiteQueenRookMoved = this.whiteQueenRookMoved || move.startsOrEndsAt(A1);
+        boolean blackQueenRookMoved = this.blackQueenRookMoved || move.startsOrEndsAt(A8);
+
+        return fromValues(whiteKingMoved, blackKingMoved, whiteKingRookMoved,
+                          blackKingRookMoved, whiteQueenRookMoved, blackQueenRookMoved);
     }
 
-    /**
-     * @return true iff the king is unmoved and the h-rook is unmoved.
-     */
+    /** Return whether the king is unmoved AND the h-rook is unmoved. */
     public boolean kingCastlePiecesReady(Piece.Color color) {
         if (color == Piece.Color.WHITE){
             return !whiteKingMoved && !whiteKingRookMoved;
@@ -109,9 +160,7 @@ public class CastlingInfo {
         }
     }
 
-    /**
-     * @return true iff the king is unmoved and the a-rook is unmoved.
-     */
+    /** Return whether the king is unmoved AND the a-rook is unmoved. */
     public boolean queenCastlePiecesReady(Piece.Color color) {
         if (color == Piece.Color.WHITE){
             return !whiteKingMoved && !whiteQueenRookMoved;
@@ -119,5 +168,4 @@ public class CastlingInfo {
             return !blackKingMoved && !blackQueenRookMoved;
         }
     }
-
 }
