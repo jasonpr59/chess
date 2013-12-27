@@ -186,14 +186,18 @@ public abstract class AbstractChessPosition implements ChessPosition {
                 break;
             case KING:
                 candidateEnds = start.explore(Delta.QUEEN_DIRS, 1);
+                candidateMoves = start.distributeOverEnds(candidateEnds);
                 if (start.getFile() == 5) {
                     // There's a decent chance that the king's in its home square,
                     // and a zero chance that a two-square hop along a rank will
                     // put us off the board.
-                    candidateEnds.add(start.plus(new Delta(2, 0)));
-                    candidateEnds.add(start.plus(new Delta(-2, 0)));
+                    // TODO: Figure out how to add these directly to candidateMoves,
+                    // without making the generics gods sad.
+                    Collection<CastlingMove> castlingMoves = new HashSet<CastlingMove>();
+                    castlingMoves.add(new CastlingMove(start, new Delta(2, 0)));
+                    castlingMoves.add(new CastlingMove(start, new Delta(-2, 0)));
+                    candidateMoves.addAll(castlingMoves);
                 }
-                candidateMoves = start.distributeOverEnds(candidateEnds);
                 break;
             default:
                 throw new RuntimeException("The piece type was not matched in the switch statement.");
