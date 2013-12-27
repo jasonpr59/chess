@@ -52,7 +52,6 @@ public class ChessMove implements Move<ChessPosition>{
      * Requires that this move is sane.
      */
     public Square capturedSquare(ChessPosition board) {
-        // TODO(jasonpr): Factor some common code out of here and isSane.
         if (board.getPiece(end) != null) {
             // There's something in the landing square, so that's what's captured.
             return end;
