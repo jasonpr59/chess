@@ -66,7 +66,7 @@ public class Game {
     public static Game fromMoves(String[] moves) throws AlgebraicNotationException, IllegalMoveException {
         Game g = new Game();
         for (String move : moves) {
-            ChessMove m = AlgebraicParser.parseAlgebraic(move, g.getCurrentPosition());
+            ChessMove m = AlgebraicNotation.parse(move, g.getCurrentPosition());
             if (m.isLegal(g.getCurrentPosition())){
                 g.makeMove(m);
             } else {

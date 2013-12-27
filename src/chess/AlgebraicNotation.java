@@ -8,8 +8,15 @@ import java.util.Map;
 import chess.Piece.Type;
 import chess.exceptions.AlgebraicNotationException;
 
-public class AlgebraicParser {
+/**
+ * Utility class for algebraic chess notation (AN).
+ * See http://en.wikipedia.org/wiki/Algebraic_notation_(chess).
+ */
+public class AlgebraicNotation {
+    // Map of AN letters to actual Piece.Type values.
     private static final Map<Character, Piece.Type> PIECE_NAMES;
+
+    // Convenience map, for generating castling moves.
     private static final Map<Piece.Color, Square> KING_SQUARES;
 
     static {
@@ -28,26 +35,29 @@ public class AlgebraicParser {
     }
 
     /**
-     * Create a move from its algebraic representation.
+     * Create a ChessMove from its algebraic representation.
      *
-     * (The algebraic representation should not include "#", "##", "!", etc.
+     * (The algebraic representation should not include "+", "#", "!", etc.
      *
      * Behavior is unspecified if the algebraic representation is
      * more specific than is necessary on the given board (e.g.
      * "Ree6" where only "Re6" is needed).
      *
-     * @param alg
-     * @param board
-     * @return
-     * @throws AlgebraicNotationException
+     * @param alg The algebraic notation String to be parsed.
+     * @param position The ChessPosition on which the move is to be played.
+     *      (The position affects how the String will be parsed.)
+     * @throws AlgebraicNotationException when the given string cannot be understood
+     *      as a move on the given ChessPosition.
      */
-    public static ChessMove parseAlgebraic(String alg, ChessPosition board) throws AlgebraicNotationException {
+    public static ChessMove parse(String alg, ChessPosition position) throws AlgebraicNotationException {
+        // TODO: Refactor the heck out of this mess!  Or, at least, comment the heck out of it.
+
         if (alg.equals("O-O")) {
-            return new ChessMove(KING_SQUARES.get(board.getToMoveColor()), new Delta(2, 0));
+            return new ChessMove(KING_SQUARES.get(position.getToMoveColor()), new Delta(2, 0));
         }
 
         if (alg.equals("O-O-O")) {
-            return new ChessMove(KING_SQUARES.get(board.getToMoveColor()), new Delta(-2, 0));
+            return new ChessMove(KING_SQUARES.get(position.getToMoveColor()), new Delta(-2, 0));
         }
 
         // TODO: Implement promotion.
@@ -90,15 +100,15 @@ public class AlgebraicParser {
             start = Square.algebraic(alg.substring(startFront, startBack));
         } else if (startLen == 1) {
             char clue = alg.charAt(startFront);
-            start = startFromClue(type, clue, end, board);
+            start = startFromClue(type, clue, end, position);
         } else {
-            start = start(type, end, board);
+            start = start(type, end, position);
         }
 
         ChessMove move = new ChessMove(start, end);
 
         // TODO(jasonpr): Do some more sanity checks
-        if (captures == (move.capturedSquare(board) == null)) {
+        if (captures == (move.capturedSquare(position) == null)) {
             throw new AlgebraicNotationException("A capture was indicated with 'x', but " +
                                                  "the indicated move doesn't perform a capture.");
         }
@@ -106,34 +116,59 @@ public class AlgebraicParser {
         return move;
     }
 
-
-    private static Square start(Piece.Type type, Square end, ChessPosition board) throws AlgebraicNotationException {
+    /**
+     * Return the only possible starting square for a move.
+     * @param type The type of the moving piece.
+     * @param end The move's ending square.
+     * @param position The position from which the move is to be made.
+     * @throws AlgebraicNotationException if there is no possible starting square.
+     */
+    private static Square start(Piece.Type type, Square end, ChessPosition position) throws AlgebraicNotationException {
         // TODO: Make more efficient.
         // TODO: Check uniqueness of start square (i.e. that no disambiguation
         // was necessary).
-        return startFromSquares(type, Square.ALL, end, board);
+        return startFromSquares(type, Square.ALL, end, position);
     }
 
-    private static Square startFromClue(Piece.Type type, char clue, Square end, ChessPosition board) throws AlgebraicNotationException {
-        return startFromSquares(type, Square.line(clue), end, board);
+    /**
+     * Get the only possible starting square for a move, given some rank or file clue.
+     * @param type The type of the moving piece.
+     * @param clue The rank or file from which to select the starting square,
+     *      in ['a', 'h'] or ['1', '8'].  (This comes from, say, the 'b' in "Rbe5".)
+     * @param end The move's ending square.
+     * @param position The position from which the move is to be made.
+     * @throws AlgebraicNotationException if there is no possible starting square.
+     */
+    private static Square startFromClue(Piece.Type type, char clue, Square end, ChessPosition position) throws AlgebraicNotationException {
+        return startFromSquares(type, Square.line(clue), end, position);
     }
 
+    /**
+     * Get the only possible starting square for a move, given some optional starting squares.
+     * @param type The type of the moving piece.
+     * @param candidateStarts All the start squares to choose from.  Usually, this is the set
+     *      of all Squares in a rank or file, or Squares.ALL.
+     * @param end The move's ending square.
+     * @param position The position from which the move is to be made.
+     * @throws AlgebraicNotationException if there is no possible starting
+     *      square in candidateSqarues.
+     */
     private static Square startFromSquares(Piece.Type type, Iterable<Square> candidateStarts,
-                                           Square end, ChessPosition board) throws AlgebraicNotationException {
+                                           Square end, ChessPosition position) throws AlgebraicNotationException {
         Piece movingPiece;
         ChessMove candidateMove;
         for (Square start : candidateStarts) {
             if (start.equals(end)) {
                 continue;
             }
-            movingPiece = board.getPiece(start);
+            movingPiece = position.getPiece(start);
             if (movingPiece == null || movingPiece.getType() != type ||
-                movingPiece.getColor() != board.getToMoveColor()) {
+                movingPiece.getColor() != position.getToMoveColor()) {
                 continue;
             }
             candidateMove = new ChessMove(start, end);
 
-            if (candidateMove.isLegal(board)) {
+            if (candidateMove.isLegal(position)) {
                 return start;
             }
         }
