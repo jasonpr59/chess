@@ -3,7 +3,7 @@
 // other files, which I wrote a year ago, for the sake of
 // consistency.
 function ServerLink(moveCallback) {
-  this.ws = new WebSocket('ws://localhost:8080');
+  this.ws = new WebSocket('ws://' + location.hostname + ':8080');
   this.ws.onopen = function() {
     console.log('CONNECT');
   };
