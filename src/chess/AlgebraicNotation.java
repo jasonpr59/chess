@@ -12,7 +12,7 @@ import chess.exceptions.AlgebraicNotationException;
  * Utility class for algebraic chess notation (AN).
  * See http://en.wikipedia.org/wiki/Algebraic_notation_(chess).
  */
-public class AlgebraicParser {
+public class AlgebraicNotation {
     // Map of AN letters to actual Piece.Type values.
     private static final Map<Character, Piece.Type> PIECE_NAMES;
 
@@ -49,7 +49,7 @@ public class AlgebraicParser {
      * @throws AlgebraicNotationException when the given string cannot be understood
      *      as a move on the given ChessPosition.
      */
-    public static ChessMove parseAlgebraic(String alg, ChessPosition position) throws AlgebraicNotationException {
+    public static ChessMove parse(String alg, ChessPosition position) throws AlgebraicNotationException {
         // TODO: Refactor the heck out of this mess!  Or, at least, comment the heck out of it.
 
         if (alg.equals("O-O")) {
