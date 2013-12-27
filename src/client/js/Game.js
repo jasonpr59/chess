@@ -288,7 +288,7 @@ Game.prototype.can_move_now = function(x_o, y_o, x_d, y_d){
 //Params (x_d, y_d) the location to which the piece should be moved.
 //promotionCallback A function of parameters (x_o, y_o, x_d, y_d, isWhite) to be called when a pawn of color isWhite is promoted
 //when moved from (x_o, y_o) to (x_d, y_d), which returns the piece type to which to promote.
-Game.prototype.move = function(x_o, y_o, x_d, y_d, promotionCallback){
+Game.prototype.move = function(x_o, y_o, x_d, y_d, promotionCallback, castlesCallback){
   if (this.can_move_now(x_o, y_o, x_d, y_d)){
     var targetPiece = this.piece_at(x_o, y_o);
     var capturedPiece = this.piece_at(x_d, y_d);
@@ -297,7 +297,7 @@ Game.prototype.move = function(x_o, y_o, x_d, y_d, promotionCallback){
       //Should never happen, given that can_move returned true...
       throw "There's no piece at " + x_o + ", " + y_o;
     } else if (targetPiece.type == "king") {
-      this._transport_king(x_o, y_o, x_d, y_d);
+      this._transport_king(x_o, y_o, x_d, y_d, castlesCallback);
     } else {
       this._transport(x_o, y_o, x_d, y_d);
 
@@ -607,9 +607,14 @@ Game.prototype._transport = function(x_o, y_o, x_d, y_d){
 
 //Requires that the move be either a valid, legal single-space king move,
 //or a valid, legal castling move.
-Game.prototype._transport_king = function(x_o, y_o, x_d, y_d){
+Game.prototype._transport_king = function(x_o, y_o, x_d, y_d, castlesCallback){
   var isWhite = this.piece_at(x_o, y_o).isWhite;
   if (Math.abs(x_d-x_o) == 2){
+    // Dirty hack to easily communicate to the caller's caller's... caller that
+    // this move was a castle.
+    if (castlesCallback) {
+      castlesCallback();
+    }
     //By the requirements of this method, this move is a valid, legal castle.
     this._castle_king(x_o, y_o, x_d, y_d);
   } else {

@@ -23,7 +23,7 @@ function ServerLink(moveCallback) {
 };
 
 ServerLink.prototype.sendMove = function(startFile, startRank,
-                                         endFile, endRank, promotionType) {
+                                         endFile, endRank, promotionType, castles) {
   var message = "" + startFile + startRank + endFile + endRank;
   if (promotionType) {
     var typeLetter;
@@ -40,5 +40,9 @@ ServerLink.prototype.sendMove = function(startFile, startRank,
     }
     message += typeLetter;
   }
+  if (castles) {
+    message += "C";
+  }
+
   this.ws.send(message);
 };

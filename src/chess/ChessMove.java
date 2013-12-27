@@ -32,6 +32,11 @@ public class ChessMove implements Move<ChessPosition>{
         this(start, start.plus(delta));
     }
 
+    /** Construct a copy of another ChessMove. */
+    public ChessMove(ChessMove that) {
+        this(that.getStart(), that.getEnd());
+    }
+
     public Square getStart() {
         return start;
     }
@@ -144,29 +149,8 @@ public class ChessMove implements Move<ChessPosition>{
             case QUEEN:
                 return (isBasic() || isDiagonal()) && isOpen(board);
             case KING:
-                if (delta.getDeltaFile() == 2 && delta.getDeltaRank() == 0) {
-                    // This could be a king-castling move.
-                    if (board.kingCastlePiecesReady(board.getToMoveColor())) {
-                        // King and rook are in place... Check if there's space!
-                        return (board.isEmpty(start.plus(new Delta(1, 0))) &&
-                                board.isEmpty(start.plus(new Delta(2, 0))));
-                    } else {
-                        return false;
-                    }
-                } else if (delta.getDeltaFile() == -2 && delta.getDeltaRank() == 0) {
-                    // This could be a queen-castling move.
-                    if (board.queenCastlePiecesReady(board.getToMoveColor())) {
-                        // King and rook are in place.  Check if there's space!
-                        return (board.isEmpty(start.plus(new Delta(-1, 0))) &&
-                                board.isEmpty(start.plus(new Delta(-2, 0))) &&
-                                board.isEmpty(start.plus(new Delta(-3, 0))));
-                    } else {
-                        return false;
-                    }
-                } else {
-                    // Not a castling move.
-                    return (Math.abs(delta.getDeltaRank()) <= 1 && Math.abs(delta.getDeltaFile()) <= 1);
-                }
+                // Not a castling move (this is ChessMove.isSane, not CastlingMove.isSane)
+                return (Math.abs(delta.getDeltaRank()) <= 1 && Math.abs(delta.getDeltaFile()) <= 1);
             default:
                 throw new RuntimeException("The piece type was not matched in the switch statement.");
         }
@@ -178,23 +162,8 @@ public class ChessMove implements Move<ChessPosition>{
      if (!isSane(board)) {
          return false;
      }
-     // If it's castling, make sure it's legal.
-        if (board.getPiece(start).getType() == Piece.Type.KING && isCastling(board)) {
-            // assert that king was not checked before moving.
-            if (board.checked(board.getToMoveColor())) {
-                return false;
-            }
-            // assert that king did not move through check.
-            // Do this by making the king move to that square, and seeing whether it is checked.
-            Square transitSquare = start.plus(getDelta().unitized());
-            ChessMove loneKingMove = new ChessMove(start, transitSquare);
-            if (!loneKingMove.isLegal(board)) {
-                return false;
-            }
-        }
-
-        ChessPosition resultBoard = result(board);
-        return !resultBoard.checked(board.getToMoveColor());
+     ChessPosition resultBoard = result(board);
+     return !resultBoard.checked(board.getToMoveColor());
     }
 
     /**
@@ -205,7 +174,7 @@ public class ChessMove implements Move<ChessPosition>{
      * Requires that the move is basic or diagonal: for other moves,
      * there is no definition of Squares "between" the start and end.
      */
-    private boolean isOpen(ChessPosition board) {
+    public boolean isOpen(ChessPosition board) {
         for (Square s : between()) {
             if (board.getPiece(s) != null) {
                 return false;
@@ -289,17 +258,6 @@ public class ChessMove implements Move<ChessPosition>{
         return delta.getDeltaFile() != 0;
     }
 
-    /**
-     * Returns whether this is a castling move on some Board.
-     * Requires that the move is sane.
-     */
-    public boolean isCastling(ChessPosition board) {
-        // We already required that the move is sane.
-        // So, it's castling if it's a two-step king move.
-        return (board.getPiece(start).getType() == Piece.Type.KING &&
-                Math.abs(delta.getDeltaFile()) == 2);
-    }
-
     /** Return whether this Move starts or ends at some Square. */
     public boolean startsOrEndsAt(Square square) {
         return start.equals(square) || end.equals(square);
@@ -317,7 +275,11 @@ public class ChessMove implements Move<ChessPosition>{
         // This method is responsible for delegating to other
         // deserializers for special moves.
         if (s.length() == 5) {
-            return PromotionMove.deserialized(s);
+            if (s.charAt(4) == 'C') {
+                return CastlingMove.deserialized(s);
+            } else {
+                return PromotionMove.deserialized(s);
+            }
         }
 
         // Once we've gotten here, we're in the "normal move
@@ -328,7 +290,7 @@ public class ChessMove implements Move<ChessPosition>{
         int endFile = Integer.parseInt(s.substring(2,3));
         int endRank = Integer.parseInt(s.substring(3,4));
         return new ChessMove(Square.squareAt(startFile, startRank),
-                        Square.squareAt(endFile, endRank));
+                             Square.squareAt(endFile, endRank));
 
     }
 
@@ -352,25 +314,6 @@ public class ChessMove implements Move<ChessPosition>{
             builder.placePiece(null, start);
             // ... and put it in its final position.
             builder.placePiece(movingPiece, end);
-
-            // TODO: Factor this behavior into a CastlingMove class.
-            // Move the rook, too, if this is a castling move.
-            if (isCastling(position)) {
-                // Remove the old rook.
-                Square rookStart;
-                if (getDelta().getDeltaFile() > 0) {
-                    // King Castle
-                    rookStart = start.plus(new Delta(3, 0));
-                } else {
-                    // Queen Castle
-                    rookStart = start.plus(new Delta(-4, 0));
-                }
-                builder.placePiece(null, rookStart);
-
-                // Place the rook in its new spot.
-                Square rookEnd= start.plus(getDelta().unitized());
-                builder.placePiece(new Piece(Piece.Type.ROOK, position.getToMoveColor()), rookEnd);
-            }
 
             // Update extra board info.
             builder.setEnPassantSquare(enPassantSquare(position));

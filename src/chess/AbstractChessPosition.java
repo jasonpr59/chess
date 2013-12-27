@@ -211,14 +211,4 @@ public abstract class AbstractChessPosition implements ChessPosition {
         }
         return saneMoves;
     }
-
-    @Override
-    public boolean kingCastlePiecesReady(Piece.Color color) {
-        return getCastlingInfo().kingCastlePiecesReady(color);
-    }
-
-    @Override
-    public boolean queenCastlePiecesReady(Piece.Color color) {
-        return getCastlingInfo().queenCastlePiecesReady(color);
-    }
 }

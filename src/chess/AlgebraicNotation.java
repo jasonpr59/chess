@@ -53,11 +53,11 @@ public class AlgebraicNotation {
         // TODO: Refactor the heck out of this mess!  Or, at least, comment the heck out of it.
 
         if (alg.equals("O-O")) {
-            return new ChessMove(KING_SQUARES.get(position.getToMoveColor()), new Delta(2, 0));
+            return new CastlingMove(KING_SQUARES.get(position.getToMoveColor()), new Delta(2, 0));
         }
 
         if (alg.equals("O-O-O")) {
-            return new ChessMove(KING_SQUARES.get(position.getToMoveColor()), new Delta(-2, 0));
+            return new CastlingMove(KING_SQUARES.get(position.getToMoveColor()), new Delta(-2, 0));
         }
 
         // TODO: Implement promotion.
