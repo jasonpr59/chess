@@ -54,7 +54,6 @@ public class AlgebraicParser {
 
         final Type type;
         final String endStr;
-        // TODO: Check that, if captures, then capture occurs.
         final boolean captures;
 
         int startFront;
