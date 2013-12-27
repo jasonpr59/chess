@@ -23,7 +23,7 @@ public class ChessPositionBuilder {
     // This allows them to share state, with no worry that modifying
     // the Builder will modify the Position.
     private boolean built = false;
-    
+
     // board[file - 1][rank - 1] = the piece with specified rank and file
     // For example, board[1][7] is the piece at b8.
     private final Piece[][] board;
@@ -31,15 +31,15 @@ public class ChessPositionBuilder {
     private Color toMoveColor;
     // For use in deciding whether castling is legal.
     private CastlingInfo castlingInfo;
-    
+
     /** Create a new ChessPositionBuilder with an empty board. */
     public ChessPositionBuilder() {
         board = new Piece[8][8];
         setEnPassantSquare(null);
         setToMoveColor(Piece.Color.WHITE);
-        setCastlingInfo(new CastlingInfo());
+        setCastlingInfo(CastlingInfo.allowAll());
     }
-    
+
     /**
      * Create a new ChessPositionBuilder from some source ChessPosition.
      * If the build() method were called immediately after running this
@@ -55,7 +55,7 @@ public class ChessPositionBuilder {
         setToMoveColor(source.getToMoveColor());
         setCastlingInfo(source.getCastlingInfo());
     }
-    
+
     /**
      * Put the position in the default chess starting position.
      * That is:
@@ -75,7 +75,7 @@ public class ChessPositionBuilder {
         // No en passant square, yet.
         setEnPassantSquare(null);
         setToMoveColor(Piece.Color.WHITE);
-        setCastlingInfo(new CastlingInfo());
+        setCastlingInfo(CastlingInfo.allowAll());
 
 
         // Set up the pawns
@@ -129,34 +129,34 @@ public class ChessPositionBuilder {
 
         return this;
     }
-    
+
     private void assertUnbuilt() {
         if (built){
             throw new AssertionError("This ChessPositionBuilder already built its " +
                                      "ChessPosition, so it cannot be modified.");
         }
     }
-    
+
     /**
      * Simple private ChessPosition implementation.
-     * 
+     *
      * We use this private class so that we don't need to duplicate
      * the board in the constructor.  This allows us to just guarantee,
      * inside of ChessPositionBuilder, that we'll never modify that
      * board once we pass it into a ChessPositionImpl.
-     * 
+     *
      * If we exposed this class and its constructor publicly, we would
      * run the risk of somebody passing in a board Piece[][] array, then
      * mutating that array and violating the immutability condition.
      *
      */
     private class ChessPositionImpl extends AbstractChessPosition {
-        
+
         private final Piece[][] board;
         private final Square enPassantSquare;
         private final Piece.Color toMoveColor;
         private final CastlingInfo castlingInfo;
-        
+
         private ChessPositionImpl(Piece[][] board, Square enPassantSquare,
                                   Piece.Color toMoveColor, CastlingInfo castlingInfo) {
             super();
@@ -165,7 +165,7 @@ public class ChessPositionBuilder {
             this.toMoveColor = toMoveColor;
             this.castlingInfo = castlingInfo;
         }
-        
+
         @Override
         public Piece getPiece(Square square) {
             return board[square.getFile() - 1][square.getRank() - 1];
@@ -183,19 +183,17 @@ public class ChessPositionBuilder {
 
         @Override
         public CastlingInfo getCastlingInfo() {
-            // TODO: Once castlingInfo is immutable,
-            // remove this new CastlingInfo creation. 
-            return new CastlingInfo(castlingInfo);
+            return castlingInfo;
         }
     }
-    
+
     /** Return the ChessPosition currently represented by this ChessPositionBuilder. */
     public ChessPosition build() {
         assertUnbuilt();
         built = true;
         return new ChessPositionImpl(board, enPassantSquare, toMoveColor, castlingInfo);
     }
-    
+
     /**
      * Place a piece on a square.
      * If another piece is already on that square, it is replaced.
@@ -243,12 +241,10 @@ public class ChessPositionBuilder {
      */
     public ChessPositionBuilder setCastlingInfo(CastlingInfo castlingInfo) {
         assertUnbuilt();
-        // TODO: Once castlingInfo is immutable,
-        // remove this new CastlingInfo creation. 
-        this.castlingInfo = new CastlingInfo(castlingInfo);
+        this.castlingInfo = castlingInfo;
         return this;
     }
-    
+
     /**
      * Take note of a move's effect on future castling abilities.
      * For example, if the move moves white's h-rook, then white
@@ -257,8 +253,7 @@ public class ChessPositionBuilder {
      */
     public ChessPositionBuilder updateCastlingInfo(ChessMove move) {
         assertUnbuilt();
-        // TODO: Replace the following line once CastlingInfo becomes immutable.
-        this.castlingInfo.update(move);
+        this.castlingInfo = castlingInfo.updated(move);
         return this;
     }
 }
