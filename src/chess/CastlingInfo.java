@@ -1,6 +1,9 @@
 package chess;
 
-/** Stores whether certain pieces have moved, for deciding whether castling is legal. */
+/**
+ * Stores whether certain pieces have moved, for deciding whether castling is legal.
+ * This class is immutable.
+ */
 public class CastlingInfo {
     // There are only 2^6 = 64 possible CastlingInfos, since
     // a CastlingInfo is defined by 6 booleans.  We generate
