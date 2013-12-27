@@ -1,4 +1,6 @@
-package test;
+package test.chess;
+
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
@@ -7,7 +9,6 @@ import chess.exceptions.AlgebraicNotationException;
 import chess.exceptions.IllegalMoveException;
 
 public class GameTest {
-    
     @Test
     public void testGame() throws IllegalMoveException, AlgebraicNotationException {
         // Fried liver attack!
@@ -24,5 +25,10 @@ public class GameTest {
                           "Qf3"};
         // Ensure that this executes without error.
         Game.fromMoves(moves);
+    }
+
+    @Test
+    public void test() {
+        fail("Not yet fully implemented.");
     }
 }
