@@ -51,7 +51,6 @@ public class CastlingInfo {
     private static final int WQRM_FLAG = 16;
     private static final int BQRM_FLAG = 32;
 
-
     /** Create the CastlingInfo with the specified id. */
     private CastlingInfo(byte id) {
         if (id < 0 || id >= 64) {
@@ -104,7 +103,6 @@ public class CastlingInfo {
     public static CastlingInfo allowAll() {
         return fromValues(false, false, false, false, false, false);
     }
-
 
     public boolean isWhiteKingMoved() {
         return whiteKingMoved;
@@ -170,5 +168,4 @@ public class CastlingInfo {
             return !blackKingMoved && !blackQueenRookMoved;
         }
     }
-
 }
