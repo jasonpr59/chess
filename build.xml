@@ -1,23 +1,56 @@
-<project>
+<project default="main">
 
-    <target name="clean">
-        <delete dir="build"/>
-    </target>
+  <property name="build.dir" value="build" />
+  <property name="classes.dir" value="${build.dir}/classes" />
+  <property name="jar.dir" value="${build.dir}/jar" />
+  <property name="lib.dir" value="lib" />
+  <property name="src.dir" value="src" />
+  <property name="test.report.dir" value="testreport" />
+  <property name="test.dir" value="${src.dir}" />
 
-    <target name="compile">
-        <mkdir dir="build/classes"/>
-        <javac srcdir="src" destdir="build/classes">
-          <exclude name="**/test/**" />
-        </javac>
-    </target>
+  <target name="clean">
+    <delete dir="${build.dir}" />
+    <delete dir="${test.report.dir}" />
+    <delete dir="${jar.dir}"/>
+  </target>
 
-    <target name="jar">
-        <mkdir dir="build/jar"/>
-        <jar destfile="build/jar/player.jar" basedir="build/classes">
-            <manifest>
-                <attribute name="Main-Class" value="server.StreamChessServer"/>
-            </manifest>
-        </jar>
-    </target>
+  <target name="makedirs">
+    <mkdir dir="${classes.dir}" />
+    <mkdir dir="${test.report.dir}" />
+    <mkdir dir="${jar.dir}"/>
+  </target>
+
+  <target name="compile" depends="clean, makedirs">
+    <javac srcdir="${src.dir}" destdir="${classes.dir}">
+      <classpath>
+        <fileset dir="${lib.dir}" includes="*.jar" />
+      </classpath>
+    </javac>
+  </target>
+
+  <target name="jar" depends="compile">
+    <jar destfile="${jar.dir}/player.jar" basedir="${classes.dir}">
+      <manifest>
+        <attribute name="Main-Class" value="server.StreamChessServer"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <target name="test" depends="compile">
+    <junit printsummary="on" fork="true" haltonfailure="yes">
+      <classpath>
+        <fileset dir="${lib.dir}" includes="*.jar" />
+        <pathelement location="${classes.dir}" />
+      </classpath>
+      <formatter type="xml" />
+      <batchtest todir="${test.report.dir}">
+        <fileset dir="${test.dir}">
+          <include name="**/*Test*.java" />
+        </fileset>
+      </batchtest>
+    </junit>
+  </target>
+
+  <target name="main" depends="compile, test" />
 
 </project>
