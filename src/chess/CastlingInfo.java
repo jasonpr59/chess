@@ -53,6 +53,14 @@ public class CastlingInfo {
     // The six booleans that completely define the CastlingInfo.
     private final boolean whiteKingMoved;
     private final boolean blackKingMoved;
+    // The *RookMoved variables for some rook is only
+    // guaranteed to be correct if the same-colored king
+    // has not moved.
+    // If that king has moved, then castling will be illegal
+    // whether or not the rook has moved, so there is
+    // no use in ensuring that that rook's value is correct.
+    // TODO: Consider replacing these six variables with
+    // just four variables: (white|black)Can(King|Queen)SideCastle.
     private final boolean whiteKingRookMoved;
     private final boolean blackKingRookMoved;
     private final boolean whiteQueenRookMoved;
