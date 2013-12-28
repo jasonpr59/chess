@@ -33,6 +33,23 @@ public class CastlingInfo {
         }
     }
 
+    @Override
+    public int hashCode() {
+        return getId();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        CastlingInfo other = (CastlingInfo) obj;
+        return id == other.getId();
+    }
+
     // The six booleans that completely define the CastlingInfo.
     private final boolean whiteKingMoved;
     private final boolean blackKingMoved;
@@ -40,6 +57,9 @@ public class CastlingInfo {
     private final boolean blackKingRookMoved;
     private final boolean whiteQueenRookMoved;
     private final boolean blackQueenRookMoved;
+
+    // We cache the id
+    private final byte id;
 
     // Flags used for computing ids from "moved values."
     // WKM = "white king moved", etc.
@@ -59,6 +79,7 @@ public class CastlingInfo {
         if (id < 0 || id >= 64) {
             throw new IllegalArgumentException();
         }
+        this.id = id;
         whiteKingMoved = (id & WKM_FLAG) != 0;
         blackKingMoved = (id & BKM_FLAG) != 0;
         whiteKingRookMoved = (id & WKRM_FLAG) != 0;
@@ -129,6 +150,10 @@ public class CastlingInfo {
 
     public boolean isBlackQueenRookMoved() {
         return blackQueenRookMoved;
+    }
+
+    public byte getId() {
+        return id;
     }
 
     /**
