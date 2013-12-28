@@ -17,6 +17,51 @@ import player.Outcome;
  */
 public abstract class AbstractChessPosition implements ChessPosition {
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        for (Square s : Square.ALL) {
+            result = prime * result + getPiece(s).hashCode();
+        }
+
+        result = prime * result + getEnPassantSquare().hashCode();
+        result = prime * result + getToMoveColor().hashCode();
+        result = prime * result + getCastlingInfo().hashCode();
+
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof AbstractChessPosition)) {
+            return false;
+        }
+
+        AbstractChessPosition other = (AbstractChessPosition) obj;
+        for (Square s : Square.ALL) {
+            if (!getPiece(s).equals(other.getPiece(s))) {
+                return false;
+            }
+        }
+        if (getToMoveColor() != other.getToMoveColor()) {
+            return false;
+        }
+        if (!(getEnPassantSquare().equals(other.getEnPassantSquare()))) {
+            return false;
+        }
+        if (!(getCastlingInfo().equals(other.getCastlingInfo()))) {
+            return false;
+        }
+        return true;
+    }
+
     // TODO: Make sure the generics magic allows both PromotionMove and ChessMove.
     @Override
     public Collection<Move<ChessPosition>> moves() {
