@@ -35,7 +35,7 @@ public class CastlingInfo {
 
     @Override
     public int hashCode() {
-        return getId();
+        return id;
     }
 
     @Override
@@ -47,7 +47,7 @@ public class CastlingInfo {
         if (getClass() != obj.getClass())
             return false;
         CastlingInfo other = (CastlingInfo) obj;
-        return id == other.getId();
+        return id == other.id;
     }
 
     // The six booleans that completely define the CastlingInfo.
@@ -126,34 +126,6 @@ public class CastlingInfo {
      */
     public static CastlingInfo allowAll() {
         return fromValues(false, false, false, false, false, false);
-    }
-
-    public boolean isWhiteKingMoved() {
-        return whiteKingMoved;
-    }
-
-    public boolean isBlackKingMoved() {
-        return blackKingMoved;
-    }
-
-    public boolean isWhiteKingRookMoved() {
-        return whiteKingRookMoved;
-    }
-
-    public boolean isBlackKingRookMoved() {
-        return blackKingRookMoved;
-    }
-
-    public boolean isWhiteQueenRookMoved() {
-        return whiteQueenRookMoved;
-    }
-
-    public boolean isBlackQueenRookMoved() {
-        return blackQueenRookMoved;
-    }
-
-    public byte getId() {
-        return id;
     }
 
     /**
