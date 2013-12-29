@@ -3,9 +3,11 @@ package test.chess;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
+import test.chess.abstractchessposition.AbstractChessPositionTests;
+
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        AbstractChessPositionTest.class,
+        AbstractChessPositionTests.class,
         AlgebraicNotationTest.class,
         CastlingInfoTest.class,
         CastlingMoveTest.class,
