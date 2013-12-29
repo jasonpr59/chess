@@ -105,7 +105,7 @@ public class AlgebraicNotation {
             start = start(type, end, position);
         }
 
-        ChessMove move = new ChessMove(start, end);
+        NormalChessMove move = new NormalChessMove(start, end);
 
         // TODO(jasonpr): Do some more sanity checks
         if (captures == (move.capturedSquare(position) == null)) {
@@ -166,7 +166,7 @@ public class AlgebraicNotation {
                 movingPiece.getColor() != position.getToMoveColor()) {
                 continue;
             }
-            candidateMove = new ChessMove(start, end);
+            candidateMove = new NormalChessMove(start, end);
 
             if (candidateMove.isLegal(position)) {
                 return start;

@@ -2,22 +2,24 @@ package chess;
 
 import chess.CastlingInfo.Side;
 
-public class CastlingMove extends ChessMove {
-
+public class CastlingMove implements ChessMove {
     private static final Delta KINGSIDE_DELTA = new Delta(2, 0);
     private static final Delta QUEENSIDE_DELTA = new Delta(-2, 0);
-    public CastlingMove(ChessMove chessMove) {
-        super(chessMove);
+
+    private final NormalChessMove baseMove;
+
+    public CastlingMove(NormalChessMove chessMove) {
+        baseMove = chessMove;
     }
 
     /** Construct a Move from one Square to another Square. */
     public CastlingMove(Square start, Square end) {
-        super(start, end);
+        baseMove = new NormalChessMove(start, end);
     }
 
     /** Construct a Move from starting at a Square and moving by a Delta. */
     public CastlingMove(Square start, Delta delta) {
-        super(start, delta);
+        baseMove = new NormalChessMove(start, delta);
     }
 
     @Override
@@ -34,7 +36,7 @@ public class CastlingMove extends ChessMove {
 
     @Override
     public boolean isSane(ChessPosition position) {
-        Square start = getStart();
+        Square start = baseMove.getStart();
 
         // Ensure the moving piece is a king.
         Piece movingPiece = position.getPiece(start);
@@ -49,7 +51,7 @@ public class CastlingMove extends ChessMove {
         }
 
         // Ensure the Delta is a castling delta.
-        Delta delta = getDelta();
+        Delta delta = baseMove.getDelta();
         CastlingInfo.Side side;
         if (delta.equals(KINGSIDE_DELTA)) {
             side = CastlingInfo.Side.KINGSIDE;
@@ -75,15 +77,15 @@ public class CastlingMove extends ChessMove {
         Square rookStart = getRookStart(movingPiece.getColor(), side);
         // There's space if the ChessMove from the king square to the rook square
         // is open.
-        return new ChessMove(start, rookStart).isOpen(position);
+        return new NormalChessMove(start, rookStart).isOpen(position);
     }
 
     private Piece.Color getColor(ChessPosition position) {
-        return position.getPiece(getStart()).getColor();
+        return position.getPiece(baseMove.getStart()).getColor();
     }
 
     private CastlingInfo.Side getSide() {
-        Delta delta = getDelta();
+        Delta delta = baseMove.getDelta();
         if (delta.equals(KINGSIDE_DELTA)) {
             return CastlingInfo.Side.KINGSIDE;
         } else if (delta.equals(QUEENSIDE_DELTA)) {
@@ -120,12 +122,12 @@ public class CastlingMove extends ChessMove {
             return false;
         }
 
-        Square start = getStart();
+        Square start = baseMove.getStart();
 
         // Ensure that king did not move through check.
         // Do this by making the king move to that square, and seeing whether it is checked.
-        Square transitSquare = start.plus(getDelta().unitized());
-        ChessMove loneKingMove = new ChessMove(start, transitSquare);
+        Square transitSquare = start.plus(baseMove.getDelta().unitized());
+        NormalChessMove loneKingMove = new NormalChessMove(start, transitSquare);
         if (!loneKingMove.isLegal(position)) {
             return false;
         }
@@ -137,7 +139,7 @@ public class CastlingMove extends ChessMove {
     @Override
     public ChessPosition result(ChessPosition position) {
         // Move the king, normally.
-        ChessPosition partlyMoved = super.result(position);
+        ChessPosition partlyMoved = baseMove.result(position);
 
         // Move the rook.
         // TODO: Do this without creating a second builder for the rook-move
@@ -146,7 +148,7 @@ public class CastlingMove extends ChessMove {
 
         Square rookStart = getRookStart(getColor(position), getSide());
         // Rook ends between king's start and king's end.
-        Square rookEnd = Square.mean(getStart(), getEnd());
+        Square rookEnd = Square.mean(baseMove.getStart(), baseMove.getEnd());
         Piece rook = partlyMoved.getPiece(rookStart);
         builder.placePiece(null, rookStart);
         builder.placePiece(rook, rookEnd);
@@ -159,8 +161,41 @@ public class CastlingMove extends ChessMove {
         assert s.length() == 5;
         assert s.charAt(4) == 'C';
 
-        ChessMove basicMove = ChessMove.deserialized(s.substring(0, 4));
+        NormalChessMove basicMove = (NormalChessMove) NormalChessMove.deserialized(s.substring(0, 4));
         return new CastlingMove(basicMove);
+    }
+
+    @Override
+    public Square getStart() {
+        return baseMove.getStart();
+    }
+
+    @Override
+    public Square getEnd() {
+        return baseMove.getEnd();
+    }
+
+    @Override
+    public Delta getDelta() {
+        return baseMove.getDelta();
+    }
+
+    @Override
+    public boolean isOpen(ChessPosition position) {
+        return baseMove.isOpen(position);
+    }
+
+    @Override
+    public boolean startsOrEndsAt(Square square) {
+        // TODO: Figure out what startsOrEndsAt really
+        // means for a CastlingMove.
+        // TODO: startsOrEndsAt probably needs a better name.
+        return baseMove.startsOrEndsAt(square);
+    }
+
+    @Override
+    public String serialized() {
+        return baseMove.serialized() + "C";
     }
 
 }

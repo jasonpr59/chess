@@ -11,6 +11,7 @@ import player.Heuristic;
 import chess.ChessMove;
 import chess.ChessPosition;
 import chess.ChessPositionBuilder;
+import chess.NormalChessMove;
 import chess.player.BoardPieceValueHeuristic;
 
 public class StreamChessServer {
@@ -46,7 +47,7 @@ public class StreamChessServer {
         // Get the move from the input.
         ChessMove m;
         try {
-            m = ChessMove.deserialized(input);
+            m = NormalChessMove.deserialized(input);
         } catch (ArrayIndexOutOfBoundsException e) {
             error("cannot deserialize");
             return;

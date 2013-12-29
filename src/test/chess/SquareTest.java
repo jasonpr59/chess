@@ -12,7 +12,7 @@ import java.util.HashSet;
 import org.junit.Test;
 
 import test.TestUtil;
-import chess.ChessMove;
+import chess.NormalChessMove;
 import chess.Delta;
 import chess.Piece;
 import chess.Square;
@@ -199,12 +199,12 @@ public class SquareTest {
         Collection<Square> ends = new HashSet<Square>();
         ends.add(Square.algebraic("e7"));
         ends.add(Square.algebraic("f4"));
-        Collection<ChessMove> distributed = start.distributeOverEnds(ends);
+        Collection<NormalChessMove> distributed = start.distributeOverEnds(ends);
 
-        Collection<ChessMove> expected = new HashSet<ChessMove>();
-        expected.add(new ChessMove(Square.algebraic("d5"),
+        Collection<NormalChessMove> expected = new HashSet<NormalChessMove>();
+        expected.add(new NormalChessMove(Square.algebraic("d5"),
                                    Square.algebraic("e7")));
-        expected.add(new ChessMove(Square.algebraic("d5"),
+        expected.add(new NormalChessMove(Square.algebraic("d5"),
                                    Square.algebraic("f4")));
 
         TestUtil.assertSameElements(expected, distributed);

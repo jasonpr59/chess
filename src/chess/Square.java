@@ -187,13 +187,13 @@ public class Square {
     }
 
     /**
-     * Return a set of Moves with this square as the start.
-     * For each Square in ends, create a Move from this Square to that Square.
+     * Return a set of NormalChessMoves with this square as the start.
+     * For each Square in ends, create a NormalChessMove from this Square to that Square.
      */
-    public Collection<ChessMove> distributeOverEnds(Collection<Square> ends) {
-        Collection<ChessMove> moves = new ArrayList<ChessMove>();
+    public Collection<NormalChessMove> distributeOverEnds(Collection<Square> ends) {
+        Collection<NormalChessMove> moves = new ArrayList<NormalChessMove>();
         for (Square end : ends) {
-            moves.add(new ChessMove(this, end));
+            moves.add(new NormalChessMove(this, end));
         }
         return moves;
     }
