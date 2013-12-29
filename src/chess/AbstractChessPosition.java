@@ -46,14 +46,23 @@ public abstract class AbstractChessPosition implements ChessPosition {
 
         AbstractChessPosition other = (AbstractChessPosition) obj;
         for (Square s : Square.ALL) {
-            if (!getPiece(s).equals(other.getPiece(s))) {
+            if (getPiece(s) == null) {
+                // Ensure the other one is null, too.
+                if (other.getPiece(s) != null) {
+                    return false;
+                }
+            } else if (!getPiece(s).equals(other.getPiece(s))) {
                 return false;
             }
         }
         if (getToMoveColor() != other.getToMoveColor()) {
             return false;
         }
-        if (!(getEnPassantSquare().equals(other.getEnPassantSquare()))) {
+        if (getEnPassantSquare() == null) {
+            if (other.getEnPassantSquare() != null) {
+                return false;
+            }
+        } else if (!(getEnPassantSquare().equals(other.getEnPassantSquare()))) {
             return false;
         }
         if (!(getCastlingInfo().equals(other.getCastlingInfo()))) {
