@@ -269,4 +269,41 @@ public class ChessPositionBuilderTest {
         assertEquals(Piece.Color.BLACK, differentPosition.getToMoveColor());
         assertEquals(whiteCannotKingCastle, differentPosition.getCastlingInfo());
     }
+
+    @Test
+    public void testCompactPlacePiece() {
+        ChessPositionBuilder builder = new ChessPositionBuilder();
+        builder.placePiece("WPa1").placePiece("WNb2").placePiece("WBc3");
+        builder.placePiece("BRd4").placePiece("BQe5").placePiece("BKf6");
+
+        ChessPosition position = builder.build();
+
+        Piece whitePawn = new Piece(Piece.Type.PAWN, Piece.Color.WHITE);
+        Piece whiteKnight = new Piece(Piece.Type.KNIGHT, Piece.Color.WHITE);
+        Piece whiteBishop = new Piece(Piece.Type.BISHOP, Piece.Color.WHITE);
+        Piece blackRook = new Piece(Piece.Type.ROOK, Piece.Color.BLACK);
+        Piece blackQueen = new Piece(Piece.Type.QUEEN, Piece.Color.BLACK);
+        Piece blackKing = new Piece(Piece.Type.KING, Piece.Color.BLACK);
+
+        assertEquals(whitePawn, position.getPiece(Square.algebraic("a1")));
+        assertEquals(whiteKnight, position.getPiece(Square.algebraic("b2")));
+        assertEquals(whiteBishop, position.getPiece(Square.algebraic("c3")));
+        assertEquals(blackRook, position.getPiece(Square.algebraic("d4")));
+        assertEquals(blackQueen, position.getPiece(Square.algebraic("e5")));
+        assertEquals(blackKing, position.getPiece(Square.algebraic("f6")));
+    }
+
+    @Test
+    public void testCompactPlacePieces() {
+        ChessPositionBuilder builder = new ChessPositionBuilder();
+        String [] placements = {"WKa1", "BKh8"};
+        builder.placePieces(placements);
+        ChessPosition position = builder.build();
+
+        Piece whiteKing = new Piece(Piece.Type.KING, Piece.Color.WHITE);
+        Piece blackKing = new Piece(Piece.Type.KING, Piece.Color.BLACK);
+
+        assertEquals(whiteKing, position.getPiece(Square.algebraic("a1")));
+        assertEquals(blackKing, position.getPiece(Square.algebraic("h8")));
+    }
 }

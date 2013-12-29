@@ -256,4 +256,74 @@ public class ChessPositionBuilder {
         this.castlingInfo = castlingInfo.updated(move);
         return this;
     }
+
+    /**
+     * Place a piece on a square, as described by a compact String.
+     * @param placement A String describing a Piece placement according
+     *      to the Placement Grammar:
+     *      ```
+     *      placement ::= color piece square
+     *      color ::= "W" | "B" // That is, white or black.
+     *      piece ::= "N" | "B" | "R" | "Q" | "K" | "P"
+     *                 // Piece type identifiers from Algebraic Notation,
+     *                 // plus "P" for pawn.
+     *      square ::= file rank
+     *      file ::= "a" ... "h"
+     *      rank ::= "1" ... "8"
+     *      ```
+     *      For example, "WBc4" means "Place a White Bishop on c4."
+     *
+     * @return This ChessPositionBuilder, for daisy chaining.
+     */
+    public ChessPositionBuilder placePiece(String placement) {
+        assert placement.length() == 4;
+        Piece.Color color;
+        char colorChar = placement.charAt(0);
+        if (colorChar == 'W') {
+            color = Piece.Color.WHITE;
+        } else if (colorChar == 'B') {
+            color = Piece.Color.BLACK;
+        } else {
+            throw new AssertionError("Color must be W or B, not " + colorChar);
+        }
+
+        Piece.Type type;
+        char typeChar = placement.charAt(1);
+        if (typeChar == 'N') {
+            type = Piece.Type.KNIGHT;
+        } else if (typeChar == 'B') {
+            type = Piece.Type.BISHOP;
+        } else if (typeChar == 'R') {
+            type = Piece.Type.ROOK;
+        } else if (typeChar == 'Q') {
+            type = Piece.Type.QUEEN;
+        } else if (typeChar == 'K') {
+            type = Piece.Type.KING;
+        } else if (typeChar == 'P') {
+            type = Piece.Type.PAWN;
+        } else {
+            throw new AssertionError("Type must be N, B, R, Q, K, or P, not " + typeChar);
+        }
+
+        Square target;
+        String square = placement.substring(2);
+        target = Square.algebraic(square);
+
+        return placePiece(new Piece(type, color), target);
+    }
+
+    /**
+     * Place some pieces on some squares, as described by compact Strings.
+     * Each placement string must conform to the Placement Grammar described in
+     * the Javadocs for ChessPositionBuilder.placePiece(String).
+     * @return This ChessPositionBuilder, for daisy chaining.
+     */
+    public ChessPositionBuilder placePieces(String[] placements) {
+        for (String placement : placements) {
+            placePiece(placement);
+        }
+        return this;
+    }
+
+
 }
