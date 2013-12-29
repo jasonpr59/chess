@@ -99,25 +99,6 @@ public abstract class AbstractChessPosition implements ChessPosition {
         return (getToMoveColor() == Piece.Color.WHITE);
     }
 
-    @Override
-    public boolean isAttackable(Square target) {
-        Piece.Color attackerColor = getToMoveColor();
-        for (Square attackerSquare : Square.ALL) {
-            Piece attacker = getPiece(attackerSquare);
-            if (attacker == null || attacker.getColor() != attackerColor) {
-                // No attacker on this square.
-                continue;
-            }
-            for (ChessMove m: saneMoves(attackerSquare)) {
-                if (m.getEnd().equals(target)) {
-                    return true;
-                }
-            }
-        }
-        // Nobody attacks the target.
-        return false;
-    }
-
     /** Return the square that the king of some color occupies. */
     private Square kingSquare(Piece.Color kingColor) {
         // TODO: Make this more efficient by "caching" the king's position
@@ -133,22 +114,51 @@ public abstract class AbstractChessPosition implements ChessPosition {
         throw new RuntimeException("There is no king of color " + kingColor + " on the board!");
     }
 
-    @Override
-    public boolean checked(Piece.Color kingColor) {
-        Square kingSquare = kingSquare(kingColor);
+    /**
+     * Return whether the given square is currently under attack.
+     * A square is under attack if a piece of the toMoveColor is
+     * attacking it.
+     */
+    private boolean isAttackable(Square target, Piece.Color attackerColor) {
+        // We'd like to just return true if there's any piece of the
+        // attackerColor that has a sane move to the target Square.
+        // But, moves are only sane if the toMoveColor is equal to the
+        // moving pieces color.
+        // So, we create a trial position, which is identical to this position
+        // EXCEPT that the toMoveColor is set equal to the attackerColor.
         ChessPosition trialPosition;
-        if (getToMoveColor() == kingColor) {
-            // Act as though it's the other side's turn, to see if they could attack the king.
-            trialPosition = new ChessPositionBuilder(this).setToMoveColor(getToMoveColor().opposite()).build();
-        } else {
-            // It's the other color's turn, so see if they can attack this king.
+        if (getToMoveColor() == attackerColor) {
+            // Already the correct toMoveColor.
             trialPosition = this;
+        } else {
+            // We need to switch the toMoveColor.
+            trialPosition = new ChessPositionBuilder(this).setToMoveColor(getToMoveColor().opposite()).build();
         }
-        return trialPosition.isAttackable(kingSquare);
+
+        // Now we just see if any piece of the attackerColor has a sane
+        // move to the target Square.
+        for (Square attackerSquare : Square.ALL) {
+            Piece attacker = getPiece(attackerSquare);
+            if (attacker == null || attacker.getColor() != attackerColor) {
+                // No attacker on this square.
+                continue;
+            }
+            if (new ChessMove(attackerSquare, target).isSane(trialPosition)) {
+                return true;
+            }
+        }
+        // Nobody attacks the target.
+        return false;
     }
 
     @Override
-    public Iterable<ChessMove> saneMoves(Square start) {
+    public boolean checked(Piece.Color kingColor) {
+        Square kingSquare = kingSquare(kingColor);
+        return isAttackable(kingSquare, kingColor.opposite());
+    }
+
+    /** Get the set of sane moves available to the piece on a square. */
+    private Iterable<ChessMove> saneMoves(Square start) {
         Piece movingPiece = getPiece(start);
 
         if (movingPiece == null) {

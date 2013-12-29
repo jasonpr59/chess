@@ -18,17 +18,6 @@ public interface ChessPosition extends Position<ChessPosition> {
 
     public CastlingInfo getCastlingInfo();
 
-    /**
-     * Return whether the given square is currently under attack.
-     * A square is under attack if a piece of the toMoveColor is
-     * attacking it.
-     * TODO: Consider allowing caller to specify attackerColor.
-     */
-    public boolean isAttackable(Square target);
-
     /** Return whether the king of some color is in check. */
     public boolean checked(Piece.Color kingColor);
-
-    /** Get the set of sane moves available to the piece on a square. */
-    public Iterable<ChessMove> saneMoves(Square start);
 }
