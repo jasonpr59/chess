@@ -11,6 +11,36 @@ import chess.Piece.Type;
 
 /** A pawn-promotion chess move. */
 public class PromotionMove implements ChessMove {
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + baseMove.hashCode();
+        result = prime * result + promotedType.hashCode();
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        PromotionMove other = (PromotionMove) obj;
+        if (!baseMove.equals(other.baseMove)) {
+            return false;
+        }
+        if (promotedType != other.promotedType) {
+            return false;
+        }
+        return true;
+    }
+
     private final Type promotedType;
     private final NormalChessMove baseMove;
 
