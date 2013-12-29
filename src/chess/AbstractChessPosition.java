@@ -46,7 +46,7 @@ public abstract class AbstractChessPosition implements ChessPosition {
 
         AbstractChessPosition other = (AbstractChessPosition) obj;
         for (Square s : Square.ALL) {
-            if (isEmpty(s)) {
+            if (getPiece(s) == null) {
                 // Ensure the other one is null, too.
                 if (other.getPiece(s) != null) {
                     return false;
@@ -97,11 +97,6 @@ public abstract class AbstractChessPosition implements ChessPosition {
     @Override
     public boolean shouldMaximize() {
         return (getToMoveColor() == Piece.Color.WHITE);
-    }
-
-    /** Return whether a square is empty. */
-    private boolean isEmpty(Square square) {
-        return getPiece(square) == null;
     }
 
     @Override
