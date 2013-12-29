@@ -112,7 +112,7 @@ public class CastlingInfo {
      * Return a CastlingInfo with no moved kings or rooks.
      */
     public static CastlingInfo allowAll() {
-        return fromValues(false, false, false, false);
+        return fromValues(true, true, true, true);
     }
 
     /**
