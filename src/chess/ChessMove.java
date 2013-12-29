@@ -27,6 +27,11 @@ public class ChessMove implements Move<ChessPosition>{
         this.delta = new Delta(start, end);
     }
 
+    /** Construct a Move from one square to another square. */
+    public ChessMove(String start, String end) {
+        this(Square.algebraic(start), Square.algebraic(end));
+    }
+
     /** Construct a Move from starting at a Square and moving by a Delta. */
     public ChessMove(Square start, Delta delta) {
         this(start, start.plus(delta));
