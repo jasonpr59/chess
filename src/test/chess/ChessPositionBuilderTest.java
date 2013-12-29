@@ -242,4 +242,31 @@ public class ChessPositionBuilderTest {
         } catch (AssertionError expected) {
         }
     }
+
+    @Test
+    public void testChessPositionImpl() {
+        ChessPositionBuilder newGameBuilder = new ChessPositionBuilder();
+        newGameBuilder.setupNewGame();
+        ChessPosition newGame = newGameBuilder.build();
+
+        Piece whiteBishop = new Piece(Piece.Type.BISHOP, Piece.Color.WHITE);
+        Square c1 = Square.algebraic("c1");
+        assertEquals(whiteBishop, newGame.getPiece(c1));
+        assertNull(newGame.getEnPassantSquare());
+        assertEquals(Piece.Color.WHITE, newGame.getToMoveColor());
+        assertEquals(CastlingInfo.allowAll(), newGame.getCastlingInfo());
+
+        ChessPositionBuilder differentBuilder = new ChessPositionBuilder();
+        differentBuilder.setupNewGame();
+        differentBuilder.setEnPassantSquare(Square.algebraic("d6"));
+        differentBuilder.setToMoveColor(Piece.Color.BLACK);
+        ChessMove fromH1 = new ChessMove("h1", "h2");
+        CastlingInfo whiteCannotKingCastle = CastlingInfo.allowAll().updated(fromH1);
+        differentBuilder.setCastlingInfo(whiteCannotKingCastle);
+        ChessPosition differentPosition = differentBuilder.build();
+
+        assertEquals(Square.algebraic("d6"), differentPosition.getEnPassantSquare());
+        assertEquals(Piece.Color.BLACK, differentPosition.getToMoveColor());
+        assertEquals(whiteCannotKingCastle, differentPosition.getCastlingInfo());
+    }
 }
