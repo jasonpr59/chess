@@ -100,16 +100,6 @@ public abstract class AbstractChessPosition implements ChessPosition {
     }
 
     @Override
-    public boolean isEmpty(Square square) {
-        return getPiece(square) == null;
-    }
-
-    @Override
-    public Piece movingPiece(ChessMove move) {
-        return getPiece(move.getStart());
-    }
-
-    @Override
     public boolean isAttackable(Square target) {
         Piece.Color attackerColor = getToMoveColor();
         for (Square attackerSquare : Square.ALL) {
@@ -128,8 +118,8 @@ public abstract class AbstractChessPosition implements ChessPosition {
         return false;
     }
 
-    @Override
-    public Square kingSquare(Piece.Color kingColor) {
+    /** Return the square that the king of some color occupies. */
+    private Square kingSquare(Piece.Color kingColor) {
         // TODO: Make this more efficient by "caching" the king's position
         // as an attribute of board.
         Piece king = new Piece(Piece.Type.KING, kingColor);
@@ -259,8 +249,8 @@ public abstract class AbstractChessPosition implements ChessPosition {
         return filterSane(candidateMoves);
     }
 
-    @Override
-    public Collection<ChessMove> filterSane(Collection<ChessMove> candidates) {
+    /** Return the subset of sane moves from a set of moves. */
+    private Collection<ChessMove> filterSane(Collection<ChessMove> candidates) {
         Set<ChessMove> saneMoves = new HashSet<ChessMove>();
         for (ChessMove c : candidates) {
             if (c.isSane(this)) {

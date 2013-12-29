@@ -303,7 +303,7 @@ public class ChessMove implements Move<ChessPosition>{
     public ChessPosition result(ChessPosition position) {
             Square start = getStart();
             Square end = getEnd();
-            Piece movingPiece = position.movingPiece(this);
+            Piece movingPiece = movingPiece(position);
 
             // Make an unfrozen copy that we can modify to effect the move.
             ChessPositionBuilder builder = new ChessPositionBuilder(position);
@@ -328,5 +328,10 @@ public class ChessMove implements Move<ChessPosition>{
             builder.updateCastlingInfo(this);
 
             return builder.build();
+    }
+
+    /** Get the piece that moves when this ChessMove is made on a ChessPosition. */
+    private Piece movingPiece(ChessPosition position) {
+        return position.getPiece(getStart());
     }
 }
