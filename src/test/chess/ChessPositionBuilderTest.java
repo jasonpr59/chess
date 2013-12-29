@@ -7,7 +7,7 @@ import static org.junit.Assert.fail;
 import org.junit.Test;
 
 import chess.CastlingInfo;
-import chess.ChessMove;
+import chess.NormalChessMove;
 import chess.ChessPosition;
 import chess.ChessPositionBuilder;
 import chess.Game;
@@ -227,7 +227,7 @@ public class ChessPositionBuilderTest {
     @Test
     public void testUpdateCastlingInfo() {
         CastlingInfo source = CastlingInfo.allowAll();
-        ChessMove fromH1 = new ChessMove("h1", "h2");
+        NormalChessMove fromH1 = new NormalChessMove("h1", "h2");
         CastlingInfo whiteCannotKingCastle = source.updated(fromH1);
 
         ChessPositionBuilder builder = new ChessPositionBuilder();
@@ -260,7 +260,7 @@ public class ChessPositionBuilderTest {
         differentBuilder.setupNewGame();
         differentBuilder.setEnPassantSquare(Square.algebraic("d6"));
         differentBuilder.setToMoveColor(Piece.Color.BLACK);
-        ChessMove fromH1 = new ChessMove("h1", "h2");
+        NormalChessMove fromH1 = new NormalChessMove("h1", "h2");
         CastlingInfo whiteCannotKingCastle = CastlingInfo.allowAll().updated(fromH1);
         differentBuilder.setCastlingInfo(whiteCannotKingCastle);
         ChessPosition differentPosition = differentBuilder.build();

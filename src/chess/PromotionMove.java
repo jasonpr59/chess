@@ -10,8 +10,10 @@ import java.util.Set;
 import chess.Piece.Type;
 
 /** A pawn-promotion chess move. */
-public class PromotionMove extends ChessMove {
+public class PromotionMove implements ChessMove {
     private final Type promotedType;
+    private final NormalChessMove baseMove;
+
     private static final Set<Type> PROMOTION_TYPES;
 
     static {
@@ -24,8 +26,8 @@ public class PromotionMove extends ChessMove {
     }
 
     /** Create a PromotionMove from a normal move and a promoted Piece.Type. */
-    public PromotionMove(ChessMove move, Type promotedType) {
-        super(move.getStart(), move.getEnd());
+    public PromotionMove(NormalChessMove move, Type promotedType) {
+        this.baseMove = move;
         this.promotedType = promotedType;
     }
 
@@ -38,7 +40,7 @@ public class PromotionMove extends ChessMove {
      * That is, create four PromotionMoves from one ChessMove,
      * one for each promotion type (knight, bishop, rook, queen).
      */
-    public static Collection<PromotionMove> allPromotions(ChessMove move) {
+    public static Collection<PromotionMove> allPromotions(NormalChessMove move) {
         List<PromotionMove> allPromotions = new ArrayList<PromotionMove>();
         for (Type type : PROMOTION_TYPES) {
             allPromotions.add(new PromotionMove(move, type));
@@ -46,9 +48,8 @@ public class PromotionMove extends ChessMove {
         return allPromotions;
     }
 
-    @Override
     public boolean isSane(ChessPosition board) {
-        Piece movingPiece = board.getPiece(getStart());
+        Piece movingPiece = board.getPiece(baseMove.getStart());
         if (movingPiece == null || movingPiece.getType() != Piece.Type.PAWN ||
                 !PROMOTION_TYPES.contains(getPromotedType())) {
             return false;
@@ -61,33 +62,33 @@ public class PromotionMove extends ChessMove {
             promotableRank = 1;
         }
 
-        if (getEnd().getRank() != promotableRank) {
+        if (baseMove.getEnd().getRank() != promotableRank) {
             return false;
         }
 
-        return super.isSane(board);
+        return baseMove.isSane(board);
     }
 
     @Override
     public ChessPosition result(ChessPosition position) {
         // Make the pawn move to the last rank, normally.
-        ChessPosition partlyMoved = super.result(position);
+        ChessPosition partlyMoved = baseMove.result(position);
 
         // Convert it to its promoted type.
         // TODO: Do this without creating a second builder for the promotion
         // step.  (The first one was in the super.result step.)
         ChessPositionBuilder builder = new ChessPositionBuilder(partlyMoved);
+        Square end = baseMove.getEnd();
         Piece promotedPiece = new Piece(getPromotedType(),
-                                        partlyMoved.getPiece(getEnd()).getColor());
-        builder.placePiece(promotedPiece, getEnd());
+                                        partlyMoved.getPiece(end).getColor());
+        builder.placePiece(promotedPiece, end);
 
         return builder.build();
     }
 
     /** Serialize this PromotionMove as a 5-character string. */
-    @Override
     public String serialized() {
-        String coords = super.serialized();
+        String coords = baseMove.serialized();
         String type;
         switch (getPromotedType()) {
         case KNIGHT:
@@ -125,7 +126,47 @@ public class PromotionMove extends ChessMove {
             throw new RuntimeException("Invalid promotion type.");
         }
 
-        ChessMove basicMove = ChessMove.deserialized(s.substring(0, 4));
+        NormalChessMove basicMove = (NormalChessMove) NormalChessMove.deserialized(s.substring(0, 4));
         return new PromotionMove(basicMove, type);
+    }
+
+    @Override
+    public Square getStart() {
+        return baseMove.getStart();
+    }
+
+    @Override
+    public Square getEnd() {
+        return baseMove.getEnd();
+    }
+
+    @Override
+    public Delta getDelta() {
+        return baseMove.getDelta();
+    }
+
+    @Override
+    public Square capturedSquare(ChessPosition position) {
+        return baseMove.capturedSquare(position);
+    }
+
+    @Override
+    public Square enPassantSquare(ChessPosition position) {
+        return null;
+    }
+
+    @Override
+    public boolean isLegal(ChessPosition position) {
+        return baseMove.isLegal(position);
+    }
+
+    @Override
+    public boolean isOpen(ChessPosition board) {
+        return false;
+    }
+
+    @Override
+    public boolean startsOrEndsAt(Square square) {
+        return baseMove.startsOrEndsAt(square);
     }
 }

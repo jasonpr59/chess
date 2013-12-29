@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import chess.ChessMove;
+import chess.NormalChessMove;
 import chess.Delta;
 import chess.Square;
 
@@ -38,7 +38,7 @@ public class DeltaTest {
         // that they're all equal.
         Delta fromInts = new Delta(1, 2);
         Delta fromSquares = new Delta(Square.algebraic("b3"), Square.algebraic("c5"));
-        Delta fromChessMove = new Delta(new ChessMove(Square.algebraic("d6"),
+        Delta fromChessMove = new Delta(new NormalChessMove(Square.algebraic("d6"),
                                                       Square.algebraic("e8")));
         assertEquals(fromInts, fromSquares);
         assertEquals(fromInts, fromChessMove);

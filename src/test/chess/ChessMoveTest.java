@@ -5,7 +5,7 @@ import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
-import chess.ChessMove;
+import chess.NormalChessMove;
 import chess.Game;
 import chess.Square;
 import chess.exceptions.AlgebraicNotationException;
@@ -17,7 +17,7 @@ public class ChessMoveTest {
         String[] moves = {"e4", "h6"};
         Game g = Game.fromMoves(moves);
 
-        ChessMove illegalDoublePush = new ChessMove(Square.algebraic("e4"),
+        NormalChessMove illegalDoublePush = new NormalChessMove(Square.algebraic("e4"),
                                           Square.algebraic("e6"));
         assertFalse(illegalDoublePush.isLegal(g.getCurrentPosition()));
     }

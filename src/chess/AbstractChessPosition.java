@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import player.Move;
 import player.Outcome;
 
 
@@ -73,8 +72,8 @@ public abstract class AbstractChessPosition implements ChessPosition {
 
     // TODO: Make sure the generics magic allows both PromotionMove and ChessMove.
     @Override
-    public Collection<Move<ChessPosition>> moves() {
-        Collection<Move<ChessPosition>> legalMoves = new ArrayList<Move<ChessPosition>>();
+    public Collection<ChessMove> moves() {
+        Collection<ChessMove> legalMoves = new ArrayList<ChessMove>();
         for (Square start : Square.ALL) {
             for (ChessMove saneMove : saneMoves(start)) {
                 if (saneMove.isLegal(this)) {
@@ -128,7 +127,7 @@ public abstract class AbstractChessPosition implements ChessPosition {
                 // No attacker on this square.
                 continue;
             }
-            if (new ChessMove(attackerSquare, target).isSane(trialPosition)) {
+            if (new NormalChessMove(attackerSquare, target).isSane(trialPosition)) {
                 return true;
             }
         }
@@ -167,7 +166,7 @@ public abstract class AbstractChessPosition implements ChessPosition {
         }
 
         Collection<Square> candidateEnds;
-        Collection<ChessMove> candidateMoves;
+        Collection<ChessMove> candidateMoves = new ArrayList<ChessMove>();
 
         switch (movingPiece.getType()) {
             case PAWN:
@@ -181,11 +180,10 @@ public abstract class AbstractChessPosition implements ChessPosition {
                 candidateDeltas.add(Delta.sum(fwd, new Delta(1, 0)));
                 candidateDeltas.add(Delta.sum(fwd,  new Delta(-1, 0)));
 
-                candidateMoves = new ArrayList<ChessMove>();
-                ChessMove candidateMove;
+                NormalChessMove candidateMove;
                 for (Delta delta : candidateDeltas) {
                     try {
-                        candidateMove = new ChessMove(start, delta);
+                        candidateMove = new NormalChessMove(start, delta);
                     } catch (ArrayIndexOutOfBoundsException e) {
                         continue;
                     }
@@ -210,7 +208,6 @@ public abstract class AbstractChessPosition implements ChessPosition {
                 int dRank;
                 int dFile;
                 Delta delta;
-                candidateMoves = new ArrayList<ChessMove>();
                 for (int rankDir : rankDirs) {
                     for (int fileDir : fileDirs) {
                         for (int[] alignment : alignments) {
@@ -218,7 +215,7 @@ public abstract class AbstractChessPosition implements ChessPosition {
                             dFile = fileDir * alignment[1];
                             delta = new Delta(dFile, dRank);
                             try {
-                                candidateMoves.add(new ChessMove(start, delta));
+                                candidateMoves.add(new NormalChessMove(start, delta));
                             } catch (ArrayIndexOutOfBoundsException e) {
                                 // Swallow it. (See explanation in PAWN case).
                             }
@@ -228,19 +225,19 @@ public abstract class AbstractChessPosition implements ChessPosition {
                 break;
             case BISHOP:
                 candidateEnds = start.explore(Delta.DIAGONAL_DIRS);
-                candidateMoves = start.distributeOverEnds(candidateEnds);
+                candidateMoves.addAll(start.distributeOverEnds(candidateEnds));
                 break;
             case ROOK:
                 candidateEnds = start.explore(Delta.BASIC_DIRS);
-                candidateMoves = start.distributeOverEnds(candidateEnds);
+                candidateMoves.addAll(start.distributeOverEnds(candidateEnds));
                 break;
             case QUEEN:
                 candidateEnds = start.explore(Delta.QUEEN_DIRS);
-                candidateMoves = start.distributeOverEnds(candidateEnds);
+                candidateMoves.addAll(start.distributeOverEnds(candidateEnds));
                 break;
             case KING:
                 candidateEnds = start.explore(Delta.QUEEN_DIRS, 1);
-                candidateMoves = start.distributeOverEnds(candidateEnds);
+                candidateMoves.addAll(start.distributeOverEnds(candidateEnds));
                 if (start.getFile() == 5) {
                     // There's a decent chance that the king's in its home square,
                     // and a zero chance that a two-square hop along a rank will

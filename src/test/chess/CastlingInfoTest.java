@@ -8,7 +8,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import chess.CastlingInfo;
-import chess.ChessMove;
+import chess.NormalChessMove;
 import chess.Piece;
 
 public class CastlingInfoTest {
@@ -39,7 +39,7 @@ public class CastlingInfoTest {
 
         // Assert that moving the white king rook makes it
         // impossible for white to kingside castle.
-        CastlingInfo whiteKingRookMoved = base.updated(new ChessMove("h1", "h2"));
+        CastlingInfo whiteKingRookMoved = base.updated(new NormalChessMove("h1", "h2"));
         assertFalse(whiteKingRookMoved.castlePiecesReady(WHITE, KINGSIDE));
         assertTrue(whiteKingRookMoved.castlePiecesReady(WHITE, QUEENSIDE));
         for (CastlingInfo.Side side : CastlingInfo.Side.values()) {
@@ -48,7 +48,7 @@ public class CastlingInfoTest {
 
         // Assert that moving the white queen rook makes it
         // impossible for white to queenside castle.
-        CastlingInfo whiteQueenRookMoved = base.updated(new ChessMove("a1", "a2"));
+        CastlingInfo whiteQueenRookMoved = base.updated(new NormalChessMove("a1", "a2"));
         assertTrue(whiteQueenRookMoved.castlePiecesReady(WHITE, KINGSIDE));
         assertFalse(whiteQueenRookMoved.castlePiecesReady(WHITE, QUEENSIDE));
         for (CastlingInfo.Side side : CastlingInfo.Side.values()) {
@@ -57,7 +57,7 @@ public class CastlingInfoTest {
 
         // Assert that moving the black king rook makes it
         // impossible for black to kingside castle.
-        CastlingInfo blackKingRookMoved = base.updated(new ChessMove("h8", "h7"));
+        CastlingInfo blackKingRookMoved = base.updated(new NormalChessMove("h8", "h7"));
         for (CastlingInfo.Side side : CastlingInfo.Side.values()) {
             assertTrue(blackKingRookMoved.castlePiecesReady(WHITE, side));
         }
@@ -66,7 +66,7 @@ public class CastlingInfoTest {
 
         // Assert that moving the black queen rook makes it
         // impossible for black to queenside castle.
-        CastlingInfo blackQueenRookMoved = base.updated(new ChessMove("a8", "a7"));
+        CastlingInfo blackQueenRookMoved = base.updated(new NormalChessMove("a8", "a7"));
         for (CastlingInfo.Side side : CastlingInfo.Side.values()) {
             assertTrue(blackQueenRookMoved.castlePiecesReady(WHITE, side));
         }
@@ -80,7 +80,7 @@ public class CastlingInfoTest {
 
         // Assert that moving the white king makes it
         // impossible for white to castle.
-        CastlingInfo whiteKingMoved = base.updated(new ChessMove("e1", "e2"));
+        CastlingInfo whiteKingMoved = base.updated(new NormalChessMove("e1", "e2"));
         for (Piece.Color color : Piece.Color.values()) {
             for (CastlingInfo.Side side : CastlingInfo.Side.values()) {
                 // Only black can castle, and black can castle on either side.
@@ -91,7 +91,7 @@ public class CastlingInfoTest {
 
         // Assert that moving the black king makes it
         // impossible for black to castle.
-        CastlingInfo blackKingMoved = base.updated(new ChessMove("e8", "e7"));
+        CastlingInfo blackKingMoved = base.updated(new NormalChessMove("e8", "e7"));
         for (Piece.Color color : Piece.Color.values()) {
             for (CastlingInfo.Side side : CastlingInfo.Side.values()) {
                 // Only white can castle, and white can castle on either side.
@@ -103,7 +103,7 @@ public class CastlingInfoTest {
 
     @Test
     public void testMoveWithNoEffect() {
-        ChessMove noEffect = new ChessMove("e5", "e6");
+        NormalChessMove noEffect = new NormalChessMove("e5", "e6");
         CastlingInfo stillUnrestricted = CastlingInfo.allowAll().updated(noEffect);
         for (Piece.Color color : Piece.Color.values()) {
             for (CastlingInfo.Side side : CastlingInfo.Side.values()) {
@@ -120,7 +120,7 @@ public class CastlingInfoTest {
         // If that's the case, then we can assume the other
         // squares are handled correctly, as well.
 
-        ChessMove toKingRookSquare =  new ChessMove("d5", "h1");
+        NormalChessMove toKingRookSquare =  new NormalChessMove("d5", "h1");
         CastlingInfo whiteCannotKingCastle = CastlingInfo.allowAll().updated(toKingRookSquare);
         assertFalse(whiteCannotKingCastle.castlePiecesReady(WHITE, KINGSIDE));
         assertTrue(whiteCannotKingCastle.castlePiecesReady(WHITE, QUEENSIDE));
@@ -132,8 +132,8 @@ public class CastlingInfoTest {
     public void testEquality() {
         CastlingInfo base = CastlingInfo.allowAll();
         // Test equality.
-        CastlingInfo whiteCannotKingCastle = base.updated(new ChessMove("h1", "h2"));
-        CastlingInfo whiteCannotKingCastle2 = base.updated(new ChessMove("d5", "h1"));
+        CastlingInfo whiteCannotKingCastle = base.updated(new NormalChessMove("h1", "h2"));
+        CastlingInfo whiteCannotKingCastle2 = base.updated(new NormalChessMove("d5", "h1"));
         assertEquals(whiteCannotKingCastle, whiteCannotKingCastle2);
 
         // Test hashCode.
