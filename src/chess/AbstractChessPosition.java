@@ -99,21 +99,6 @@ public abstract class AbstractChessPosition implements ChessPosition {
         return (getToMoveColor() == Piece.Color.WHITE);
     }
 
-    /** Return the square that the king of some color occupies. */
-    private Square kingSquare(Piece.Color kingColor) {
-        // TODO: Make this more efficient by "caching" the king's position
-        // as an attribute of board.
-        Piece king = new Piece(Piece.Type.KING, kingColor);
-
-        for (Square possibleKingSquare : Square.ALL){
-            if (king.equals(getPiece(possibleKingSquare))) {
-                return possibleKingSquare;
-            }
-        }
-        // Didn't return anything!
-        throw new RuntimeException("There is no king of color " + kingColor + " on the board!");
-    }
-
     /**
      * Return whether the given square is currently under attack.
      * A square is under attack if a piece of the toMoveColor is
@@ -134,7 +119,7 @@ public abstract class AbstractChessPosition implements ChessPosition {
             // We need to switch the toMoveColor.
             trialPosition = new ChessPositionBuilder(this).setToMoveColor(getToMoveColor().opposite()).build();
         }
-
+    
         // Now we just see if any piece of the attackerColor has a sane
         // move to the target Square.
         for (Square attackerSquare : Square.ALL) {
@@ -149,6 +134,21 @@ public abstract class AbstractChessPosition implements ChessPosition {
         }
         // Nobody attacks the target.
         return false;
+    }
+
+    /** Return the square that the king of some color occupies. */
+    private Square kingSquare(Piece.Color kingColor) {
+        // TODO: Make this more efficient by "caching" the king's position
+        // as an attribute of board.
+        Piece king = new Piece(Piece.Type.KING, kingColor);
+
+        for (Square possibleKingSquare : Square.ALL){
+            if (king.equals(getPiece(possibleKingSquare))) {
+                return possibleKingSquare;
+            }
+        }
+        // Didn't return anything!
+        throw new RuntimeException("There is no king of color " + kingColor + " on the board!");
     }
 
     @Override
