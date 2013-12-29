@@ -1,5 +1,7 @@
 package chess;
 
+import java.util.Collection;
+
 import player.Position;
 
 /**
@@ -20,4 +22,9 @@ public interface ChessPosition extends Position<ChessPosition> {
 
     /** Return whether the king of some color is in check. */
     public boolean checked(Piece.Color kingColor);
+
+    // Make the return type more specific that is required
+    // by Position<ChessPosition>.
+    @Override
+    public Collection<ChessMove> moves();
 }
