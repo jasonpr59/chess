@@ -24,7 +24,7 @@ public interface ChessPosition extends Position<ChessPosition> {
      * attacking it.
      * TODO: Consider allowing caller to specify attackerColor.
      */
-    public boolean isAttackable(Square kingSquare);
+    public boolean isAttackable(Square target);
 
     /** Return whether the king of some color is in check. */
     public boolean checked(Piece.Color kingColor);
