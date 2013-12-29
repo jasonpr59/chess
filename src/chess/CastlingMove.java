@@ -3,6 +3,26 @@ package chess;
 import chess.CastlingInfo.Side;
 
 public class CastlingMove implements ChessMove {
+    @Override
+    public int hashCode() {
+        return baseMove.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        CastlingMove other = (CastlingMove) obj;
+        return baseMove.equals(other.baseMove);
+    }
+
     private static final Delta KINGSIDE_DELTA = new Delta(2, 0);
     private static final Delta QUEENSIDE_DELTA = new Delta(-2, 0);
 
