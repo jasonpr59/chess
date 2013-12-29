@@ -8,8 +8,8 @@ public class CastlingInfo {
 
     public enum Side { KINGSIDE, QUEENSIDE; }
 
-    // There are only 2^6 = 64 possible CastlingInfos, since
-    // a CastlingInfo is defined by 6 booleans.  We generate
+    // There are only 2^4 = 16 possible CastlingInfos, since
+    // a CastlingInfo is defined by 4 booleans.  We generate
     // all of them statically, then pass around references to
     // these (immutable) CastlingInfos.
     private static CastlingInfo[] ALL;
@@ -27,8 +27,8 @@ public class CastlingInfo {
     static {
         // Generate all the possible CastlingInfos, ahead of time.
         // Each one
-        ALL = new CastlingInfo[64];
-        for (byte id = 0; id < 64; id++) {
+        ALL = new CastlingInfo[16];
+        for (byte id = 0; id < 16; id++) {
             ALL[id] = new CastlingInfo(id);
         }
     }
@@ -50,37 +50,25 @@ public class CastlingInfo {
         return id == other.id;
     }
 
-    // The six booleans that completely define the CastlingInfo.
-    private final boolean whiteKingMoved;
-    private final boolean blackKingMoved;
-    // The *RookMoved variables for some rook is only
-    // guaranteed to be correct if the same-colored king
-    // has not moved.
-    // If that king has moved, then castling will be illegal
-    // whether or not the rook has moved, so there is
-    // no use in ensuring that that rook's value is correct.
-    // TODO: Consider replacing these six variables with
-    // just four variables: (white|black)Can(King|Queen)SideCastle.
-    private final boolean whiteKingRookMoved;
-    private final boolean blackKingRookMoved;
-    private final boolean whiteQueenRookMoved;
-    private final boolean blackQueenRookMoved;
+    // The four booleans that completely define the CastlingInfo.
+    private final boolean whiteCanKingCastle;
+    private final boolean whiteCanQueenCastle;
+    private final boolean blackCanKingCastle;
+    private final boolean blackCanQueenCastle;
 
     // We cache the id
     private final byte id;
 
     // Flags used for computing ids from "moved values."
-    // WKM = "white king moved", etc.
+    // WCKC = "white can king castle", etc.
     // One might argue that these abbreviations are unacceptable,
     // but if you're using these flags anywhere except *right* next
     // to the unabbreviated boolean value names, you're doing something
     // wrong.
-    private static final int WKM_FLAG = 1;
-    private static final int BKM_FLAG = 2;
-    private static final int WKRM_FLAG = 4;
-    private static final int BKRM_FLAG = 8;
-    private static final int WQRM_FLAG = 16;
-    private static final int BQRM_FLAG = 32;
+    private static final int WCKC_FLAG = 1;
+    private static final int WCQC_FLAG = 2;
+    private static final int BCKC_FLAG = 4;
+    private static final int BCQC_FLAG = 8;
 
     /** Create the CastlingInfo with the specified id. */
     private CastlingInfo(byte id) {
@@ -88,40 +76,31 @@ public class CastlingInfo {
             throw new IllegalArgumentException();
         }
         this.id = id;
-        whiteKingMoved = (id & WKM_FLAG) != 0;
-        blackKingMoved = (id & BKM_FLAG) != 0;
-        whiteKingRookMoved = (id & WKRM_FLAG) != 0;
-        blackKingRookMoved = (id & BKRM_FLAG) != 0;
-        whiteQueenRookMoved = (id & WQRM_FLAG) != 0;
-        blackQueenRookMoved = (id & BQRM_FLAG) != 0;
+        whiteCanKingCastle = (id & WCKC_FLAG) != 0;
+        whiteCanQueenCastle = (id & WCQC_FLAG) != 0;
+        blackCanKingCastle = (id & BCKC_FLAG) != 0;
+        blackCanQueenCastle = (id & BCQC_FLAG) != 0;
     }
 
     /** Return a CastlingInfo with the specified "moved values." */
-    private static CastlingInfo fromValues(final boolean whiteKingMoved,
-                                           final boolean blackKingMoved,
-                                           final boolean whiteKingRookMoved,
-                                           final boolean blackKingRookMoved,
-                                           final boolean whiteQueenRookMoved,
-                                           final boolean blackQueenRookMoved) {
-        byte id = id(whiteKingMoved, blackKingMoved,
-                     whiteKingRookMoved, blackKingRookMoved,
-                     whiteQueenRookMoved, blackQueenRookMoved);
+    private static CastlingInfo fromValues(final boolean whiteCanKingCastle,
+                                           final boolean whiteCanQueenCastle,
+                                           final boolean blackCanKingCastle,
+                                           final boolean blackCanQueenCastle) {
+        byte id = id(whiteCanKingCastle, whiteCanQueenCastle,
+                     blackCanKingCastle, blackCanQueenCastle);
         return fromId(id);
     }
 
     /** Return the id of the CastlingInfo with the specified "moved values." */
-    private static byte id(final boolean whiteKingMoved,
-                           final boolean blackKingMoved,
-                           final boolean whiteKingRookMoved,
-                           final boolean blackKingRookMoved,
-                           final boolean whiteQueenRookMoved,
-                           final boolean blackQueenRookMoved) {
-        return (byte) ((whiteKingMoved ? WKM_FLAG : 0) +
-                       (blackKingMoved ? BKM_FLAG : 0) +
-                       (whiteKingRookMoved ? WKRM_FLAG : 0) +
-                       (blackKingRookMoved ? BKRM_FLAG : 0) +
-                       (whiteQueenRookMoved ? WQRM_FLAG : 0) +
-                       (blackQueenRookMoved ? BQRM_FLAG : 0));
+    private static byte id(final boolean whiteCanKingCastle,
+                           final boolean whiteCanQueenCastle,
+                           final boolean blackCanKingCastle,
+                           final boolean blackCanQueenCastle) {
+        return (byte) ((whiteCanKingCastle ? WCKC_FLAG : 0) +
+                       (whiteCanQueenCastle ? WCQC_FLAG : 0) +
+                       (blackCanKingCastle ? BCKC_FLAG : 0) +
+                       (blackCanQueenCastle ? BCQC_FLAG : 0));
     }
 
     /** Return the CastlingInfo with the specified id. */
@@ -133,7 +112,7 @@ public class CastlingInfo {
      * Return a CastlingInfo with no moved kings or rooks.
      */
     public static CastlingInfo allowAll() {
-        return fromValues(false, false, false, false, false, false);
+        return fromValues(false, false, false, false);
     }
 
     /**
@@ -146,33 +125,33 @@ public class CastlingInfo {
         // piece whose home was that square has either moved (in this move
         // or a previous move), or been captured.  In any such case, it means
         // the piece whose home was that square has moved in some way or another.
-        boolean whiteKingMoved = this.whiteKingMoved || move.startsOrEndsAt(E1);
-        boolean blackKingMoved = this.blackKingMoved || move.startsOrEndsAt(E8);
 
-        boolean whiteKingRookMoved = this.whiteKingRookMoved || move.startsOrEndsAt(H1);
-        boolean blackKingRookMoved = this.blackKingRookMoved || move.startsOrEndsAt(H8);
+        boolean whiteCanKingCastle = (this.whiteCanKingCastle &&
+                                      !move.startsOrEndsAt(E1) &&
+                                      !move.startsOrEndsAt(H1));
 
-        boolean whiteQueenRookMoved = this.whiteQueenRookMoved || move.startsOrEndsAt(A1);
-        boolean blackQueenRookMoved = this.blackQueenRookMoved || move.startsOrEndsAt(A8);
+        boolean whiteCanQueenCastle = (this.whiteCanQueenCastle &&
+                                       !move.startsOrEndsAt(E1) &&
+                                       !move.startsOrEndsAt(A1));
 
-        return fromValues(whiteKingMoved, blackKingMoved, whiteKingRookMoved,
-                          blackKingRookMoved, whiteQueenRookMoved, blackQueenRookMoved);
+        boolean blackCanKingCastle = (this.blackCanKingCastle &&
+                                      !move.startsOrEndsAt(E8) &&
+                                      !move.startsOrEndsAt(H8));
+
+        boolean blackCanQueenCastle = (this.blackCanQueenCastle &&
+                                       !move.startsOrEndsAt(E8) &&
+                                       !move.startsOrEndsAt(A8));
+
+        return fromValues(whiteCanKingCastle, whiteCanQueenCastle,
+                          blackCanKingCastle, blackCanQueenCastle);
     }
 
     /** Return whether the king is unmoved AND the h-rook is unmoved. */
     public boolean castlePiecesReady(Piece.Color color, Side side) {
         if (side == Side.KINGSIDE){
-            if (color == Piece.Color.WHITE){
-                return !whiteKingMoved && !whiteKingRookMoved;
-            } else {
-                return !blackKingMoved && !blackKingRookMoved;
-            }
+            return (color == Piece.Color.WHITE) ? whiteCanKingCastle : blackCanKingCastle;
         } else {
-            if (color == Piece.Color.WHITE){
-                return !whiteKingMoved && !whiteQueenRookMoved;
-            } else {
-                return !blackKingMoved && !blackQueenRookMoved;
-            }
+            return (color == Piece.Color.WHITE) ? whiteCanQueenCastle : blackCanQueenCastle;
         }
     }
 }
