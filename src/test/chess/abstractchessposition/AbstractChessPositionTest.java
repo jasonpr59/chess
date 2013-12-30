@@ -12,8 +12,8 @@ import chess.ChessMove;
 import chess.ChessPosition;
 import chess.ChessPositionBuilder;
 import chess.NormalChessMove;
-import chess.Piece;
 import chess.Square;
+import chess.piece.Piece;
 
 /**
  * Tests for the chess.AbstractChessPosition class.

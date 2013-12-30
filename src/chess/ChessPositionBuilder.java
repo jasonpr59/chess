@@ -1,6 +1,13 @@
 package chess;
 
-import chess.Piece.Color;
+import chess.piece.Bishop;
+import chess.piece.King;
+import chess.piece.Knight;
+import chess.piece.Pawn;
+import chess.piece.Piece;
+import chess.piece.Piece.Color;
+import chess.piece.Queen;
+import chess.piece.Rook;
 
 /**
  * A One-time-use Builder for ChessPositions.
@@ -77,55 +84,36 @@ public class ChessPositionBuilder {
         setToMoveColor(Piece.Color.WHITE);
         setCastlingInfo(CastlingInfo.allowAll());
 
-
         // Set up the pawns
         for (int file = 1; file <= 8; file++){
-            placePiece(new Piece(Piece.Type.PAWN, Piece.Color.WHITE),
-                         Square.squareAt(file, 2));
-            placePiece(new Piece(Piece.Type.PAWN, Piece.Color.BLACK),
-                         Square.squareAt(file, 7));
+            placePiece(new Pawn(Piece.Color.WHITE), Square.squareAt(file, 2));
+            placePiece(new Pawn(Piece.Color.BLACK), Square.squareAt(file, 7));
         }
 
         // Set up the pieces
-        placePiece(new Piece(Piece.Type.ROOK, Piece.Color.WHITE),
-                   Square.squareAt(1, 1));
-        placePiece(new Piece(Piece.Type.ROOK, Piece.Color.BLACK),
-                   Square.squareAt(1, 8));
+        placePiece(new Rook(Piece.Color.WHITE), Square.squareAt(1, 1));
+        placePiece(new Rook(Piece.Color.BLACK), Square.squareAt(1, 8));
 
-        placePiece(new Piece(Piece.Type.KNIGHT, Piece.Color.WHITE),
-                   Square.squareAt(2, 1));
-        placePiece(new Piece(Piece.Type.KNIGHT, Piece.Color.BLACK),
-                   Square.squareAt(2, 8));
+        placePiece(new Knight(Piece.Color.WHITE), Square.squareAt(2, 1));
+        placePiece(new Knight(Piece.Color.BLACK), Square.squareAt(2, 8));
 
-        placePiece(new Piece(Piece.Type.BISHOP, Piece.Color.WHITE),
-                   Square.squareAt(3, 1));
-        placePiece(new Piece(Piece.Type.BISHOP, Piece.Color.BLACK),
-                   Square.squareAt(3, 8));
+        placePiece(new Bishop(Piece.Color.WHITE), Square.squareAt(3, 1));
+        placePiece(new Bishop(Piece.Color.BLACK), Square.squareAt(3, 8));
 
-        placePiece(new Piece(Piece.Type.QUEEN, Piece.Color.WHITE),
-                   Square.squareAt(4, 1));
-        placePiece(new Piece(Piece.Type.QUEEN, Piece.Color.BLACK),
-                   Square.squareAt(4, 8));
+        placePiece(new Queen(Piece.Color.WHITE), Square.squareAt(4, 1));
+        placePiece(new Queen(Piece.Color.BLACK), Square.squareAt(4, 8));
 
-        placePiece(new Piece(Piece.Type.KING, Piece.Color.WHITE),
-                   Square.squareAt(5, 1));
-        placePiece(new Piece(Piece.Type.KING, Piece.Color.BLACK),
-                   Square.squareAt(5, 8));
+        placePiece(new King(Piece.Color.WHITE), Square.squareAt(5, 1));
+        placePiece(new King(Piece.Color.BLACK), Square.squareAt(5, 8));
 
-        placePiece(new Piece(Piece.Type.BISHOP, Piece.Color.WHITE),
-                   Square.squareAt(6, 1));
-        placePiece(new Piece(Piece.Type.BISHOP, Piece.Color.BLACK),
-                   Square.squareAt(6, 8));
+        placePiece(new Bishop(Piece.Color.WHITE), Square.squareAt(6, 1));
+        placePiece(new Bishop(Piece.Color.BLACK), Square.squareAt(6, 8));
 
-        placePiece(new Piece(Piece.Type.KNIGHT, Piece.Color.WHITE),
-                   Square.squareAt(7, 1));
-        placePiece(new Piece(Piece.Type.KNIGHT, Piece.Color.BLACK),
-                   Square.squareAt(7, 8));
+        placePiece(new Knight(Piece.Color.WHITE), Square.squareAt(7, 1));
+        placePiece(new Knight(Piece.Color.BLACK), Square.squareAt(7, 8));
 
-        placePiece(new Piece(Piece.Type.ROOK, Piece.Color.WHITE),
-                   Square.squareAt(8, 1));
-        placePiece(new Piece(Piece.Type.ROOK, Piece.Color.BLACK),
-                   Square.squareAt(8, 8));
+        placePiece(new Rook(Piece.Color.WHITE), Square.squareAt(8, 1));
+        placePiece(new Rook(Piece.Color.BLACK), Square.squareAt(8, 8));
 
         return this;
     }
@@ -287,20 +275,20 @@ public class ChessPositionBuilder {
             throw new AssertionError("Color must be W or B, not " + colorChar);
         }
 
-        Piece.Type type;
+        Piece piece;
         char typeChar = placement.charAt(1);
         if (typeChar == 'N') {
-            type = Piece.Type.KNIGHT;
+            piece = new Knight(color);
         } else if (typeChar == 'B') {
-            type = Piece.Type.BISHOP;
+            piece = new Bishop(color);
         } else if (typeChar == 'R') {
-            type = Piece.Type.ROOK;
+            piece = new Rook(color);
         } else if (typeChar == 'Q') {
-            type = Piece.Type.QUEEN;
+            piece = new Queen(color);
         } else if (typeChar == 'K') {
-            type = Piece.Type.KING;
+            piece = new King(color);
         } else if (typeChar == 'P') {
-            type = Piece.Type.PAWN;
+            piece = new Pawn(color);
         } else {
             throw new AssertionError("Type must be N, B, R, Q, K, or P, not " + typeChar);
         }
@@ -309,7 +297,7 @@ public class ChessPositionBuilder {
         String square = placement.substring(2);
         target = Square.algebraic(square);
 
-        return placePiece(new Piece(type, color), target);
+        return placePiece(piece, target);
     }
 
     /**

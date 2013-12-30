@@ -7,7 +7,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import chess.Piece.Type;
+import chess.piece.Bishop;
+import chess.piece.Knight;
+import chess.piece.Pawn;
+import chess.piece.Piece;
+import chess.piece.Queen;
+import chess.piece.Rook;
 
 /** A pawn-promotion chess move. */
 public class PromotionMove implements ChessMove {
@@ -16,7 +21,7 @@ public class PromotionMove implements ChessMove {
         final int prime = 31;
         int result = 1;
         result = prime * result + baseMove.hashCode();
-        result = prime * result + promotedType.hashCode();
+        result = prime * result + promotedPiece.hashCode();
         return result;
     }
 
@@ -35,34 +40,34 @@ public class PromotionMove implements ChessMove {
         if (!baseMove.equals(other.baseMove)) {
             return false;
         }
-        if (promotedType != other.promotedType) {
+        if (!promotedPiece.equals(other.promotedPiece)) {
             return false;
         }
         return true;
     }
 
-    private final Type promotedType;
+    private final Piece promotedPiece;
     private final NormalChessMove baseMove;
 
-    private static final Set<Type> PROMOTION_TYPES;
+    private static final Set<Class<?>> PROMOTION_TYPES;
 
     static {
-        Set<Type> promotionTypes = new HashSet<Type>();
-        promotionTypes.add(Type.KNIGHT);
-        promotionTypes.add(Type.BISHOP);
-        promotionTypes.add(Type.ROOK);
-        promotionTypes.add(Type.QUEEN);
+        Set<Class<?>> promotionTypes = new HashSet<Class<?>>();
+        promotionTypes.add(Knight.class);
+        promotionTypes.add(Bishop.class);
+        promotionTypes.add(Rook.class);
+        promotionTypes.add(Queen.class);
         PROMOTION_TYPES = Collections.unmodifiableSet(promotionTypes);
     }
 
-    /** Create a PromotionMove from a normal move and a promoted Piece.Type. */
-    public PromotionMove(NormalChessMove move, Type promotedType) {
+    /** Create a PromotionMove from a normal move and a promoted Piece. */
+    public PromotionMove(NormalChessMove move, Piece promotedPiece) {
         this.baseMove = move;
-        this.promotedType = promotedType;
+        this.promotedPiece = promotedPiece;
     }
 
-    public Type getPromotedType() {
-        return promotedType;
+    public Piece getPromotedPiece() {
+        return promotedPiece;
     }
 
     /**
@@ -72,16 +77,18 @@ public class PromotionMove implements ChessMove {
      */
     public static Collection<PromotionMove> allPromotions(NormalChessMove move) {
         List<PromotionMove> allPromotions = new ArrayList<PromotionMove>();
-        for (Type type : PROMOTION_TYPES) {
-            allPromotions.add(new PromotionMove(move, type));
-        }
+        Piece.Color color = getPromotingColor(move);
+        allPromotions.add(new PromotionMove(move, new Knight(color)));
+        allPromotions.add(new PromotionMove(move, new Bishop(color)));
+        allPromotions.add(new PromotionMove(move, new Rook(color)));
+        allPromotions.add(new PromotionMove(move, new Queen(color)));
         return allPromotions;
     }
 
     public boolean isSane(ChessPosition board) {
         Piece movingPiece = board.getPiece(baseMove.getStart());
-        if (movingPiece == null || movingPiece.getType() != Piece.Type.PAWN ||
-                !PROMOTION_TYPES.contains(getPromotedType())) {
+        if (!(movingPiece instanceof Pawn) ||
+            !PROMOTION_TYPES.contains(getPromotedPiece().getClass())) {
             return false;
         }
 
@@ -109,8 +116,6 @@ public class PromotionMove implements ChessMove {
         // step.  (The first one was in the super.result step.)
         ChessPositionBuilder builder = new ChessPositionBuilder(partlyMoved);
         Square end = baseMove.getEnd();
-        Piece promotedPiece = new Piece(getPromotedType(),
-                                        partlyMoved.getPiece(end).getColor());
         builder.placePiece(promotedPiece, end);
 
         return builder.build();
@@ -120,20 +125,15 @@ public class PromotionMove implements ChessMove {
     public String serialized() {
         String coords = baseMove.serialized();
         String type;
-        switch (getPromotedType()) {
-        case KNIGHT:
+        if (getPromotedPiece() instanceof Knight) {
             type = "N";
-            break;
-        case BISHOP:
+        } else if (getPromotedPiece() instanceof Bishop) {
             type = "B";
-            break;
-        case ROOK:
+        } else if (getPromotedPiece() instanceof Rook) {
             type = "R";
-            break;
-        case QUEEN:
+        } else if (getPromotedPiece() instanceof Queen) {
             type = "Q";
-            break;
-        default:
+        } else {
             throw new RuntimeException("Invalid promotion type.");
         }
         return coords + type;
@@ -142,22 +142,24 @@ public class PromotionMove implements ChessMove {
     /** Deserialize this move from a 5-character String. */
     public static PromotionMove deserialized(String s) {
         assert s.length() == 5;
+        NormalChessMove basicMove = (NormalChessMove) NormalChessMove.deserialized(s.substring(0, 4));
+        Piece.Color color = getPromotingColor(basicMove);
         char typeChar = s.charAt(4);
-        Piece.Type type;
+        Piece promotedPiece;
         if (typeChar == 'N') {
-            type = Piece.Type.KNIGHT;
+            promotedPiece = new Knight(color);
         } else if (typeChar == 'B') {
-            type = Piece.Type.BISHOP;
+            promotedPiece = new Bishop(color);
         } else if (typeChar == 'R') {
-            type = Piece.Type.ROOK;
+            promotedPiece = new Rook(color);
         } else if (typeChar == 'Q') {
-            type = Piece.Type.QUEEN;
+            promotedPiece = new Queen(color);
         } else {
             throw new RuntimeException("Invalid promotion type.");
         }
 
-        NormalChessMove basicMove = (NormalChessMove) NormalChessMove.deserialized(s.substring(0, 4));
-        return new PromotionMove(basicMove, type);
+
+        return new PromotionMove(basicMove, promotedPiece);
     }
 
     @Override
@@ -198,5 +200,13 @@ public class PromotionMove implements ChessMove {
     @Override
     public boolean startsOrEndsAt(Square square) {
         return baseMove.startsOrEndsAt(square);
+    }
+
+    private static Piece.Color getPromotingColor(NormalChessMove move) {
+        if (move.getEnd().getRank() == 8) {
+            return Piece.Color.WHITE;
+        } else {
+            return Piece.Color.BLACK;
+        }
     }
 }

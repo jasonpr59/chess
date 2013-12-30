@@ -2,6 +2,8 @@ package chess;
 
 import java.util.Collection;
 
+import chess.piece.Piece;
+
 import player.Position;
 
 /**

@@ -14,8 +14,8 @@ import org.junit.Test;
 import test.TestUtil;
 import chess.NormalChessMove;
 import chess.Delta;
-import chess.Piece;
 import chess.Square;
+import chess.piece.Piece;
 
 /** Tests for the chess.Square class. */
 public class SquareTest {

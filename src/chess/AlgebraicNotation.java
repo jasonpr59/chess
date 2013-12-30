@@ -2,32 +2,26 @@ package chess;
 
 import java.util.Collections;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.Map;
 
-import chess.Piece.Type;
 import chess.exceptions.AlgebraicNotationException;
+import chess.piece.Bishop;
+import chess.piece.King;
+import chess.piece.Knight;
+import chess.piece.Pawn;
+import chess.piece.Piece;
+import chess.piece.Queen;
+import chess.piece.Rook;
 
 /**
  * Utility class for algebraic chess notation (AN).
  * See http://en.wikipedia.org/wiki/Algebraic_notation_(chess).
  */
 public class AlgebraicNotation {
-    // Map of AN letters to actual Piece.Type values.
-    private static final Map<Character, Piece.Type> PIECE_NAMES;
-
     // Convenience map, for generating castling moves.
     private static final Map<Piece.Color, Square> KING_SQUARES;
 
     static {
-        Map<Character, Piece.Type> pieceNames = new HashMap<Character, Piece.Type>();
-        pieceNames.put('N', Piece.Type.KNIGHT);
-        pieceNames.put('B', Piece.Type.BISHOP);
-        pieceNames.put('R', Piece.Type.ROOK);
-        pieceNames.put('Q', Piece.Type.QUEEN);
-        pieceNames.put('K', Piece.Type.KING);
-        PIECE_NAMES = Collections.unmodifiableMap(pieceNames);
-
         Map<Piece.Color, Square> kingSquares = new EnumMap<Piece.Color, Square>(Piece.Color.class);
         kingSquares.put(Piece.Color.WHITE, Square.squareAt(5, 1));
         kingSquares.put(Piece.Color.BLACK, Square.squareAt(5, 8));
@@ -62,20 +56,28 @@ public class AlgebraicNotation {
 
         // TODO: Implement promotion.
 
-        final Type type;
         final String endStr;
         final boolean captures;
 
-        int startFront;
+        int startFront = 1;
         int startBack;
 
         // Get piece type.
         char typeChar = alg.charAt(0);
-        if (PIECE_NAMES.containsKey(typeChar)) {
-            type = PIECE_NAMES.get(typeChar);
-            startFront = 1;
+        Piece piece;
+        Piece.Color color = position.getToMoveColor();
+        if (typeChar == 'N') {
+            piece = new Knight(color);
+        } else if (typeChar == 'B') {
+            piece = new Bishop(color);
+        } else if (typeChar == 'R') {
+            piece = new Rook(color);
+        } else if (typeChar == 'Q') {
+            piece = new Queen(color);
+        } else if (typeChar == 'K') {
+            piece = new King(color);
         } else {
-            type = Piece.Type.PAWN;
+            piece = new Pawn(color);
             startFront = 0;
         }
 
@@ -100,9 +102,9 @@ public class AlgebraicNotation {
             start = Square.algebraic(alg.substring(startFront, startBack));
         } else if (startLen == 1) {
             char clue = alg.charAt(startFront);
-            start = startFromClue(type, clue, end, position);
+            start = startFromClue(piece.getClass(), clue, end, position);
         } else {
-            start = start(type, end, position);
+            start = start(piece.getClass(), end, position);
         }
 
         NormalChessMove move = new NormalChessMove(start, end);
@@ -123,7 +125,7 @@ public class AlgebraicNotation {
      * @param position The position from which the move is to be made.
      * @throws AlgebraicNotationException if there is no possible starting square.
      */
-    private static Square start(Piece.Type type, Square end, ChessPosition position) throws AlgebraicNotationException {
+    private static Square start(Class<?> type, Square end, ChessPosition position) throws AlgebraicNotationException {
         // TODO: Make more efficient.
         // TODO: Check uniqueness of start square (i.e. that no disambiguation
         // was necessary).
@@ -139,7 +141,7 @@ public class AlgebraicNotation {
      * @param position The position from which the move is to be made.
      * @throws AlgebraicNotationException if there is no possible starting square.
      */
-    private static Square startFromClue(Piece.Type type, char clue, Square end, ChessPosition position) throws AlgebraicNotationException {
+    private static Square startFromClue(Class<?> type, char clue, Square end, ChessPosition position) throws AlgebraicNotationException {
         return startFromSquares(type, Square.line(clue), end, position);
     }
 
@@ -153,7 +155,7 @@ public class AlgebraicNotation {
      * @throws AlgebraicNotationException if there is no possible starting
      *      square in candidateSqarues.
      */
-    private static Square startFromSquares(Piece.Type type, Iterable<Square> candidateStarts,
+    private static Square startFromSquares(Class<?> type, Iterable<Square> candidateStarts,
                                            Square end, ChessPosition position) throws AlgebraicNotationException {
         Piece movingPiece;
         ChessMove candidateMove;
@@ -162,7 +164,7 @@ public class AlgebraicNotation {
                 continue;
             }
             movingPiece = position.getPiece(start);
-            if (movingPiece == null || movingPiece.getType() != type ||
+            if (movingPiece == null || movingPiece.getClass() != type ||
                 movingPiece.getColor() != position.getToMoveColor()) {
                 continue;
             }

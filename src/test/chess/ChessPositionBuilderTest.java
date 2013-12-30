@@ -12,10 +12,16 @@ import chess.ChessPosition;
 import chess.ChessPositionBuilder;
 import chess.Game;
 import chess.NormalChessMove;
-import chess.Piece;
 import chess.Square;
 import chess.exceptions.AlgebraicNotationException;
 import chess.exceptions.IllegalMoveException;
+import chess.piece.Bishop;
+import chess.piece.King;
+import chess.piece.Knight;
+import chess.piece.Pawn;
+import chess.piece.Piece;
+import chess.piece.Queen;
+import chess.piece.Rook;
 
 public class ChessPositionBuilderTest {
     @Test
@@ -42,7 +48,7 @@ public class ChessPositionBuilderTest {
         ChessPositionBuilder nonBlankBuilder = new ChessPositionBuilder();
 
         // Place two "transient" pieces on it.
-        Piece transientRook = new Piece(Piece.Type.ROOK, Piece.Color.WHITE);
+        Piece transientRook = new Rook(Piece.Color.WHITE);
         Square toBeEmpty = Square.algebraic("d5");
         // We use f7 because assertIsNewGame will check that square.
         Square toBeOccupied = Square.algebraic("f7");
@@ -87,19 +93,19 @@ public class ChessPositionBuilderTest {
         ChessPositionBuilder builder = new ChessPositionBuilder();
         // On empty square.
         Square emptyTarget = Square.algebraic("a1");
-        Piece whiteRook = new Piece(Piece.Type.ROOK, Piece.Color.WHITE);
+        Piece whiteRook = new Rook(Piece.Color.WHITE);
         builder.placePiece(whiteRook, emptyTarget);
 
         // On non-empty square (replacement).
         Square replacementTarget = Square.algebraic("b2");
-        Piece replacedPiece = new Piece(Piece.Type.BISHOP, Piece.Color.WHITE);
-        Piece replacingPiece = new Piece(Piece.Type.PAWN, Piece.Color.BLACK);
+        Piece replacedPiece = new Bishop(Piece.Color.WHITE);
+        Piece replacingPiece = new Pawn(Piece.Color.BLACK);
         builder.placePiece(replacedPiece, replacementTarget);
         builder.placePiece(replacingPiece, replacementTarget);
 
         // Null piece.
         Square removalTarget = Square.algebraic("c3");
-        Piece removedPiece = new Piece(Piece.Type.QUEEN, Piece.Color.BLACK);
+        Piece removedPiece = new Queen(Piece.Color.BLACK);
         builder.placePiece(removedPiece, removalTarget);
         builder.placePiece(null, removalTarget);
 
@@ -226,7 +232,7 @@ public class ChessPositionBuilderTest {
         newGameBuilder.setupNewGame();
         ChessPosition newGame = newGameBuilder.build();
 
-        Piece whiteBishop = new Piece(Piece.Type.BISHOP, Piece.Color.WHITE);
+        Piece whiteBishop = new Bishop(Piece.Color.WHITE);
         Square c1 = Square.algebraic("c1");
         assertEquals(whiteBishop, newGame.getPiece(c1));
         assertNull(newGame.getEnPassantSquare());
@@ -255,12 +261,12 @@ public class ChessPositionBuilderTest {
 
         ChessPosition position = builder.build();
 
-        Piece whitePawn = new Piece(Piece.Type.PAWN, Piece.Color.WHITE);
-        Piece whiteKnight = new Piece(Piece.Type.KNIGHT, Piece.Color.WHITE);
-        Piece whiteBishop = new Piece(Piece.Type.BISHOP, Piece.Color.WHITE);
-        Piece blackRook = new Piece(Piece.Type.ROOK, Piece.Color.BLACK);
-        Piece blackQueen = new Piece(Piece.Type.QUEEN, Piece.Color.BLACK);
-        Piece blackKing = new Piece(Piece.Type.KING, Piece.Color.BLACK);
+        Piece whitePawn = new Pawn(Piece.Color.WHITE);
+        Piece whiteKnight = new Knight(Piece.Color.WHITE);
+        Piece whiteBishop = new Bishop(Piece.Color.WHITE);
+        Piece blackRook = new Rook(Piece.Color.BLACK);
+        Piece blackQueen = new Queen(Piece.Color.BLACK);
+        Piece blackKing = new King(Piece.Color.BLACK);
 
         assertEquals(whitePawn, position.getPiece(Square.algebraic("a1")));
         assertEquals(whiteKnight, position.getPiece(Square.algebraic("b2")));
@@ -277,8 +283,8 @@ public class ChessPositionBuilderTest {
         builder.placePieces(placements);
         ChessPosition position = builder.build();
 
-        Piece whiteKing = new Piece(Piece.Type.KING, Piece.Color.WHITE);
-        Piece blackKing = new Piece(Piece.Type.KING, Piece.Color.BLACK);
+        Piece whiteKing = new King(Piece.Color.WHITE);
+        Piece blackKing = new King(Piece.Color.BLACK);
 
         assertEquals(whiteKing, position.getPiece(Square.algebraic("a1")));
         assertEquals(blackKing, position.getPiece(Square.algebraic("h8")));

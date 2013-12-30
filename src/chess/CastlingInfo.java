@@ -1,5 +1,7 @@
 package chess;
 
+import chess.piece.Piece;
+
 /**
  * Stores whether certain pieces have moved, for deciding whether castling is legal.
  * This class is immutable.

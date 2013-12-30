@@ -14,10 +14,14 @@ import chess.ChessPosition;
 import chess.ChessPositionBuilder;
 import chess.Delta;
 import chess.NormalChessMove;
-import chess.Piece;
 import chess.PromotionMove;
 import chess.Square;
 import chess.exceptions.AlgebraicNotationException;
+import chess.piece.Bishop;
+import chess.piece.Knight;
+import chess.piece.Piece;
+import chess.piece.Queen;
+import chess.piece.Rook;
 
 /** Various tests for the AbstractChessPosition.moves() method. */
 public class AbstractChessPositionMovesTest {
@@ -134,18 +138,18 @@ public class AbstractChessPositionMovesTest {
         builder.placePieces(placements);
         ChessPosition canPromote = builder.build();
 
-        final Piece.Type[] PROMOTION_TYPES = {
-                Piece.Type.KNIGHT, Piece.Type.BISHOP,
-                Piece.Type.ROOK, Piece.Type.QUEEN};
+        final Piece[] PROMOTED_PIECES = {
+                new Knight(Piece.Color.WHITE), new Bishop(Piece.Color.WHITE),
+                new Rook(Piece.Color.WHITE), new Queen(Piece.Color.WHITE)};
 
         Collection<ChessMove> expected = new ArrayList<ChessMove>();
         NormalChessMove pawnPush = new NormalChessMove("e7", "e8");
         NormalChessMove pawnCapture = new NormalChessMove("e7", "d8");
-        for (Piece.Type type : PROMOTION_TYPES) {
+        for (Piece promotedPiece : PROMOTED_PIECES) {
             // Pawn push to promote.
-            expected.add(new PromotionMove(pawnPush, type));
+            expected.add(new PromotionMove(pawnPush, promotedPiece));
             // Pawn capture to promote.
-            expected.add(new PromotionMove(pawnCapture, type));
+            expected.add(new PromotionMove(pawnCapture, promotedPiece));
         }
         // King moves.
         Square kingStart = Square.algebraic("e2");
