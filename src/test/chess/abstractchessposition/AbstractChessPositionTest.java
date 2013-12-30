@@ -7,9 +7,13 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import player.Outcome;
+import chess.CastlingInfo;
+import chess.ChessMove;
 import chess.ChessPosition;
 import chess.ChessPositionBuilder;
+import chess.NormalChessMove;
 import chess.Piece;
+import chess.Square;
 
 /**
  * Tests for the chess.AbstractChessPosition class.
@@ -75,5 +79,37 @@ public class AbstractChessPositionTest {
         blackToMoveBuilder.setToMoveColor(Piece.Color.BLACK);
         ChessPosition blackToMove = blackToMoveBuilder.build();
         assertTrue(blackToMove.checked(Piece.Color.WHITE));
+    }
+
+    @Test
+    public void testEquality() {
+        // Assert that two equal (new) ChessPositions are equal, and have the same hashCode.
+        ChessPosition newGame = new ChessPositionBuilder().setupNewGame().build();
+        ChessPosition newGameAgain = new ChessPositionBuilder().setupNewGame().build();
+        assertEquals(newGame, newGameAgain);
+        assertEquals(newGame.hashCode(), newGameAgain.hashCode());
+
+        // Assert that differing pieces make ChessPositions unequal.
+        ChessPosition noQueenRook = new ChessPositionBuilder().setupNewGame()
+                                    .placePiece(null, Square.algebraic("a1")).build();
+        assertFalse(noQueenRook.equals(newGame));
+
+        // Assert that differing toMoveColors make ChessPositions unequal.
+        ChessPosition blackToMove = new ChessPositionBuilder().setupNewGame()
+                                    .setToMoveColor(Piece.Color.BLACK).build();
+        assertFalse(blackToMove.equals(newGame));
+
+        // Assert that differing enPassantSquares make ChessPositions unequal.
+        ChessPosition enPassantPossible = new ChessPositionBuilder().setupNewGame()
+                                          .setEnPassantSquare(Square.algebraic("d5"))
+                                          .build();
+        assertFalse(enPassantPossible.equals(newGame));
+
+        // Assert that differing castlingInfos make ChessPositions unequal.
+        ChessMove fromH1 = new NormalChessMove("h1", "h2");
+        CastlingInfo whiteCannotKingCastle = CastlingInfo.allowAll().updated(fromH1);
+        ChessPosition castlingInfoDifferent = new ChessPositionBuilder().setupNewGame()
+                                              .setCastlingInfo(whiteCannotKingCastle).build();
+        assertFalse(castlingInfoDifferent.equals(newGame));
     }
 }
