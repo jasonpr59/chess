@@ -6,11 +6,12 @@ import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
+import test.TestUtil;
 import chess.CastlingInfo;
-import chess.NormalChessMove;
 import chess.ChessPosition;
 import chess.ChessPositionBuilder;
 import chess.Game;
+import chess.NormalChessMove;
 import chess.Piece;
 import chess.Square;
 import chess.exceptions.AlgebraicNotationException;
@@ -29,37 +30,13 @@ public class ChessPositionBuilderTest {
         assertEquals(CastlingInfo.allowAll(), position.getCastlingInfo());
     }
 
-    /** Assert that a ChessPosition is in the new-game position. */
-    private void assertIsNewGame(ChessPosition position) {
-        // Do a couple perfunctory spot checks for pieces.
-        Piece whiteBishop = new Piece(Piece.Type.BISHOP, Piece.Color.WHITE);
-        Piece c1Piece = position.getPiece(Square.algebraic("c1"));
-        assertEquals(whiteBishop, c1Piece);
-
-        Piece blackPawn = new Piece(Piece.Type.PAWN, Piece.Color.BLACK);
-        Piece f7Piece = position.getPiece(Square.algebraic("f7"));
-        assertEquals(blackPawn, f7Piece);
-
-        // Make sure that all the middle squares are empty.
-        for (int file = 1; file <= 8; file++) {
-            for (int rank = 3; rank <= 6; rank++) {
-                assertNull(position.getPiece(Square.squareAt(file, rank)));
-            }
-        }
-
-        // Assert other info is correct.
-        assertNull(position.getEnPassantSquare());
-        assertEquals(Piece.Color.WHITE, position.getToMoveColor());
-        assertEquals(CastlingInfo.allowAll(), position.getCastlingInfo());
-    }
-
     @Test
     public void testNewGame() {
         // From blank board.
         ChessPositionBuilder builder = new ChessPositionBuilder();
         builder.setupNewGame();
         ChessPosition newGame = builder.build();
-        assertIsNewGame(newGame);
+        TestUtil.assertIsNewGame(newGame);
 
         // From non-blank board.
         ChessPositionBuilder nonBlankBuilder = new ChessPositionBuilder();
@@ -77,7 +54,7 @@ public class ChessPositionBuilderTest {
 
         // Assert that the resulting position is still good.
        ChessPosition newGameFromNonBlankBuilder = nonBlankBuilder.build();
-       assertIsNewGame(newGameFromNonBlankBuilder);
+       TestUtil.assertIsNewGame(newGameFromNonBlankBuilder);
     }
 
     @Test
