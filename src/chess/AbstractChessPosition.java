@@ -21,10 +21,12 @@ public abstract class AbstractChessPosition implements ChessPosition {
         final int prime = 31;
         int result = 1;
         for (Square s : Square.ALL) {
-            result = prime * result + getPiece(s).hashCode();
+            Piece piece = getPiece(s);
+            result = prime * result + (piece == null ? 0 : piece.hashCode());
         }
 
-        result = prime * result + getEnPassantSquare().hashCode();
+        Square enPassantSquare = getEnPassantSquare();
+        result = prime * result + (enPassantSquare == null ? 0 : enPassantSquare.hashCode());
         result = prime * result + getToMoveColor().hashCode();
         result = prime * result + getCastlingInfo().hashCode();
 
