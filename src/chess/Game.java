@@ -29,7 +29,10 @@ public class Game {
      * @return This Game, for daisy chaining.
      * @throws IllegalMoveException
      */
-    public Game makeMove(ChessMove move) throws IllegalMoveException{
+    public Game makeMove(ChessMove move) throws IllegalMoveException {
+        if (!move.isLegal(getCurrentPosition())) {
+            throw new IllegalMoveException();
+        }
         history.add(move.result(getCurrentPosition()));
         return this;
     }
