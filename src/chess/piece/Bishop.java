@@ -23,15 +23,10 @@ public class Bishop extends Piece {
     }
 
     @Override
-    public boolean isSane(ChessMove move, ChessPosition position) {
+    public boolean isSane(NormalChessMove move, ChessPosition position) {
         if (!isColorSane(move, position)) {
             return false;
         }
-        if (move instanceof NormalChessMove) {
-            return move.getDelta().isDiagonal() && move.isOpen(position);
-        } else {
-            // Bishops only make NormalChessMoves.
-            return false;
-        }
-    }
+        return move.getDelta().isDiagonal() && move.isOpen(position);
+      }
 }

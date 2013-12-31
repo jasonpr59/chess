@@ -46,16 +46,12 @@ public class Knight extends Piece {
     }
 
     @Override
-    public boolean isSane(ChessMove move, ChessPosition position) {
+    public boolean isSane(NormalChessMove move, ChessPosition position) {
         if (!isColorSane(move, position)) {
             return false;
         }
-        if (move instanceof NormalChessMove) {
-            Delta moveDelta = move.getDelta();
-            return Math.abs(moveDelta.getDeltaRank() * moveDelta.getDeltaFile()) == 2;
-        } else {
-            // Knights only make NormalChessMoves.
-            return false;
-        }
+        Delta moveDelta = move.getDelta();
+        return Math.abs(moveDelta.getDeltaRank() * moveDelta.getDeltaFile()) == 2;
+
     }
 }
