@@ -102,6 +102,18 @@ public class NormalChessMove implements ChessMove{
             return false;
         }
 
+        // TODO: Figure out where this code goes!
+        // It seems as though the following code should be pushed
+        // into a `Piece.isSane(Move, ChessPosition)` method.
+        // I tried to do that, but it ends up inducing a fair
+        // amount of code duplication.  Not cool.
+        // Eventually I hope to figure out a way to move this code
+        // into `Piece`'s methods, so that a Piece can define
+        // what types of ChessMoves are sane for it, removing a ton of
+        // `instanceof` uses along the way.  But, for now, I'm not
+        // horribly offended by the idea that a type of ChessMove
+        // defines whether it is sane for various types of Piece.
+        // It's not ideal, but I need to move on for now.
         if (movingPiece instanceof Pawn) {
             // We'll need to know which way is forward for this pawn, later on.
             boolean isWhite = movingPiece.getColor() == Piece.Color.WHITE;
