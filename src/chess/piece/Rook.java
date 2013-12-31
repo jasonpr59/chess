@@ -23,16 +23,10 @@ public class Rook extends Piece {
     }
 
     @Override
-    public boolean isSane(ChessMove move, ChessPosition position) {
+    public boolean isSane(NormalChessMove move, ChessPosition position) {
         if (!isColorSane(move, position)) {
             return false;
         }
-        if (move instanceof NormalChessMove) {
-            return move.getDelta().isBasic() && move.isOpen(position);
-        } else {
-            // Rooks only make NormalChessMoves.
-            return false;
-        }
-
+        return move.getDelta().isBasic() && move.isOpen(position);
     }
 }

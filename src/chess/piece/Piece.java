@@ -4,8 +4,11 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import chess.CastlingMove;
 import chess.ChessMove;
 import chess.ChessPosition;
+import chess.NormalChessMove;
+import chess.PromotionMove;
 import chess.Square;
 
 /**
@@ -67,13 +70,35 @@ public abstract class Piece {
     public abstract Iterable<ChessMove> saneMoves(Square start, ChessPosition position);
 
     /**
-     * Return whether a ChessMove is sane for this piece.
+     * Return whether a NormalChessMove is sane for this piece.
      * @param move The ChessMove whose color-sanity is to be checked.
      * @param position The ChessPosition on which the move occurs.
      * Requires that `position.getPiece(move.getStart()).equals(this)`, i.e.
      * that the moving piece equal to this piece.
      */
-    public abstract boolean isSane(ChessMove move, ChessPosition position);
+    public abstract boolean isSane(NormalChessMove move, ChessPosition position);
+
+    /**
+     * Return whether a PromotionMove is sane for this piece.
+     * @param move The PromotionMove whose color-sanity is to be checked.
+     * @param position The ChessPosition on which the move occurs.
+     * Requires that `position.getPiece(move.getStart()).equals(this)`, i.e.
+     * that the moving piece equal to this piece.
+     */
+    public boolean isSane(PromotionMove move, ChessPosition position) {
+        return false;
+    }
+
+    /**
+     * Return whether a CastlingMove is sane for this piece.
+     * @param move The CastlingMove whose color-sanity is to be checked.
+     * @param position The ChessPosition on which the move occurs.
+     * Requires that `position.getPiece(move.getStart()).equals(this)`, i.e.
+     * that the moving piece equal to this piece.
+     */
+    public boolean isSane(CastlingMove move, ChessPosition position) {
+        return false;
+    }
 
     /**
      * Return whether a ChessMove is color-sane for this piece.
@@ -106,7 +131,7 @@ public abstract class Piece {
                                                    ChessPosition position) {
         Set<ChessMove> saneMoves = new HashSet<ChessMove>();
         for (ChessMove c : candidates) {
-            if (isSane(c, position)) {
+            if (c.isSane(position)) {
                 saneMoves.add(c);
             }
         }

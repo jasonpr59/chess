@@ -32,55 +32,54 @@ public class King extends Piece {
     }
 
     @Override
-    public boolean isSane(ChessMove move, ChessPosition position) {
+    public boolean isSane(NormalChessMove move, ChessPosition position) {
         if (!isColorSane(move, position)) {
             return false;
         }
+        Delta delta = move.getDelta();
+        return (Math.abs(delta.getDeltaRank()) <= 1 && Math.abs(delta.getDeltaFile()) <= 1);
+    }
 
-        if (move instanceof NormalChessMove) {
-            Delta delta = move.getDelta();
-            return (Math.abs(delta.getDeltaRank()) <= 1 && Math.abs(delta.getDeltaFile()) <= 1);
-        } else if (move instanceof CastlingMove) {
-            Square start = move.getStart();
+    @Override
+    public boolean isSane(CastlingMove move, ChessPosition position) {
+        if (!isColorSane(move, position)) {
+            return false;
+        }
+        Square start = move.getStart();
 
-            // Ensure the start square is a king square.
-            if (!start.equals(Square.algebraic("e1")) &&
-                    !start.equals(Square.algebraic("e8"))) {
-                return false;
-            }
-
-            // Ensure the Delta is a castling delta.
-            Delta delta = move.getDelta();
-            CastlingInfo.Side side;
-            if (delta.equals(Delta.KING_CASTLE_DELTA)) {
-                side = CastlingInfo.Side.KINGSIDE;
-            } else if (delta.equals(Delta.QUEEN_CASTLE_DELTA)) {
-                side = CastlingInfo.Side.QUEENSIDE;
-            } else {
-                return false;
-            }
-
-            // Ensure the pieces are ready to castle.
-            CastlingInfo castlingInfo = position.getCastlingInfo();
-            // If the moving piece is a king in its OWN home square, then
-            // this CastlingInfo check will ensure that he is ready to castle.
-            // If the moving piece is a king in the OTHER king's home square, then
-            // neither king is in his own home square, so neither king is ready to
-            // castle, and this check will return false, correctly.
-            if (!castlingInfo.castlePiecesReady(getColor(), side)) {
-                return false;
-            }
-
-            // Finally, just ensure that there's space all the way between the king
-            // and its rook.
-            Square rookStart = CastlingMove.getRookStart(getColor(), side);
-            // There's space if the ChessMove from the king square to the rook square
-            // is open.
-            return new NormalChessMove(start, rookStart).isOpen(position);
-        } else {
-            // Kings only make NormalChessMoves and CastlingMoves.
+        // Ensure the start square is a king square.
+        if (!start.equals(Square.algebraic("e1")) &&
+                !start.equals(Square.algebraic("e8"))) {
             return false;
         }
 
+        // Ensure the Delta is a castling delta.
+        Delta delta = move.getDelta();
+        CastlingInfo.Side side;
+        if (delta.equals(Delta.KING_CASTLE_DELTA)) {
+            side = CastlingInfo.Side.KINGSIDE;
+        } else if (delta.equals(Delta.QUEEN_CASTLE_DELTA)) {
+            side = CastlingInfo.Side.QUEENSIDE;
+        } else {
+            return false;
+        }
+
+        // Ensure the pieces are ready to castle.
+        CastlingInfo castlingInfo = position.getCastlingInfo();
+        // If the moving piece is a king in its OWN home square, then
+        // this CastlingInfo check will ensure that he is ready to castle.
+        // If the moving piece is a king in the OTHER king's home square, then
+        // neither king is in his own home square, so neither king is ready to
+        // castle, and this check will return false, correctly.
+        if (!castlingInfo.castlePiecesReady(getColor(), side)) {
+            return false;
+        }
+
+        // Finally, just ensure that there's space all the way between the king
+        // and its rook.
+        Square rookStart = CastlingMove.getRookStart(getColor(), side);
+        // There's space if the ChessMove from the king square to the rook square
+        // is open.
+        return new NormalChessMove(start, rookStart).isOpen(position);
     }
 }
