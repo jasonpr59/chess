@@ -6,6 +6,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 import player.Outcome;
+import chess.piece.Bishop;
+import chess.piece.King;
+import chess.piece.Knight;
+import chess.piece.Pawn;
+import chess.piece.Piece;
+import chess.piece.Queen;
+import chess.piece.Rook;
 
 
 /**
@@ -120,7 +127,7 @@ public abstract class AbstractChessPosition implements ChessPosition {
             // We need to switch the toMoveColor.
             trialPosition = new ChessPositionBuilder(this).setToMoveColor(getToMoveColor().opposite()).build();
         }
-    
+
         // Now we just see if any piece of the attackerColor has a sane
         // move to the target Square.
         for (Square attackerSquare : Square.ALL) {
@@ -141,7 +148,7 @@ public abstract class AbstractChessPosition implements ChessPosition {
     private Square kingSquare(Piece.Color kingColor) {
         // TODO: Make this more efficient by "caching" the king's position
         // as an attribute of board.
-        Piece king = new Piece(Piece.Type.KING, kingColor);
+        Piece king = new King(kingColor);
 
         for (Square possibleKingSquare : Square.ALL){
             if (king.equals(getPiece(possibleKingSquare))) {
@@ -170,90 +177,83 @@ public abstract class AbstractChessPosition implements ChessPosition {
         Collection<Square> candidateEnds;
         Collection<ChessMove> candidateMoves = new ArrayList<ChessMove>();
 
-        switch (movingPiece.getType()) {
-            case PAWN:
-                boolean isWhite = movingPiece.getColor() == Piece.Color.WHITE;
-                Delta fwd = new Delta(0, isWhite? 1 : -1);
-                Collection<Delta> candidateDeltas = new ArrayList<Delta>();
-                // There are at most four possible pawn moves (ignoring promotion choices).
-                // Just try them all!
-                candidateDeltas.add(fwd);
-                candidateDeltas.add(fwd.scaled(2));
-                candidateDeltas.add(Delta.sum(fwd, new Delta(1, 0)));
-                candidateDeltas.add(Delta.sum(fwd,  new Delta(-1, 0)));
+        if (movingPiece instanceof Pawn) {
+            boolean isWhite = movingPiece.getColor() == Piece.Color.WHITE;
+            Delta fwd = new Delta(0, isWhite? 1 : -1);
+            Collection<Delta> candidateDeltas = new ArrayList<Delta>();
+            // There are at most four possible pawn moves (ignoring promotion choices).
+            // Just try them all!
+            candidateDeltas.add(fwd);
+            candidateDeltas.add(fwd.scaled(2));
+            candidateDeltas.add(Delta.sum(fwd, new Delta(1, 0)));
+            candidateDeltas.add(Delta.sum(fwd,  new Delta(-1, 0)));
 
-                NormalChessMove candidateMove;
-                for (Delta delta : candidateDeltas) {
-                    try {
-                        candidateMove = new NormalChessMove(start, delta);
-                    } catch (ArrayIndexOutOfBoundsException e) {
-                        continue;
-                    }
-                    int endRank = candidateMove.getEnd().getRank();
-                    if (endRank == 8 || endRank == 1) {
-                        // It's a promotion!
-                        candidateMoves.addAll(PromotionMove.allPromotions(candidateMove));
-                    } else {
-                        // It's a non-promotion.
-                        candidateMoves.add(candidateMove);
-                    }
+            NormalChessMove candidateMove;
+            for (Delta delta : candidateDeltas) {
+                try {
+                    candidateMove = new NormalChessMove(start, delta);
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    continue;
                 }
-                break;
-            case KNIGHT:
-                // Knight moves are specified by three binary parameters:
-                // Direction along rank, direction along file, and
-                // alignment of the L-shape's long leg.
-                int[] rankDirs = {-1, 1};
-                int[] fileDirs = {-1, 1};
-                int[][] alignments = {{1, 2}, {2, 1}};
+                int endRank = candidateMove.getEnd().getRank();
+                if (endRank == 8 || endRank == 1) {
+                    // It's a promotion!
+                    candidateMoves.addAll(PromotionMove.allPromotions(candidateMove));
+                } else {
+                    // It's a non-promotion.
+                    candidateMoves.add(candidateMove);
+                }
+            }
+        } else if (movingPiece instanceof Knight) {
+            // Knight moves are specified by three binary parameters:
+            // Direction along rank, direction along file, and
+            // alignment of the L-shape's long leg.
+            int[] rankDirs = {-1, 1};
+            int[] fileDirs = {-1, 1};
+            int[][] alignments = {{1, 2}, {2, 1}};
 
-                int dRank;
-                int dFile;
-                Delta delta;
-                for (int rankDir : rankDirs) {
-                    for (int fileDir : fileDirs) {
-                        for (int[] alignment : alignments) {
-                            dRank = rankDir * alignment[0];
-                            dFile = fileDir * alignment[1];
-                            delta = new Delta(dFile, dRank);
-                            try {
-                                candidateMoves.add(new NormalChessMove(start, delta));
-                            } catch (ArrayIndexOutOfBoundsException e) {
-                                // Swallow it. (See explanation in PAWN case).
-                            }
+            int dRank;
+            int dFile;
+            Delta delta;
+            for (int rankDir : rankDirs) {
+                for (int fileDir : fileDirs) {
+                    for (int[] alignment : alignments) {
+                        dRank = rankDir * alignment[0];
+                        dFile = fileDir * alignment[1];
+                        delta = new Delta(dFile, dRank);
+                        try {
+                            candidateMoves.add(new NormalChessMove(start, delta));
+                        } catch (ArrayIndexOutOfBoundsException e) {
+                            // Swallow it. (See explanation in PAWN case).
                         }
                     }
                 }
-                break;
-            case BISHOP:
-                candidateEnds = start.explore(Delta.DIAGONAL_DIRS);
-                candidateMoves.addAll(start.distributeOverEnds(candidateEnds));
-                break;
-            case ROOK:
-                candidateEnds = start.explore(Delta.BASIC_DIRS);
-                candidateMoves.addAll(start.distributeOverEnds(candidateEnds));
-                break;
-            case QUEEN:
-                candidateEnds = start.explore(Delta.QUEEN_DIRS);
-                candidateMoves.addAll(start.distributeOverEnds(candidateEnds));
-                break;
-            case KING:
-                candidateEnds = start.explore(Delta.QUEEN_DIRS, 1);
-                candidateMoves.addAll(start.distributeOverEnds(candidateEnds));
-                if (start.getFile() == 5) {
-                    // There's a decent chance that the king's in its home square,
-                    // and a zero chance that a two-square hop along a rank will
-                    // put us off the board.
-                    // TODO: Figure out how to add these directly to candidateMoves,
-                    // without making the generics gods sad.
-                    Collection<CastlingMove> castlingMoves = new HashSet<CastlingMove>();
-                    castlingMoves.add(new CastlingMove(start, new Delta(2, 0)));
-                    castlingMoves.add(new CastlingMove(start, new Delta(-2, 0)));
-                    candidateMoves.addAll(castlingMoves);
-                }
-                break;
-            default:
-                throw new RuntimeException("The piece type was not matched in the switch statement.");
+            }
+        } else if (movingPiece instanceof Bishop) {
+            candidateEnds = start.explore(Delta.DIAGONAL_DIRS);
+            candidateMoves.addAll(start.distributeOverEnds(candidateEnds));
+        } else if (movingPiece instanceof Rook) {
+            candidateEnds = start.explore(Delta.BASIC_DIRS);
+            candidateMoves.addAll(start.distributeOverEnds(candidateEnds));
+        } else if (movingPiece instanceof Queen) {
+            candidateEnds = start.explore(Delta.QUEEN_DIRS);
+            candidateMoves.addAll(start.distributeOverEnds(candidateEnds));
+        } else if (movingPiece instanceof King) {
+            candidateEnds = start.explore(Delta.QUEEN_DIRS, 1);
+            candidateMoves.addAll(start.distributeOverEnds(candidateEnds));
+            if (start.getFile() == 5) {
+                // There's a decent chance that the king's in its home square,
+                // and a zero chance that a two-square hop along a rank will
+                // put us off the board.
+                // TODO: Figure out how to add these directly to candidateMoves,
+                // without making the generics gods sad.
+                Collection<CastlingMove> castlingMoves = new HashSet<CastlingMove>();
+                castlingMoves.add(new CastlingMove(start, new Delta(2, 0)));
+                castlingMoves.add(new CastlingMove(start, new Delta(-2, 0)));
+                candidateMoves.addAll(castlingMoves);
+            }
+        } else {
+            throw new RuntimeException("The piece type was not matched in the switch statement.");
         }
         return filterSane(candidateMoves);
     }

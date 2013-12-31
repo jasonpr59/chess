@@ -1,20 +1,10 @@
-package chess;
+package chess.piece;
 
 /**
  * A chess piece.
  * This class is immutable.
  */
-public class Piece {
-    /** The type of this piece: pawn, rook, king, etc. */
-    public enum Type{
-        PAWN,
-        KNIGHT,
-        BISHOP,
-        ROOK,
-        QUEEN,
-        KING
-    }
-
+public abstract class Piece {
     /** The color of this piece: white or black. */
     public enum Color{
         WHITE,
@@ -32,20 +22,11 @@ public class Piece {
         }
     }
 
-    // These fields are final (Piece is immutable).
-    // So, promoting a pawn must involve destroying the pawn
-    // and creating a new piece of the promoted type.
-    private final Type type;
     private final Color color;
 
     /** Construct a new Piece with some type and color. */
-    public Piece(Type type, Color color){
-        this.type = type;
+    public Piece(Color color){
         this.color = color;
-    }
-
-    public Type getType(){
-        return this.type;
     }
 
     public Color getColor(){
@@ -63,16 +44,11 @@ public class Piece {
         }
 
         Piece that = (Piece) obj;
-        return type == that.getType() && color == that.getColor();
+        return color == that.getColor();
     }
 
     @Override
     public int hashCode() {
-        return 17 * type.hashCode() + color.hashCode();
-    }
-
-    @Override
-    public String toString() {
-        return "Piece of type " + type + " and color "+ color;
+        return color.hashCode();
     }
 }

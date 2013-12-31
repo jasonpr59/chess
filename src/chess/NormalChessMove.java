@@ -3,6 +3,14 @@ package chess;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import chess.piece.Bishop;
+import chess.piece.King;
+import chess.piece.Knight;
+import chess.piece.Pawn;
+import chess.piece.Piece;
+import chess.piece.Queen;
+import chess.piece.Rook;
+
 /**
  * A normal (non-promoting, non-castling) move from one Square to another Square.
  *  This class is immutable.
@@ -71,7 +79,7 @@ public class NormalChessMove implements ChessMove{
     @Override
     public Square enPassantSquare(ChessPosition board) {
         Piece movingPiece = board.getPiece(start);
-        if (movingPiece == null || movingPiece.getType() != Piece.Type.PAWN) {
+        if (!(movingPiece instanceof Pawn)) {
             return null;
         }
 
@@ -94,67 +102,66 @@ public class NormalChessMove implements ChessMove{
             return false;
         }
 
-        switch (movingPiece.getType()) {
-            case PAWN:
-                // We'll need to know which way is forward for this pawn, later on.
-                boolean isWhite = movingPiece.getColor() == Piece.Color.WHITE;
-                Delta forward = new Delta(0, isWhite ? 1: -1);
-                Delta doubleForward = forward.scaled(2);
+        if (movingPiece instanceof Pawn) {
+            // We'll need to know which way is forward for this pawn, later on.
+            boolean isWhite = movingPiece.getColor() == Piece.Color.WHITE;
+            Delta forward = new Delta(0, isWhite ? 1: -1);
+            Delta doubleForward = forward.scaled(2);
 
-                if (delta.getDeltaFile() == 0) {
-                    // Pawn push.
-                    // Square one ahead must be unoccupied, whether single- or
-                    // double-push.
-                    // Note, isLandable is NOT enough... it must be UNOCCUPIED, not just landable.
-                    if (board.getPiece(start.plus(forward)) != null) {
-                        return false;
-                    }
+            if (delta.getDeltaFile() == 0) {
+                // Pawn push.
+                // Square one ahead must be unoccupied, whether single- or
+                // double-push.
+                // Note, isLandable is NOT enough... it must be UNOCCUPIED, not just landable.
+                if (board.getPiece(start.plus(forward)) != null) {
+                    return false;
+                }
 
-                    if (delta.equals(forward)) {
-                        return true;
-                    } else if (delta.equals(doubleForward)) {
-                        return (start.isOnPawnHomeRank(movingPiece.getColor()) &&
-                                board.getPiece(start.plus(doubleForward)) == null);
-                    } else {
-                        return false;
-                    }
-                } else if (Math.abs(delta.getDeltaFile()) == 1) {
-                    // Capture.
-                    if (delta.getDeltaRank() != forward.getDeltaRank()) {
-                        return false;
-                    }
-                    Piece capturedPiece = board.getPiece(end);
-                    boolean normalCapture = (capturedPiece != null &&
-                                             capturedPiece.getColor() != movingPiece.getColor());
-                    boolean epCapture = end.equals(board.getEnPassantSquare());
-                    return normalCapture || epCapture;
+                if (delta.equals(forward)) {
+                    return true;
+                } else if (delta.equals(doubleForward)) {
+                    return (start.isOnPawnHomeRank(movingPiece.getColor()) &&
+                            board.getPiece(start.plus(doubleForward)) == null);
                 } else {
                     return false;
                 }
-            case KNIGHT:
-                return Math.abs(delta.getDeltaRank() * delta.getDeltaFile()) == 2;
-            case BISHOP:
-                return isDiagonal() && isOpen(board);
-            case ROOK:
-                return isBasic() && isOpen(board);
-            case QUEEN:
-                return (isBasic() || isDiagonal()) && isOpen(board);
-            case KING:
-                // Not a castling move (this is ChessMove.isSane, not CastlingMove.isSane)
-                return (Math.abs(delta.getDeltaRank()) <= 1 && Math.abs(delta.getDeltaFile()) <= 1);
-            default:
-                throw new RuntimeException("The piece type was not matched in the switch statement.");
+            } else if (Math.abs(delta.getDeltaFile()) == 1) {
+                // Capture.
+                if (delta.getDeltaRank() != forward.getDeltaRank()) {
+                    return false;
+                }
+                Piece capturedPiece = board.getPiece(end);
+                boolean normalCapture = (capturedPiece != null &&
+                        capturedPiece.getColor() != movingPiece.getColor());
+                boolean epCapture = end.equals(board.getEnPassantSquare());
+                return normalCapture || epCapture;
+            } else {
+                return false;
+            }
+        } else if (movingPiece instanceof Knight) {
+            return Math.abs(delta.getDeltaRank() * delta.getDeltaFile()) == 2;
+        } else if (movingPiece instanceof Bishop) {
+            return isDiagonal() && isOpen(board);
+        } else if (movingPiece instanceof Rook) {
+            return isBasic() && isOpen(board);
+        } else if (movingPiece instanceof Queen) {
+            return (isBasic() || isDiagonal()) && isOpen(board);
+        } else if (movingPiece instanceof King) {
+            // Not a castling move (this is ChessMove.isSane, not CastlingMove.isSane)
+            return (Math.abs(delta.getDeltaRank()) <= 1 && Math.abs(delta.getDeltaFile()) <= 1);
+        } else {
+            throw new RuntimeException("The piece type was not matched in the switch statement.");
         }
     }
 
     @Override
     public boolean isLegal(ChessPosition board) {
-     // All legal Moves are sane.
-     if (!isSane(board)) {
-         return false;
-     }
-     ChessPosition resultBoard = result(board);
-     return !resultBoard.checked(board.getToMoveColor());
+        // All legal Moves are sane.
+        if (!isSane(board)) {
+            return false;
+        }
+        ChessPosition resultBoard = result(board);
+        return !resultBoard.checked(board.getToMoveColor());
     }
 
     @Override
@@ -235,7 +242,7 @@ public class NormalChessMove implements ChessMove{
     /** Return whether move makes a pawn do a capture on a Board. */
     private boolean isPawnCapture(ChessPosition position) {
         Piece movingPiece = movingPiece(position);
-        if (movingPiece == null || movingPiece.getType() != Piece.Type.PAWN) {
+        if (!(movingPiece instanceof Pawn)) {
             // Not a pawn.
             return false;
         }
@@ -276,38 +283,38 @@ public class NormalChessMove implements ChessMove{
         int endFile = Integer.parseInt(s.substring(2,3));
         int endRank = Integer.parseInt(s.substring(3,4));
         return new NormalChessMove(Square.squareAt(startFile, startRank),
-                             Square.squareAt(endFile, endRank));
+                Square.squareAt(endFile, endRank));
     }
 
     @Override
     public ChessPosition result(ChessPosition position) {
-            Square start = getStart();
-            Square end = getEnd();
-            Piece movingPiece = movingPiece(position);
+        Square start = getStart();
+        Square end = getEnd();
+        Piece movingPiece = movingPiece(position);
 
-            // Make an unfrozen copy that we can modify to effect the move.
-            ChessPositionBuilder builder = new ChessPositionBuilder(position);
+        // Make an unfrozen copy that we can modify to effect the move.
+        ChessPositionBuilder builder = new ChessPositionBuilder(position);
 
-            // The captured square might not be in the end square (in the case of en passant).
-            Square capturedSquare = capturedSquare(position);
-            if (capturedSquare != null) {
-                // Remove the captured piece.
-                builder.placePiece(null, capturedSquare);
-            }
+        // The captured square might not be in the end square (in the case of en passant).
+        Square capturedSquare = capturedSquare(position);
+        if (capturedSquare != null) {
+            // Remove the captured piece.
+            builder.placePiece(null, capturedSquare);
+        }
 
-            // Remove the piece from its starting position...
-            builder.placePiece(null, start);
-            // ... and put it in its final position.
-            builder.placePiece(movingPiece, end);
+        // Remove the piece from its starting position...
+        builder.placePiece(null, start);
+        // ... and put it in its final position.
+        builder.placePiece(movingPiece, end);
 
-            // Update extra board info.
-            builder.setEnPassantSquare(enPassantSquare(position));
-            builder.flipToMoveColor();
-            // Keep track of whether castling will be allowable
-            // in future moves.
-            builder.updateCastlingInfo(this);
+        // Update extra board info.
+        builder.setEnPassantSquare(enPassantSquare(position));
+        builder.flipToMoveColor();
+        // Keep track of whether castling will be allowable
+        // in future moves.
+        builder.updateCastlingInfo(this);
 
-            return builder.build();
+        return builder.build();
     }
 
     /** Get the piece that moves when this ChessMove is made on a ChessPosition. */

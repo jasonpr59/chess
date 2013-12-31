@@ -11,10 +11,12 @@ import chess.CastlingMove;
 import chess.ChessMove;
 import chess.ChessPosition;
 import chess.Game;
-import chess.Piece;
 import chess.Square;
 import chess.exceptions.AlgebraicNotationException;
 import chess.exceptions.IllegalMoveException;
+import chess.piece.King;
+import chess.piece.Piece;
+import chess.piece.Rook;
 
 public class CastlingMoveTest {
     @Test
@@ -32,8 +34,8 @@ public class CastlingMoveTest {
 
         // Be sure pieces moved around correctly.
         assertEquals(b_good.getPiece(Square.algebraic("e1")), null);
-        assertEquals(b_good.getPiece(Square.algebraic("f1")), new Piece(Piece.Type.ROOK, Piece.Color.WHITE));
-        assertEquals(b_good.getPiece(Square.algebraic("g1")), new Piece(Piece.Type.KING, Piece.Color.WHITE));
+        assertEquals(b_good.getPiece(Square.algebraic("f1")), new Rook(Piece.Color.WHITE));
+        assertEquals(b_good.getPiece(Square.algebraic("g1")), new King(Piece.Color.WHITE));
         assertEquals(b_good.getPiece(Square.algebraic("h1")), null);
 
         // Be sure black can't castle through his bishop!
@@ -53,8 +55,8 @@ public class CastlingMoveTest {
 
         // Be sure pieces moved around correctly.
         assertEquals(b_good.getPiece(Square.algebraic("a1")), null);
-        assertEquals(b_good.getPiece(Square.algebraic("c1")), new Piece(Piece.Type.KING, Piece.Color.WHITE));
-        assertEquals(b_good.getPiece(Square.algebraic("d1")), new Piece(Piece.Type.ROOK, Piece.Color.WHITE));
+        assertEquals(b_good.getPiece(Square.algebraic("c1")), new King(Piece.Color.WHITE));
+        assertEquals(b_good.getPiece(Square.algebraic("d1")), new Rook(Piece.Color.WHITE));
         assertEquals(b_good.getPiece(Square.algebraic("e1")), null);
 
         // Be sure black can't castle through his knight.

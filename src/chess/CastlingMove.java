@@ -1,6 +1,8 @@
 package chess;
 
 import chess.CastlingInfo.Side;
+import chess.piece.King;
+import chess.piece.Piece;
 
 public class CastlingMove implements ChessMove {
     @Override
@@ -60,7 +62,7 @@ public class CastlingMove implements ChessMove {
 
         // Ensure the moving piece is a king.
         Piece movingPiece = position.getPiece(start);
-        if (movingPiece.getType() != Piece.Type.KING) {
+        if (!(movingPiece instanceof King)) {
             return false;
         }
 

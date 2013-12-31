@@ -12,10 +12,12 @@ import chess.ChessPosition;
 import chess.ChessPositionBuilder;
 import chess.Game;
 import chess.NormalChessMove;
-import chess.Piece;
 import chess.Square;
 import chess.exceptions.AlgebraicNotationException;
 import chess.exceptions.IllegalMoveException;
+import chess.piece.Knight;
+import chess.piece.Pawn;
+import chess.piece.Piece;
 
 public class GameTest {
 
@@ -34,8 +36,8 @@ public class GameTest {
         // Assert that those moves worked.
         // We don't do any hard-cord testing of the resulting ChessPosition.
         // That will be done in the tests for ChessMove's implementations.
-        Piece whitePawn = new Piece(Piece.Type.PAWN, Piece.Color.WHITE);
-        Piece blackPawn = new Piece(Piece.Type.PAWN, Piece.Color.BLACK);
+        Piece whitePawn = new Pawn(Piece.Color.WHITE);
+        Piece blackPawn = new Pawn(Piece.Color.BLACK);
         assertEquals(whitePawn, ePawnsPushed.getPiece(Square.algebraic("e4")));
         assertNull(ePawnsPushed.getPiece(Square.algebraic("e2")));
         assertEquals(blackPawn, ePawnsPushed.getPiece(Square.algebraic("e5")));
@@ -83,9 +85,9 @@ public class GameTest {
         // ...even for a strange "ply" value.
         assertEquals(newGame, kingKnight.getPosition(0, 20));
 
-        final Piece whitePawn = new Piece(Piece.Type.PAWN, Piece.Color.WHITE);
-        final Piece blackPawn = new Piece(Piece.Type.PAWN, Piece.Color.BLACK);
-        final Piece whiteKnight = new Piece(Piece.Type.KNIGHT, Piece.Color.WHITE);
+        final Piece whitePawn = new Pawn(Piece.Color.WHITE);
+        final Piece blackPawn = new Pawn(Piece.Color.BLACK);
+        final Piece whiteKnight = new Knight(Piece.Color.WHITE);
 
         // Assert after first full move, position is correct.
         ChessPosition open = new ChessPositionBuilder().setupNewGame()

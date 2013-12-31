@@ -6,21 +6,28 @@ import java.util.Map;
 
 import player.AbstractHeuristic;
 import chess.ChessPosition;
-import chess.Piece;
 import chess.Square;
+import chess.piece.Bishop;
+import chess.piece.King;
+import chess.piece.Knight;
+import chess.piece.Pawn;
+import chess.piece.Piece;
+import chess.piece.Queen;
+import chess.piece.Rook;
 
 public class BoardPieceValueHeuristic extends AbstractHeuristic<ChessPosition>{
-    private static final Map<Piece.Type, Float> PIECE_VALUES;
-    
+    // TODO: Figure out how to restrict this to classes that extend Piece.
+    private static final Map<Class<?>, Float> PIECE_VALUES;
+
     static {
-        Map<Piece.Type, Float> pieceValues = new HashMap<Piece.Type, Float>(); 
-        pieceValues.put(Piece.Type.PAWN, 1.0f);
-        pieceValues.put(Piece.Type.KNIGHT, 3.0f);
-        pieceValues.put(Piece.Type.BISHOP, 3.2f);
-        pieceValues.put(Piece.Type.ROOK, 5.0f);
-        pieceValues.put(Piece.Type.QUEEN, 9.0f);
+        Map<Class<?>, Float> pieceValues = new HashMap<Class<?>, Float>();
+        pieceValues.put(Pawn.class, 1.0f);
+        pieceValues.put(Knight.class, 3.0f);
+        pieceValues.put(Bishop.class, 3.2f);
+        pieceValues.put(Rook.class, 5.0f);
+        pieceValues.put(Queen.class, 9.0f);
         // TODO(jasonpr): Figure out what we should do about King's value.
-        pieceValues.put(Piece.Type.KING, 1000.0f);
+        pieceValues.put(King.class, 1000.0f);
         PIECE_VALUES = Collections.unmodifiableMap(pieceValues);
     }
 
@@ -35,7 +42,7 @@ public class BoardPieceValueHeuristic extends AbstractHeuristic<ChessPosition>{
             if (p == null) {
                 continue;
             }
-            pieceScore = PIECE_VALUES.get(p.getType());
+            pieceScore = PIECE_VALUES.get(p.getClass());
             mult = (p.getColor() == Piece.Color.WHITE) ? +1.0f : -1.0f;
             totalScore += pieceScore * mult;
         }

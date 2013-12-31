@@ -5,24 +5,25 @@ import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
 
-import chess.Piece;
+import chess.piece.King;
+import chess.piece.Piece;
+import chess.piece.Rook;
 
 /** Tests for the chess.Piece class. */
 public class PieceTest {
 
     @Test
     public void testGetters() {
-        Piece whiteRook = new Piece(Piece.Type.ROOK, Piece.Color.WHITE);
-        assertEquals(Piece.Type.ROOK, whiteRook.getType());
+        Piece whiteRook = new Rook(Piece.Color.WHITE);
         assertEquals(Piece.Color.WHITE, whiteRook.getColor());
     }
 
     @Test
     public void testEquality() {
-        Piece whiteRook = new Piece(Piece.Type.ROOK, Piece.Color.WHITE);
-        Piece blackRook = new Piece(Piece.Type.ROOK, Piece.Color.BLACK);
-        Piece whiteKing = new Piece(Piece.Type.KING, Piece.Color.WHITE);
-        Piece otherWhiteRook = new Piece(Piece.Type.ROOK, Piece.Color.WHITE);
+        Piece whiteRook = new Rook(Piece.Color.WHITE);
+        Piece blackRook = new Rook(Piece.Color.BLACK);
+        Piece whiteKing = new King(Piece.Color.WHITE);
+        Piece otherWhiteRook = new Rook(Piece.Color.WHITE);
 
         assertEquals(whiteRook, otherWhiteRook);
         assertEquals(whiteRook.hashCode(), otherWhiteRook.hashCode());

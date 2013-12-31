@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 import chess.exceptions.NonexistentSquareException;
+import chess.piece.Piece;
 
 
 /**

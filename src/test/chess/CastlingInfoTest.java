@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import chess.CastlingInfo;
 import chess.NormalChessMove;
-import chess.Piece;
+import chess.piece.Piece;
 
 public class CastlingInfoTest {
 
