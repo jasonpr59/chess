@@ -1,5 +1,9 @@
 package chess.piece;
 
+import chess.ChessMove;
+import chess.ChessPosition;
+import chess.Square;
+
 /**
  * A chess piece.
  * This class is immutable.
@@ -51,4 +55,10 @@ public abstract class Piece {
     public int hashCode() {
         return color.hashCode();
     }
+
+    /**
+     * Return an Iterable of sane ChessMoves for this Piece.
+     * Requires that `position.getPiece(square).equals(this)`.
+     */
+    public abstract Iterable<ChessMove> saneMoves(Square start, ChessPosition position);
 }
