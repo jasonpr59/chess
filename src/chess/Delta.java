@@ -22,6 +22,10 @@ public class Delta{
     public static final Collection<Delta> DIAGONAL_DIRS;
     public static final Collection<Delta> QUEEN_DIRS;
 
+    public static final Delta KING_CASTLE_DELTA;
+    public static final Delta QUEEN_CASTLE_DELTA;
+
+
     static {
         NORTH = new Delta(0, 1);
         EAST = new Delta(1, 0);
@@ -52,6 +56,8 @@ public class Delta{
         queenDirs.addAll(DIAGONAL_DIRS);
         QUEEN_DIRS = Collections.unmodifiableList(queenDirs);
 
+        KING_CASTLE_DELTA = new Delta(2, 0);
+        QUEEN_CASTLE_DELTA = new Delta(-2, 0);
     }
 
     /** Create the delta between a Move's start and end Squares. */
@@ -134,4 +140,19 @@ public class Delta{
         return new Delta(a.getDeltaFile() + b.getDeltaFile(),
                          a.getDeltaRank() + b.getDeltaRank());
     }
+
+    public boolean isDiagonal() {
+        return Math.abs(deltaRank) == Math.abs(deltaFile);
+    }
+
+    /** Return whether this is a rook-like move.
+     *  That is, return true iff this move is entirely along a rank
+     *  or a file.
+     *  Such moves are "basic" because the rank and file directions form
+     *  a nice basis for all moves on the board.
+     */
+    public boolean isBasic() {
+        return (deltaRank == 0) ^ (deltaFile == 0);
+    }
+
 }

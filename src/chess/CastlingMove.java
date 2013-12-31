@@ -117,7 +117,8 @@ public class CastlingMove implements ChessMove {
         }
     }
 
-    private Square getRookStart(Piece.Color color, CastlingInfo.Side side) {
+    /** Get the starting Square of the Rook involved in castling. */
+    public static Square getRookStart(Piece.Color color, CastlingInfo.Side side) {
         String rank;
         String file;
         if (color == Piece.Color.WHITE) {

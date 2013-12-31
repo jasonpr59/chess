@@ -1,5 +1,9 @@
 package chess.piece;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
 import chess.ChessMove;
 import chess.ChessPosition;
 import chess.Square;
@@ -61,4 +65,51 @@ public abstract class Piece {
      * Requires that `position.getPiece(square).equals(this)`.
      */
     public abstract Iterable<ChessMove> saneMoves(Square start, ChessPosition position);
+
+    /**
+     * Return whether a ChessMove is sane for this piece.
+     * @param move The ChessMove whose color-sanity is to be checked.
+     * @param position The ChessPosition on which the move occurs.
+     * Requires that `position.getPiece(move.getStart()).equals(this)`, i.e.
+     * that the moving piece equal to this piece.
+     */
+    public abstract boolean isSane(ChessMove move, ChessPosition position);
+
+    /**
+     * Return whether a ChessMove is color-sane for this piece.
+     * A move is color-sane if it satisfies the basic color-related
+     * checks of a sanity check:
+     *   A Piece can only move if it is of the to-move color.
+     *   A captured Piece must be the opposite color of the capturing Piece.
+     * @param move The ChessMove whose color-sanity is to be checked.
+     * @param position The ChessPosition on which the move occurs.
+     * Requires that `position.getPiece(move.getStart()).equals(this)`, i.e.
+     * that the moving piece equal to this Piece.
+     */
+    public boolean isColorSane(ChessMove move, ChessPosition position) {
+        Piece movingPiece = position.getPiece(move.getStart());
+        Piece capturedPiece = position.getPiece(move.getEnd());
+
+        if (movingPiece.getColor() != position.getToMoveColor()) {
+            // This piece is not of the to-move color.
+            return false;
+        }
+        if (capturedPiece != null && capturedPiece.getColor() == movingPiece.getColor()) {
+            // Captures a piece of its own color!
+            return false;
+        }
+        return true;
+    }
+
+    /** Return this Piece's sane moves from a set of moves. */
+    public Collection<ChessMove> filterSane(Collection<ChessMove> candidates,
+                                                   ChessPosition position) {
+        Set<ChessMove> saneMoves = new HashSet<ChessMove>();
+        for (ChessMove c : candidates) {
+            if (isSane(c, position)) {
+                saneMoves.add(c);
+            }
+        }
+        return saneMoves;
+    }
 }

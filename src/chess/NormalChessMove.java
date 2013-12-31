@@ -3,13 +3,8 @@ package chess;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import chess.piece.Bishop;
-import chess.piece.King;
-import chess.piece.Knight;
 import chess.piece.Pawn;
 import chess.piece.Piece;
-import chess.piece.Queen;
-import chess.piece.Rook;
 
 /**
  * A normal (non-promoting, non-castling) move from one Square to another Square.
@@ -92,78 +87,11 @@ public class NormalChessMove implements ChessMove{
 
     @Override
     public boolean isSane(ChessPosition board) {
-        if (!isLandable(board)) {
-            return false;
-        }
-
         Piece movingPiece = board.getPiece(start);
-
-        if (movingPiece == null || movingPiece.getColor() != board.getToMoveColor()) {
+        if (movingPiece == null) {
             return false;
         }
-
-        // TODO: Figure out where this code goes!
-        // It seems as though the following code should be pushed
-        // into a `Piece.isSane(Move, ChessPosition)` method.
-        // I tried to do that, but it ends up inducing a fair
-        // amount of code duplication.  Not cool.
-        // Eventually I hope to figure out a way to move this code
-        // into `Piece`'s methods, so that a Piece can define
-        // what types of ChessMoves are sane for it, removing a ton of
-        // `instanceof` uses along the way.  But, for now, I'm not
-        // horribly offended by the idea that a type of ChessMove
-        // defines whether it is sane for various types of Piece.
-        // It's not ideal, but I need to move on for now.
-        if (movingPiece instanceof Pawn) {
-            // We'll need to know which way is forward for this pawn, later on.
-            boolean isWhite = movingPiece.getColor() == Piece.Color.WHITE;
-            Delta forward = new Delta(0, isWhite ? 1: -1);
-            Delta doubleForward = forward.scaled(2);
-
-            if (delta.getDeltaFile() == 0) {
-                // Pawn push.
-                // Square one ahead must be unoccupied, whether single- or
-                // double-push.
-                // Note, isLandable is NOT enough... it must be UNOCCUPIED, not just landable.
-                if (board.getPiece(start.plus(forward)) != null) {
-                    return false;
-                }
-
-                if (delta.equals(forward)) {
-                    return true;
-                } else if (delta.equals(doubleForward)) {
-                    return (start.isOnPawnHomeRank(movingPiece.getColor()) &&
-                            board.getPiece(start.plus(doubleForward)) == null);
-                } else {
-                    return false;
-                }
-            } else if (Math.abs(delta.getDeltaFile()) == 1) {
-                // Capture.
-                if (delta.getDeltaRank() != forward.getDeltaRank()) {
-                    return false;
-                }
-                Piece capturedPiece = board.getPiece(end);
-                boolean normalCapture = (capturedPiece != null &&
-                        capturedPiece.getColor() != movingPiece.getColor());
-                boolean epCapture = end.equals(board.getEnPassantSquare());
-                return normalCapture || epCapture;
-            } else {
-                return false;
-            }
-        } else if (movingPiece instanceof Knight) {
-            return Math.abs(delta.getDeltaRank() * delta.getDeltaFile()) == 2;
-        } else if (movingPiece instanceof Bishop) {
-            return isDiagonal() && isOpen(board);
-        } else if (movingPiece instanceof Rook) {
-            return isBasic() && isOpen(board);
-        } else if (movingPiece instanceof Queen) {
-            return (isBasic() || isDiagonal()) && isOpen(board);
-        } else if (movingPiece instanceof King) {
-            // Not a castling move (this is ChessMove.isSane, not CastlingMove.isSane)
-            return (Math.abs(delta.getDeltaRank()) <= 1 && Math.abs(delta.getDeltaFile()) <= 1);
-        } else {
-            throw new RuntimeException("The piece type was not matched in the switch statement.");
-        }
+        return movingPiece.isSane(this, board);
     }
 
     @Override
@@ -192,7 +120,7 @@ public class NormalChessMove implements ChessMove{
      * there is no definition of Squares "between" the start and end.
      */
     private Collection<Square> between() {
-        assert isDiagonal() || isBasic();
+        assert delta.isDiagonal() || delta.isBasic();
 
         Delta unitStep = delta.unitized();
         Collection<Square> squares = new ArrayList<Square>();
@@ -204,31 +132,7 @@ public class NormalChessMove implements ChessMove{
         return squares;
     }
 
-    /**
-     * Return whether the Piece at the start could land on the end Square.
-     * A Piece could land on a Square iff that Square is unoccupied or it is
-     * occupied by a piece of the opposite color.
-     */
-    private boolean isLandable(ChessPosition board) {
-        Piece movingPiece = board.getPiece(start);
-        Piece capturedPiece = board.getPiece(end);
-        return (capturedPiece == null ||
-                capturedPiece.getColor() != movingPiece.getColor());
-    }
 
-    private boolean isDiagonal() {
-        return Math.abs(delta.getDeltaRank()) == Math.abs(delta.getDeltaFile());
-    }
-
-    /** Return whether this is a rook-like move.
-     *  That is, return true iff this move is entirely along a rank
-     *  or a file.
-     *  Such moves are "basic" because the rank and file directions form
-     *  a nice basis for all moves on the board.
-     */
-    private boolean isBasic() {
-        return (delta.getDeltaRank() == 0) ^ (delta.getDeltaFile() == 0);
-    }
 
     @Override
     public boolean equals(Object obj) {

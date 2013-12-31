@@ -66,6 +66,10 @@ public class PromotionMove implements ChessMove {
         this.promotedPiece = promotedPiece;
     }
 
+    public NormalChessMove getBaseMove() {
+        return baseMove;
+    }
+
     public Piece getPromotedPiece() {
         return promotedPiece;
     }

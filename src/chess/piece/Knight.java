@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import chess.ChessMove;
-import chess.ChessMoveUtil;
 import chess.ChessPosition;
 import chess.Delta;
 import chess.NormalChessMove;
@@ -43,6 +42,20 @@ public class Knight extends Piece {
                 }
             }
         }
-        return ChessMoveUtil.filterSane(candidateMoves, position);
+        return filterSane(candidateMoves, position);
+    }
+
+    @Override
+    public boolean isSane(ChessMove move, ChessPosition position) {
+        if (!isColorSane(move, position)) {
+            return false;
+        }
+        if (move instanceof NormalChessMove) {
+            Delta moveDelta = move.getDelta();
+            return Math.abs(moveDelta.getDeltaRank() * moveDelta.getDeltaFile()) == 2;
+        } else {
+            // Knights only make NormalChessMoves.
+            return false;
+        }
     }
 }
