@@ -169,11 +169,6 @@ public class PromotionMove implements ChessMove {
     }
 
     @Override
-    public boolean isOpen(ChessPosition board) {
-        return false;
-    }
-
-    @Override
     public boolean startsOrEndsAt(Square square) {
         return baseMove.startsOrEndsAt(square);
     }
@@ -184,5 +179,12 @@ public class PromotionMove implements ChessMove {
         } else {
             return Piece.Color.BLACK;
         }
+    }
+
+    @Override
+    public Iterable<Square> passedThrough() {
+        // TODO: Figure out if there's a better way
+        // to return an empty Iterable.
+        return new ArrayList<Square>();
     }
 }

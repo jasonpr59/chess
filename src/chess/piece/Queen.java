@@ -28,6 +28,7 @@ public class Queen extends Piece {
             return false;
         }
         Delta delta = move.getDelta();
-        return (delta.isBasic() || delta.isDiagonal()) && move.isOpen(position);
+        return ((delta.isBasic() || delta.isDiagonal()) &&
+                !position.anyOccupied(move.passedThrough()));
     }
 }

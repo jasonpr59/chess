@@ -1,8 +1,5 @@
 package chess;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import chess.piece.Pawn;
 import chess.piece.Piece;
 
@@ -105,34 +102,9 @@ public class NormalChessMove implements ChessMove{
     }
 
     @Override
-    public boolean isOpen(ChessPosition board) {
-        for (Square s : between()) {
-            if (board.getPiece(s) != null) {
-                return false;
-            }
-        }
-        return true;
+    public Iterable<Square> passedThrough() {
+        return Square.between(start, end);
     }
-
-    /**
-     * Get the Squares between the start and end.
-     * Requires that the move is basic or diagonal: for other moves,
-     * there is no definition of Squares "between" the start and end.
-     */
-    private Collection<Square> between() {
-        assert delta.isDiagonal() || delta.isBasic();
-
-        Delta unitStep = delta.unitized();
-        Collection<Square> squares = new ArrayList<Square>();
-        Square currentSquare = start.plus(unitStep);
-        while (!currentSquare.equals(end)) {
-            squares.add(currentSquare);
-            currentSquare = currentSquare.plus(unitStep);
-        }
-        return squares;
-    }
-
-
 
     @Override
     public boolean equals(Object obj) {

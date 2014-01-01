@@ -75,11 +75,6 @@ public class King extends Piece {
             return false;
         }
 
-        // Finally, just ensure that there's space all the way between the king
-        // and its rook.
-        Square rookStart = CastlingMove.getRookStart(getColor(), side);
-        // There's space if the ChessMove from the king square to the rook square
-        // is open.
-        return new NormalChessMove(start, rookStart).isOpen(position);
+        return !position.anyOccupied(move.passedThrough());
     }
 }

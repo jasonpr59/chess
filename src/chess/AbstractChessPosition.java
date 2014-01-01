@@ -170,4 +170,14 @@ public abstract class AbstractChessPosition implements ChessPosition {
         return movingPiece.saneMoves(start, this);
     }
 
+    @Override
+    public boolean anyOccupied(Iterable<Square>squares) {
+        for (Square square : squares) {
+            if (getPiece(square) != null){
+                return true;
+            }
+        }
+        return false;
+    }
+
 }
