@@ -36,19 +36,12 @@ public interface ChessMove extends Move<ChessPosition> {
     /** Return whether a move is legal on a given board. */
     public boolean isLegal(ChessPosition board);
 
-    /**
-     * Return whether a move is open on a given board.
-     * A move is open if the Squares between its start and end
-     * are all unoccupied.
-     *
-     * Requires that the move is basic or diagonal: for other moves,
-     * there is no definition of Squares "between" the start and end.
-     */
-    public boolean isOpen(ChessPosition board);
-
     /** Return whether this Move starts or ends at some Square. */
     public boolean startsOrEndsAt(Square square);
 
     /** Serialize this move as a 4-character String. */
     public String serialized();
+
+    /** Get squares passed-through by the moving Piece(s). */
+    public Iterable<Square> passedThrough();
 }

@@ -29,4 +29,8 @@ public interface ChessPosition extends Position<ChessPosition> {
     // by Position<ChessPosition>.
     @Override
     public Collection<ChessMove> moves();
+
+    /** Return whether any of certain Squares is occupied in this Position. */
+    public boolean anyOccupied(Iterable<Square> squares);
+
 }

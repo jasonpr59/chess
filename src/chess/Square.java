@@ -258,4 +258,27 @@ public class Square {
     public static Square squareAt(int file, int rank) {
         return GRID[file - 1][rank - 1];
     }
+
+    /**
+     * Get the Squares between the start and end.
+     * Requires that the move from start to end is basic or diagonal:
+     * for other moves, there is no definition of Squares "between" the
+     * start and end.
+     */
+    public static Iterable<Square> between(Square start, Square end) {
+        Delta delta = new Delta(start ,end);
+        assert delta.isDiagonal() || delta.isBasic();
+
+        Delta unitStep = delta.unitized();
+        // TODO: Use an on-line Iterable, rather than a
+        // precomputed Collection.
+        Collection<Square> squares = new ArrayList<Square>();
+        Square currentSquare = start.plus(unitStep);
+        while (!currentSquare.equals(end)) {
+            squares.add(currentSquare);
+            currentSquare = currentSquare.plus(unitStep);
+        }
+        return squares;
+    }
+
 }

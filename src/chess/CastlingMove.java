@@ -166,11 +166,6 @@ public class CastlingMove implements ChessMove {
     }
 
     @Override
-    public boolean isOpen(ChessPosition position) {
-        return baseMove.isOpen(position);
-    }
-
-    @Override
     public boolean startsOrEndsAt(Square square) {
         // TODO: Figure out what startsOrEndsAt really
         // means for a CastlingMove.
@@ -181,6 +176,38 @@ public class CastlingMove implements ChessMove {
     @Override
     public String serialized() {
         return baseMove.serialized() + "C";
+    }
+
+    @Override
+    public Iterable<Square> passedThrough() {
+        // There's a fair amount of duplicated code
+        // between here and isSane.  I'm being lax because
+        // I'll be seriously remodeling this class soon.
+        // TODO: Remove this comment post-remodeling.
+
+        Square kingStart = baseMove.getStart();
+
+        Delta delta = baseMove.getDelta();
+        CastlingInfo.Side side;
+        if (delta.equals(KINGSIDE_DELTA)) {
+            side = CastlingInfo.Side.KINGSIDE;
+        } else if (delta.equals(QUEENSIDE_DELTA)) {
+            side = CastlingInfo.Side.QUEENSIDE;
+        } else {
+            throw new IllegalStateException();
+        }
+
+        Piece.Color color;
+        if (kingStart.getRank() == 1) {
+            color = Piece.Color.WHITE;
+        } else if (kingStart.getRank() == 8) {
+            color = Piece.Color.BLACK;
+        } else {
+            throw new IllegalStateException();
+        }
+        Square rookStart = getRookStart(color, side);
+
+        return Square.between(kingStart, rookStart);
     }
 
 }
