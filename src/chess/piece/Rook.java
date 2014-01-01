@@ -27,6 +27,6 @@ public class Rook extends Piece {
         if (!isColorSane(move, position)) {
             return false;
         }
-        return move.getDelta().isBasic() && !position.anyOccupied(move.passedThrough());
+        return new Delta(move).isBasic() && !position.anyOccupied(move.passedThrough());
     }
 }

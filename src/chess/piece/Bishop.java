@@ -27,6 +27,6 @@ public class Bishop extends Piece {
         if (!isColorSane(move, position)) {
             return false;
         }
-        return move.getDelta().isDiagonal() && !position.anyOccupied(move.passedThrough());
+        return new Delta(move).isDiagonal() && !position.anyOccupied(move.passedThrough());
       }
 }

@@ -27,7 +27,7 @@ public class Queen extends Piece {
         if (!isColorSane(move, position)) {
             return false;
         }
-        Delta delta = move.getDelta();
+        Delta delta = new Delta(move);
         return ((delta.isBasic() || delta.isDiagonal()) &&
                 !position.anyOccupied(move.passedThrough()));
     }

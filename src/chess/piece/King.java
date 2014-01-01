@@ -36,7 +36,7 @@ public class King extends Piece {
         if (!isColorSane(move, position)) {
             return false;
         }
-        Delta delta = move.getDelta();
+        Delta delta = new Delta(move);
         return (Math.abs(delta.getDeltaRank()) <= 1 && Math.abs(delta.getDeltaFile()) <= 1);
     }
 
@@ -54,7 +54,7 @@ public class King extends Piece {
         }
 
         // Ensure the Delta is a castling delta.
-        Delta delta = move.getDelta();
+        Delta delta = new Delta(move);
         CastlingInfo.Side side;
         if (delta.equals(Delta.KING_CASTLE_DELTA)) {
             side = CastlingInfo.Side.KINGSIDE;

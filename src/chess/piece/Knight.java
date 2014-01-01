@@ -50,7 +50,7 @@ public class Knight extends Piece {
         if (!isColorSane(move, position)) {
             return false;
         }
-        Delta moveDelta = move.getDelta();
+        Delta moveDelta = new Delta(move);
         return Math.abs(moveDelta.getDeltaRank() * moveDelta.getDeltaFile()) == 2;
 
     }

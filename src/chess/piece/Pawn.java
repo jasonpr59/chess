@@ -53,7 +53,7 @@ public class Pawn extends Piece {
             return false;
         }
 
-        Delta moveDelta = move.getDelta();
+        Delta moveDelta = new Delta(move);
         Square start = move.getStart();
         Square end = move.getEnd();
 
