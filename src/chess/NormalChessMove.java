@@ -138,38 +138,6 @@ public class NormalChessMove implements ChessMove{
     }
 
     @Override
-    public String serialized() {
-        return "" + start.getFile() + start.getRank() + end.getFile() + end.getRank();
-    }
-
-    // TODO: Move this elsewhere.  Or, better, delete
-    // it, and abandon this weird serialization scheme.
-    /** Deserialize this move from a 4-character String. */
-    public static ChessMove deserialized(String s) {
-        s = s.trim();
-
-        // This method is responsible for delegating to other
-        // deserializers for special moves.
-        if (s.length() == 5) {
-            if (s.charAt(4) == 'C') {
-                return CastlingMove.deserialized(s);
-            } else {
-                return PromotionMove.deserialized(s);
-            }
-        }
-
-        // Once we've gotten here, we're in the "normal move
-        // deserialization" part.
-        assert s.length() == 4;
-        int startFile = Integer.parseInt(s.substring(0,1));
-        int startRank = Integer.parseInt(s.substring(1,2));
-        int endFile = Integer.parseInt(s.substring(2,3));
-        int endRank = Integer.parseInt(s.substring(3,4));
-        return new NormalChessMove(Square.squareAt(startFile, startRank),
-                Square.squareAt(endFile, endRank));
-    }
-
-    @Override
     public ChessPosition result(ChessPosition position) {
         Square start = getStart();
         Square end = getEnd();
