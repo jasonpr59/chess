@@ -108,11 +108,6 @@ public class PromotionMove implements ChessMove {
     }
 
     @Override
-    public Delta getDelta() {
-        return baseMove.getDelta();
-    }
-
-    @Override
     public Square capturedSquare(ChessPosition position) {
         return baseMove.capturedSquare(position);
     }

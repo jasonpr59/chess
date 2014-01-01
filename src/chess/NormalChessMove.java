@@ -51,11 +51,6 @@ public class NormalChessMove implements ChessMove{
     }
 
     @Override
-    public Delta getDelta() {
-        return delta;
-    }
-
-    @Override
     public Square capturedSquare(ChessPosition board) {
         if (board.getPiece(end) != null) {
             // There's something in the landing square, so that's what's captured.

@@ -69,7 +69,7 @@ public class CastlingMove implements ChessMove {
     }
 
     private CastlingInfo.Side getSide() {
-        Delta delta = baseMove.getDelta();
+        Delta delta = new Delta(baseMove);
         if (delta.equals(KINGSIDE_DELTA)) {
             return CastlingInfo.Side.KINGSIDE;
         } else if (delta.equals(QUEENSIDE_DELTA)) {
@@ -111,7 +111,7 @@ public class CastlingMove implements ChessMove {
 
         // Ensure that king did not move through check.
         // Do this by making the king move to that square, and seeing whether it is checked.
-        Square transitSquare = start.plus(baseMove.getDelta().unitized());
+        Square transitSquare = start.plus(new Delta(baseMove).unitized());
         NormalChessMove loneKingMove = new NormalChessMove(start, transitSquare);
         if (!loneKingMove.isLegal(position)) {
             return false;
@@ -152,11 +152,6 @@ public class CastlingMove implements ChessMove {
     }
 
     @Override
-    public Delta getDelta() {
-        return baseMove.getDelta();
-    }
-
-    @Override
     public Iterable<Square> passedThrough() {
         // There's a fair amount of duplicated code
         // between here and isSane.  I'm being lax because
@@ -165,7 +160,7 @@ public class CastlingMove implements ChessMove {
 
         Square kingStart = baseMove.getStart();
 
-        Delta delta = baseMove.getDelta();
+        Delta delta = new Delta(baseMove);
         CastlingInfo.Side side;
         if (delta.equals(KINGSIDE_DELTA)) {
             side = CastlingInfo.Side.KINGSIDE;

@@ -7,8 +7,6 @@ public interface ChessMove extends Move<ChessPosition> {
 
     public Square getEnd();
 
-    public Delta getDelta();
-
     /**
      * Return the square that is occupied by the piece that's to be captured by this move.
      * Return null if no piece is to be captured.
