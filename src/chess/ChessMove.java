@@ -36,9 +36,6 @@ public interface ChessMove extends Move<ChessPosition> {
     /** Return whether a move is legal on a given board. */
     public boolean isLegal(ChessPosition board);
 
-    /** Serialize this move as a 4-character String. */
-    public String serialized();
-
     /** Get squares passed-through by the moving Piece(s). */
     public Iterable<Square> passedThrough();
 }

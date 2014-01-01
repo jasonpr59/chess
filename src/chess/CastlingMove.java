@@ -141,15 +141,6 @@ public class CastlingMove implements ChessMove {
         return builder.build();
     }
 
-    /** Deserialize this move from a 5-character String. */
-    public static CastlingMove deserialized(String s) {
-        assert s.length() == 5;
-        assert s.charAt(4) == 'C';
-
-        NormalChessMove basicMove = (NormalChessMove) NormalChessMove.deserialized(s.substring(0, 4));
-        return new CastlingMove(basicMove);
-    }
-
     @Override
     public Square getStart() {
         return baseMove.getStart();
@@ -163,11 +154,6 @@ public class CastlingMove implements ChessMove {
     @Override
     public Delta getDelta() {
         return baseMove.getDelta();
-    }
-
-    @Override
-    public String serialized() {
-        return baseMove.serialized() + "C";
     }
 
     @Override

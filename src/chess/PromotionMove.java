@@ -97,47 +97,6 @@ public class PromotionMove implements ChessMove {
         return builder.build();
     }
 
-    /** Serialize this PromotionMove as a 5-character string. */
-    public String serialized() {
-        String coords = baseMove.serialized();
-        String type;
-        if (getPromotedPiece() instanceof Knight) {
-            type = "N";
-        } else if (getPromotedPiece() instanceof Bishop) {
-            type = "B";
-        } else if (getPromotedPiece() instanceof Rook) {
-            type = "R";
-        } else if (getPromotedPiece() instanceof Queen) {
-            type = "Q";
-        } else {
-            throw new RuntimeException("Invalid promotion type.");
-        }
-        return coords + type;
-    }
-
-    /** Deserialize this move from a 5-character String. */
-    public static PromotionMove deserialized(String s) {
-        assert s.length() == 5;
-        NormalChessMove basicMove = (NormalChessMove) NormalChessMove.deserialized(s.substring(0, 4));
-        Piece.Color color = getPromotingColor(basicMove);
-        char typeChar = s.charAt(4);
-        Piece promotedPiece;
-        if (typeChar == 'N') {
-            promotedPiece = new Knight(color);
-        } else if (typeChar == 'B') {
-            promotedPiece = new Bishop(color);
-        } else if (typeChar == 'R') {
-            promotedPiece = new Rook(color);
-        } else if (typeChar == 'Q') {
-            promotedPiece = new Queen(color);
-        } else {
-            throw new RuntimeException("Invalid promotion type.");
-        }
-
-
-        return new PromotionMove(basicMove, promotedPiece);
-    }
-
     @Override
     public Square getStart() {
         return baseMove.getStart();
