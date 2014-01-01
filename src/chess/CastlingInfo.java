@@ -129,20 +129,20 @@ public class CastlingInfo {
         // the piece whose home was that square has moved in some way or another.
 
         boolean whiteCanKingCastle = (this.whiteCanKingCastle &&
-                                      !move.startsOrEndsAt(E1) &&
-                                      !move.startsOrEndsAt(H1));
+                                      !startsOrEndsAt(move, E1) &&
+                                      !startsOrEndsAt(move, H1));
 
         boolean whiteCanQueenCastle = (this.whiteCanQueenCastle &&
-                                       !move.startsOrEndsAt(E1) &&
-                                       !move.startsOrEndsAt(A1));
+                                       !startsOrEndsAt(move, E1) &&
+                                       !startsOrEndsAt(move, A1));
 
         boolean blackCanKingCastle = (this.blackCanKingCastle &&
-                                      !move.startsOrEndsAt(E8) &&
-                                      !move.startsOrEndsAt(H8));
+                                      !startsOrEndsAt(move, E8) &&
+                                      !startsOrEndsAt(move, H8));
 
         boolean blackCanQueenCastle = (this.blackCanQueenCastle &&
-                                       !move.startsOrEndsAt(E8) &&
-                                       !move.startsOrEndsAt(A8));
+                                       !startsOrEndsAt(move, E8) &&
+                                       !startsOrEndsAt(move, A8));
 
         return fromValues(whiteCanKingCastle, whiteCanQueenCastle,
                           blackCanKingCastle, blackCanQueenCastle);
@@ -155,5 +155,10 @@ public class CastlingInfo {
         } else {
             return (color == Piece.Color.WHITE) ? whiteCanQueenCastle : blackCanQueenCastle;
         }
+    }
+
+    /** Returns whether the moving Piece of a ChessMove starts or ends at some Square. */
+    private static boolean startsOrEndsAt(ChessMove move, Square square) {
+        return move.getStart().equals(square) || move.getEnd().equals(square);
     }
 }
