@@ -2,14 +2,10 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import chess.piece.Bishop;
 import chess.piece.Knight;
-import chess.piece.Pawn;
 import chess.piece.Piece;
 import chess.piece.Queen;
 import chess.piece.Rook;
@@ -49,17 +45,6 @@ public class PromotionMove implements ChessMove {
     private final Piece promotedPiece;
     private final NormalChessMove baseMove;
 
-    private static final Set<Class<?>> PROMOTION_TYPES;
-
-    static {
-        Set<Class<?>> promotionTypes = new HashSet<Class<?>>();
-        promotionTypes.add(Knight.class);
-        promotionTypes.add(Bishop.class);
-        promotionTypes.add(Rook.class);
-        promotionTypes.add(Queen.class);
-        PROMOTION_TYPES = Collections.unmodifiableSet(promotionTypes);
-    }
-
     /** Create a PromotionMove from a normal move and a promoted Piece. */
     public PromotionMove(NormalChessMove move, Piece promotedPiece) {
         this.baseMove = move;
@@ -89,25 +74,12 @@ public class PromotionMove implements ChessMove {
         return allPromotions;
     }
 
-    public boolean isSane(ChessPosition board) {
-        Piece movingPiece = board.getPiece(baseMove.getStart());
-        if (!(movingPiece instanceof Pawn) ||
-            !PROMOTION_TYPES.contains(getPromotedPiece().getClass())) {
+    public boolean isSane(ChessPosition position) {
+        Piece movingPiece = position.getPiece(baseMove.getStart());
+        if (movingPiece == null) {
             return false;
         }
-
-        int promotableRank;
-        if (movingPiece.getColor() == Piece.Color.WHITE) {
-            promotableRank = 8;
-        } else {
-            promotableRank = 1;
-        }
-
-        if (baseMove.getEnd().getRank() != promotableRank) {
-            return false;
-        }
-
-        return baseMove.isSane(board);
+        return movingPiece.isSane(this, position);
     }
 
     @Override

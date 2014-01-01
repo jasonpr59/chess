@@ -1,7 +1,6 @@
 package chess;
 
 import chess.CastlingInfo.Side;
-import chess.piece.King;
 import chess.piece.Piece;
 
 public class CastlingMove implements ChessMove {
@@ -58,48 +57,11 @@ public class CastlingMove implements ChessMove {
 
     @Override
     public boolean isSane(ChessPosition position) {
-        Square start = baseMove.getStart();
-
-        // Ensure the moving piece is a king.
-        Piece movingPiece = position.getPiece(start);
-        if (!(movingPiece instanceof King)) {
+        Piece movingPiece = position.getPiece(getStart());
+        if (movingPiece == null) {
             return false;
         }
-
-        // Ensure the start square is a king square.
-        if (!start.equals(Square.algebraic("e1")) &&
-            !start.equals(Square.algebraic("e8"))) {
-            return false;
-        }
-
-        // Ensure the Delta is a castling delta.
-        Delta delta = baseMove.getDelta();
-        CastlingInfo.Side side;
-        if (delta.equals(KINGSIDE_DELTA)) {
-            side = CastlingInfo.Side.KINGSIDE;
-        } else if (delta.equals(QUEENSIDE_DELTA)) {
-            side = CastlingInfo.Side.QUEENSIDE;
-        } else {
-            return false;
-        }
-
-        // Ensure the pieces are ready to castle.
-        CastlingInfo castlingInfo = position.getCastlingInfo();
-        // If the moving piece is a king in its OWN home square, then
-        // this CastlingInfo check will ensure that he is ready to castle.
-        // If the moving piece is a king in the OTHER king's home square, then
-        // neither king is in his own home square, so neither king is ready to
-        // castle, and this check will return false, correctly.
-        if (!castlingInfo.castlePiecesReady(movingPiece.getColor(), side)) {
-            return false;
-        }
-
-        // Finally, just ensure that there's space all the way between the king
-        // and its rook.
-        Square rookStart = getRookStart(movingPiece.getColor(), side);
-        // There's space if the ChessMove from the king square to the rook square
-        // is open.
-        return new NormalChessMove(start, rookStart).isOpen(position);
+        return movingPiece.isSane(this, position);
     }
 
     private Piece.Color getColor(ChessPosition position) {
