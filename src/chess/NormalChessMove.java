@@ -138,11 +138,6 @@ public class NormalChessMove implements ChessMove{
     }
 
     @Override
-    public boolean startsOrEndsAt(Square square) {
-        return start.equals(square) || end.equals(square);
-    }
-
-    @Override
     public String serialized() {
         return "" + start.getFile() + start.getRank() + end.getFile() + end.getRank();
     }

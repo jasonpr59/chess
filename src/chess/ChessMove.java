@@ -36,9 +36,6 @@ public interface ChessMove extends Move<ChessPosition> {
     /** Return whether a move is legal on a given board. */
     public boolean isLegal(ChessPosition board);
 
-    /** Return whether this Move starts or ends at some Square. */
-    public boolean startsOrEndsAt(Square square);
-
     /** Serialize this move as a 4-character String. */
     public String serialized();
 

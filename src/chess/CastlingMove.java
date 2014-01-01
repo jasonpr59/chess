@@ -166,14 +166,6 @@ public class CastlingMove implements ChessMove {
     }
 
     @Override
-    public boolean startsOrEndsAt(Square square) {
-        // TODO: Figure out what startsOrEndsAt really
-        // means for a CastlingMove.
-        // TODO: startsOrEndsAt probably needs a better name.
-        return baseMove.startsOrEndsAt(square);
-    }
-
-    @Override
     public String serialized() {
         return baseMove.serialized() + "C";
     }

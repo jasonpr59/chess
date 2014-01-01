@@ -168,11 +168,6 @@ public class PromotionMove implements ChessMove {
         return baseMove.isLegal(position);
     }
 
-    @Override
-    public boolean startsOrEndsAt(Square square) {
-        return baseMove.startsOrEndsAt(square);
-    }
-
     private static Piece.Color getPromotingColor(NormalChessMove move) {
         if (move.getEnd().getRank() == 8) {
             return Piece.Color.WHITE;
