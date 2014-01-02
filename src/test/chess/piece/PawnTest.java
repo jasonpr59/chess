@@ -72,6 +72,15 @@ public class PawnTest {
     }
 
     @Test
+    public void testFriendlyCaptureIsInsane() {
+        builder.placePiece(WHITE_PAWN, Square.algebraic("e4"));
+        builder.placePiece("WNf5");
+        position = builder.build();
+        NormalChessMove friendlyCapture = new NormalChessMove("e4", "f5");
+        assertFalse(WHITE_PAWN.isSane(friendlyCapture, position));
+    }
+
+    @Test
     public void testSingleStepFromHomeIsSane() {
         builder.placePiece(WHITE_PAWN, Square.algebraic("e2"));
         position = builder.build();
