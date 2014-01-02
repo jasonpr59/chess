@@ -1,12 +1,68 @@
 package chess;
 
-import chess.CastlingInfo.Side;
 import chess.piece.Piece;
 
 public class CastlingMove implements ChessMove {
+
+    public enum Side { KINGSIDE, QUEENSIDE; }
+
+    private static final Delta KINGSIDE_DELTA = new Delta(2, 0);
+    private static final Delta QUEENSIDE_DELTA = new Delta(-2, 0);
+
+    // Convenience squares, for deciding whether kings/rooks have moved.
+    // These are the same as the ones defined in CastlingInfo.
+    // TODO: Decide whether to factor out these common square definitions
+    // into a helper class.
+    private static final Square E1 = Square.squareAt(5, 1);
+    private static final Square E8 = Square.squareAt(5, 8);
+
+    private final Side side;
+    private final Piece.Color color;
+
+    public CastlingMove(Side side, Piece.Color color) {
+        this.side = side;
+        this.color = color;
+    }
+
+    public static CastlingMove fromNormalMove(NormalChessMove move) {
+        int startRank = move.getStart().getRank();
+        int startFile = move.getStart().getFile();
+        int endRank = move.getEnd().getRank();
+        int endFile = move.getEnd().getFile();
+
+        if (startFile != 5) {
+            throw new IllegalArgumentException("Moving piece must start on the a-file.");
+        }
+
+        if (startRank != endRank) {
+            throw new IllegalArgumentException("Start and end ranks must be equal.");
+        }
+
+        Piece.Color color;
+        if (startRank == 1) {
+            color = Piece.Color.WHITE;
+        } else if (startRank == 8) {
+            color = Piece.Color.BLACK;
+        } else {
+            throw new IllegalArgumentException("Start rank must be 1 or 8.");
+        }
+
+        Side side;
+        if (endFile == 3) {
+            side = Side.QUEENSIDE;
+        } else if (endFile == 7) {
+            side = Side.KINGSIDE;
+        } else {
+            throw new IllegalArgumentException("End file must be 3 or 7.");
+        }
+
+        return new CastlingMove(side, color);
+    }
+
     @Override
     public int hashCode() {
-        return baseMove.hashCode();
+        return (side == Side.KINGSIDE ? 2 : 0) +
+               (color == Piece.Color.WHITE ? 1 : 0);
     }
 
     @Override
@@ -21,26 +77,7 @@ public class CastlingMove implements ChessMove {
             return false;
         }
         CastlingMove other = (CastlingMove) obj;
-        return baseMove.equals(other.baseMove);
-    }
-
-    private static final Delta KINGSIDE_DELTA = new Delta(2, 0);
-    private static final Delta QUEENSIDE_DELTA = new Delta(-2, 0);
-
-    private final NormalChessMove baseMove;
-
-    public CastlingMove(NormalChessMove chessMove) {
-        baseMove = chessMove;
-    }
-
-    /** Construct a Move from one Square to another Square. */
-    public CastlingMove(Square start, Square end) {
-        baseMove = new NormalChessMove(start, end);
-    }
-
-    /** Construct a Move from starting at a Square and moving by a Delta. */
-    public CastlingMove(Square start, Delta delta) {
-        baseMove = new NormalChessMove(start, delta);
+        return (side == other.getSide() && color == other.getColor());
     }
 
     @Override
@@ -64,23 +101,20 @@ public class CastlingMove implements ChessMove {
         return movingPiece.isSane(this, position);
     }
 
-    private Piece.Color getColor(ChessPosition position) {
-        return position.getPiece(baseMove.getStart()).getColor();
+    public Piece.Color getColor() {
+        return color;
     }
 
-    private CastlingInfo.Side getSide() {
-        Delta delta = new Delta(baseMove);
-        if (delta.equals(KINGSIDE_DELTA)) {
-            return CastlingInfo.Side.KINGSIDE;
-        } else if (delta.equals(QUEENSIDE_DELTA)) {
-            return CastlingInfo.Side.QUEENSIDE;
-        } else {
-            throw new IllegalStateException("This CastlingMove has an impossible Delta.");
-        }
+    public Side getSide() {
+        return side;
+    }
+
+    private Delta getDelta () {
+        return (side == Side.KINGSIDE ? KINGSIDE_DELTA : QUEENSIDE_DELTA);
     }
 
     /** Get the starting Square of the Rook involved in castling. */
-    public static Square getRookStart(Piece.Color color, CastlingInfo.Side side) {
+    public Square getRookStart() {
         String rank;
         String file;
         if (color == Piece.Color.WHITE) {
@@ -96,6 +130,12 @@ public class CastlingMove implements ChessMove {
         return Square.algebraic(file + rank);
     }
 
+    /** Get the ending Square of the Rook involved in castling. */
+    public Square getRookEnd() {
+        // The rook ends between the king's start and end squares.
+        return Square.mean(getStart(), getEnd());
+    }
+
     @Override
     public boolean isLegal(ChessPosition position){
         // All legal moves are sane.
@@ -107,11 +147,11 @@ public class CastlingMove implements ChessMove {
             return false;
         }
 
-        Square start = baseMove.getStart();
+        Square start = getStart();
 
         // Ensure that king did not move through check.
         // Do this by making the king move to that square, and seeing whether it is checked.
-        Square transitSquare = start.plus(new Delta(baseMove).unitized());
+        Square transitSquare = start.plus(getDelta().unitized());
         NormalChessMove loneKingMove = new NormalChessMove(start, transitSquare);
         if (!loneKingMove.isLegal(position)) {
             return false;
@@ -123,64 +163,47 @@ public class CastlingMove implements ChessMove {
 
     @Override
     public ChessPosition result(ChessPosition position) {
-        // Move the king, normally.
-        ChessPosition partlyMoved = baseMove.result(position);
+        ChessPositionBuilder builder = new ChessPositionBuilder(position);
+
+        // Move the king.
+        Piece movingKing = position.getPiece(getStart());
+        builder.placePiece(null, getStart());
+        builder.placePiece(movingKing, getEnd());
 
         // Move the rook.
-        // TODO: Do this without creating a second builder for the rook-move
-        // step.  (The first one was in the super.result step.)
-        ChessPositionBuilder builder = new ChessPositionBuilder(partlyMoved);
-
-        Square rookStart = getRookStart(getColor(position), getSide());
-        // Rook ends between king's start and king's end.
-        Square rookEnd = Square.mean(baseMove.getStart(), baseMove.getEnd());
-        Piece rook = partlyMoved.getPiece(rookStart);
+        Square rookStart = getRookStart();
+        Piece movingRook = position.getPiece(rookStart);
         builder.placePiece(null, rookStart);
-        builder.placePiece(rook, rookEnd);
+        builder.placePiece(movingRook, getRookEnd());
+
+        // Clear en-passant square.
+        builder.setEnPassantSquare(null);
+        builder.flipToMoveColor();
+        builder.updateCastlingInfo(this);
 
         return builder.build();
     }
 
     @Override
     public Square getStart() {
-        return baseMove.getStart();
+        if (color == Piece.Color.WHITE) {
+            return E1;
+        } else {
+            return E8;
+        }
     }
 
     @Override
     public Square getEnd() {
-        return baseMove.getEnd();
+        int endRank = color == Piece.Color.WHITE ? 1 : 8;
+        int endFile = side == Side.KINGSIDE ? 7 : 3;
+        return Square.squareAt(endFile, endRank);
     }
 
     @Override
     public Iterable<Square> passedThrough() {
-        // There's a fair amount of duplicated code
-        // between here and isSane.  I'm being lax because
-        // I'll be seriously remodeling this class soon.
-        // TODO: Remove this comment post-remodeling.
-
-        Square kingStart = baseMove.getStart();
-
-        Delta delta = new Delta(baseMove);
-        CastlingInfo.Side side;
-        if (delta.equals(KINGSIDE_DELTA)) {
-            side = CastlingInfo.Side.KINGSIDE;
-        } else if (delta.equals(QUEENSIDE_DELTA)) {
-            side = CastlingInfo.Side.QUEENSIDE;
-        } else {
-            throw new IllegalStateException();
-        }
-
-        Piece.Color color;
-        if (kingStart.getRank() == 1) {
-            color = Piece.Color.WHITE;
-        } else if (kingStart.getRank() == 8) {
-            color = Piece.Color.BLACK;
-        } else {
-            throw new IllegalStateException();
-        }
-        Square rookStart = getRookStart(color, side);
-
-        return Square.between(kingStart, rookStart);
+        Square kingStart = getStart();
+        return Square.between(kingStart, getRookStart());
     }
-
 }
+

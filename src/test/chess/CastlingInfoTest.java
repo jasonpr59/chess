@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import chess.CastlingInfo;
+import chess.CastlingMove;
 import chess.NormalChessMove;
 import chess.piece.Piece;
 
@@ -17,14 +18,14 @@ public class CastlingInfoTest {
     // fully qualified names a zillion times.
     private static final Piece.Color WHITE = Piece.Color.WHITE;
     private static final Piece.Color BLACK = Piece.Color.BLACK;
-    private static final CastlingInfo.Side KINGSIDE = CastlingInfo.Side.KINGSIDE;
-    private static final CastlingInfo.Side QUEENSIDE = CastlingInfo.Side.QUEENSIDE;
+    private static final CastlingMove.Side KINGSIDE = CastlingMove.Side.KINGSIDE;
+    private static final CastlingMove.Side QUEENSIDE = CastlingMove.Side.QUEENSIDE;
 
     @Test
     public void testAllowAll() {
         CastlingInfo allAllowed = CastlingInfo.allowAll();
         for (Piece.Color color : Piece.Color.values()) {
-            for (CastlingInfo.Side side : CastlingInfo.Side.values()) {
+            for (CastlingMove.Side side : CastlingMove.Side.values()) {
                 assertTrue(allAllowed.castlePiecesReady(color, side));
             }
         }
@@ -42,7 +43,7 @@ public class CastlingInfoTest {
         CastlingInfo whiteKingRookMoved = base.updated(new NormalChessMove("h1", "h2"));
         assertFalse(whiteKingRookMoved.castlePiecesReady(WHITE, KINGSIDE));
         assertTrue(whiteKingRookMoved.castlePiecesReady(WHITE, QUEENSIDE));
-        for (CastlingInfo.Side side : CastlingInfo.Side.values()) {
+        for (CastlingMove.Side side : CastlingMove.Side.values()) {
             assertTrue(whiteKingRookMoved.castlePiecesReady(BLACK, side));
         }
 
@@ -51,14 +52,14 @@ public class CastlingInfoTest {
         CastlingInfo whiteQueenRookMoved = base.updated(new NormalChessMove("a1", "a2"));
         assertTrue(whiteQueenRookMoved.castlePiecesReady(WHITE, KINGSIDE));
         assertFalse(whiteQueenRookMoved.castlePiecesReady(WHITE, QUEENSIDE));
-        for (CastlingInfo.Side side : CastlingInfo.Side.values()) {
+        for (CastlingMove.Side side : CastlingMove.Side.values()) {
             assertTrue(whiteQueenRookMoved.castlePiecesReady(BLACK, side));
         }
 
         // Assert that moving the black king rook makes it
         // impossible for black to kingside castle.
         CastlingInfo blackKingRookMoved = base.updated(new NormalChessMove("h8", "h7"));
-        for (CastlingInfo.Side side : CastlingInfo.Side.values()) {
+        for (CastlingMove.Side side : CastlingMove.Side.values()) {
             assertTrue(blackKingRookMoved.castlePiecesReady(WHITE, side));
         }
         assertFalse(blackKingRookMoved.castlePiecesReady(BLACK, KINGSIDE));
@@ -67,7 +68,7 @@ public class CastlingInfoTest {
         // Assert that moving the black queen rook makes it
         // impossible for black to queenside castle.
         CastlingInfo blackQueenRookMoved = base.updated(new NormalChessMove("a8", "a7"));
-        for (CastlingInfo.Side side : CastlingInfo.Side.values()) {
+        for (CastlingMove.Side side : CastlingMove.Side.values()) {
             assertTrue(blackQueenRookMoved.castlePiecesReady(WHITE, side));
         }
         assertTrue(blackQueenRookMoved.castlePiecesReady(BLACK, KINGSIDE));
@@ -82,7 +83,7 @@ public class CastlingInfoTest {
         // impossible for white to castle.
         CastlingInfo whiteKingMoved = base.updated(new NormalChessMove("e1", "e2"));
         for (Piece.Color color : Piece.Color.values()) {
-            for (CastlingInfo.Side side : CastlingInfo.Side.values()) {
+            for (CastlingMove.Side side : CastlingMove.Side.values()) {
                 // Only black can castle, and black can castle on either side.
                 assertEquals(color == Piece.Color.BLACK,
                              whiteKingMoved.castlePiecesReady(color, side));
@@ -93,7 +94,7 @@ public class CastlingInfoTest {
         // impossible for black to castle.
         CastlingInfo blackKingMoved = base.updated(new NormalChessMove("e8", "e7"));
         for (Piece.Color color : Piece.Color.values()) {
-            for (CastlingInfo.Side side : CastlingInfo.Side.values()) {
+            for (CastlingMove.Side side : CastlingMove.Side.values()) {
                 // Only white can castle, and white can castle on either side.
                 assertEquals(color == Piece.Color.WHITE,
                              blackKingMoved.castlePiecesReady(color, side));
@@ -106,7 +107,7 @@ public class CastlingInfoTest {
         NormalChessMove noEffect = new NormalChessMove("e5", "e6");
         CastlingInfo stillUnrestricted = CastlingInfo.allowAll().updated(noEffect);
         for (Piece.Color color : Piece.Color.values()) {
-            for (CastlingInfo.Side side : CastlingInfo.Side.values()) {
+            for (CastlingMove.Side side : CastlingMove.Side.values()) {
                 assertTrue(stillUnrestricted.castlePiecesReady(color, side));
             }
         }

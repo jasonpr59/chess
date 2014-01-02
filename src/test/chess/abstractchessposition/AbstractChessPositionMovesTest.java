@@ -125,8 +125,8 @@ public class AbstractChessPositionMovesTest {
             }
         }
         // king can castle on either side.
-        expected.add(new CastlingMove(kingStart, new Delta(-2, 0)));
-        expected.add(new CastlingMove(kingStart, new Delta(2, 0)));
+        expected.add(new CastlingMove(CastlingMove.Side.KINGSIDE, Piece.Color.WHITE));
+        expected.add(new CastlingMove(CastlingMove.Side.QUEENSIDE, Piece.Color.WHITE));
 
         TestUtil.assertSameElements(expected, whiteCanCastle.moves());
     }
