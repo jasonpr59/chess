@@ -4,7 +4,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 import test.chess.abstractchessposition.AbstractChessPositionTests;
-import test.chess.chessmove.CastlingMoveTest;
 import test.chess.chessmove.ChessMoveTests;
 import test.chess.piece.PieceTests;
 
@@ -13,7 +12,6 @@ import test.chess.piece.PieceTests;
         AbstractChessPositionTests.class,
         AlgebraicNotationTest.class,
         CastlingInfoTest.class,
-        CastlingMoveTest.class,
         ChessMoveTests.class,
         ChessPositionBuilderTest.class,
         DeltaTest.class,
