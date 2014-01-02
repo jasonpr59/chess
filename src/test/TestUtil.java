@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import chess.CastlingInfo;
@@ -15,9 +16,19 @@ import chess.piece.Piece;
 
 /** Globally useful utility functions for testing. */
 public class TestUtil {
-    public static <T> void assertSameElements(Collection<T> expected, Collection<T> actual) {
-        assertTrue(expected.containsAll(actual));
-        assertTrue(actual.containsAll(expected));
+    public static <T> void assertSameElements(Iterable<T> expected, Iterable<T> actual) {
+        Collection<T> allExpected = new ArrayList<T>();
+        for (T t : expected) {
+            allExpected.add(t);
+        }
+
+        Collection<T> allActual = new ArrayList<T>();
+        for (T t : actual) {
+            allActual.add(t);
+        }
+
+        assertTrue(allExpected.containsAll(allActual));
+        assertTrue(allActual.containsAll(allExpected));
     }
 
     /** Assert that a ChessPosition is in the new-game position. */
