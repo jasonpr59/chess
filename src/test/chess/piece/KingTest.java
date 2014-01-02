@@ -74,8 +74,10 @@ public class KingTest {
         builder.placePiece("WKb2").placePiece("BKb7");
         position = builder.build();
 
-        final NormalChessMove tooFar = new NormalChessMove("b2", "d2");
-        assertFalse(WHITE_KING.isSane(tooFar, position));
+        final NormalChessMove tooFarOver = new NormalChessMove("b2", "d2");
+        assertFalse(WHITE_KING.isSane(tooFarOver, position));
+        final NormalChessMove tooFarUp = new NormalChessMove("b2", "b4");
+        assertFalse(WHITE_KING.isSane(tooFarUp, position));
     }
 
     @Test
