@@ -6,7 +6,28 @@ import org.junit.Test;
 
 public class KnightTest {
     @Test
-    public void test() {
-        fail("Not yet implemented.");
+    public void testNonCaptureIsSane() {
+        fail();
     }
+
+    @Test
+    public void testCaptureIsSane() {
+        fail();
+    }
+
+    @Test
+    public void testFriendlyCaptureIsInsane() {
+        fail();
+    }
+
+    @Test
+    public void testBadDeltaIsInsane() {
+        fail();
+    }
+
+    @Test
+    public void testSaneMoves() {
+        fail();
+    }
+
 }
