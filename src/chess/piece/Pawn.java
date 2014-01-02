@@ -15,6 +15,7 @@ public class Pawn extends Piece {
         super(color);
     }
 
+    @Override
     public Iterable<ChessMove> saneMoves(Square start, ChessPosition position) {
         Collection<ChessMove> candidateMoves = new ArrayList<ChessMove>();
 
@@ -47,8 +48,16 @@ public class Pawn extends Piece {
         return filterSane(candidateMoves, position);
     }
 
-    @Override
-    public boolean isSane(NormalChessMove move, ChessPosition position) {
+    /**
+     * Return whether a NormalChessMove is sane, except possibly for pushing too far.
+     *
+     * Normally, it's illegal for a pawn to push to its last rank without promoting.
+     * But, it can be useful to ask, "would this NormalChessMove be sane, if not
+     * for the fact the pawn doesn't promote?"  This method allows us to ask that question.
+     * @param pawnCanPushToEdge Whether to allow a pawn to push "sanely" to its
+     *      promotion rank, even though the NormalChessMove is not a PromotionMove.
+     */
+    private boolean isSane(NormalChessMove move, ChessPosition position, boolean pawnCanPushToEdge) {
         if (!isColorSane(move, position)) {
             return false;
         }
@@ -56,6 +65,10 @@ public class Pawn extends Piece {
         Delta moveDelta = new Delta(move);
         Square start = move.getStart();
         Square end = move.getEnd();
+
+        if (!pawnCanPushToEdge && end.getRank() == getPromotionRank()) {
+            return false;
+        }
 
         // We'll need to know which way is forward for this pawn, later on.
         boolean isWhite = getColor() == Piece.Color.WHITE;
@@ -95,21 +108,24 @@ public class Pawn extends Piece {
     }
 
     @Override
+    public boolean isSane(NormalChessMove move, ChessPosition position) {
+        return isSane(move, position, false);
+    }
+
+    @Override
     public boolean isSane(PromotionMove move, ChessPosition position) {
         if (!isColorSane(move, position)) {
             return false;
         }
-        int promotableRank;
-        if (getColor() == Piece.Color.WHITE) {
-            promotableRank = 8;
-        } else {
-            promotableRank = 1;
-        }
-        if (move.getEnd().getRank() != promotableRank) {
+        if (move.getEnd().getRank() != getPromotionRank()) {
             return false;
         }
 
-        PromotionMove promotionMove = (PromotionMove) move;
-        return isSane(promotionMove.getBaseMove(), position);
+        PromotionMove promotionMove = move;
+        return isSane(promotionMove.getBaseMove(), position, true);
+    }
+
+    private int getPromotionRank() {
+        return getColor() == Piece.Color.WHITE ? 8 : 1;
     }
 }
