@@ -8,6 +8,7 @@ import java.util.Collection;
 import org.junit.Test;
 
 import test.TestUtil;
+import chess.CastlingInfo;
 import chess.CastlingMove;
 import chess.ChessMove;
 import chess.ChessPosition;
@@ -125,8 +126,8 @@ public class AbstractChessPositionMovesTest {
             }
         }
         // king can castle on either side.
-        expected.add(new CastlingMove(kingStart, new Delta(-2, 0)));
-        expected.add(new CastlingMove(kingStart, new Delta(2, 0)));
+        expected.add(new CastlingMove(CastlingInfo.Side.KINGSIDE, Piece.Color.WHITE));
+        expected.add(new CastlingMove(CastlingInfo.Side.QUEENSIDE, Piece.Color.WHITE));
 
         TestUtil.assertSameElements(expected, whiteCanCastle.moves());
     }

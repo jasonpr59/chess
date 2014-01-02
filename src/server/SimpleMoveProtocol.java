@@ -58,7 +58,7 @@ public class SimpleMoveProtocol {
 
         if (s.length() == 5) {
             if (s.charAt(4) == 'C') {
-                return new CastlingMove(normal);
+                return CastlingMove.fromNormalMove(normal);
             } else {
                 Piece.Color color;
                 if (normal.getStart().getRank() == 7) {

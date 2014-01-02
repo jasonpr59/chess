@@ -1,9 +1,5 @@
 package chess;
 
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.Map;
-
 import chess.exceptions.AlgebraicNotationException;
 import chess.piece.Bishop;
 import chess.piece.King;
@@ -18,16 +14,6 @@ import chess.piece.Rook;
  * See http://en.wikipedia.org/wiki/Algebraic_notation_(chess).
  */
 public class AlgebraicNotation {
-    // Convenience map, for generating castling moves.
-    private static final Map<Piece.Color, Square> KING_SQUARES;
-
-    static {
-        Map<Piece.Color, Square> kingSquares = new EnumMap<Piece.Color, Square>(Piece.Color.class);
-        kingSquares.put(Piece.Color.WHITE, Square.squareAt(5, 1));
-        kingSquares.put(Piece.Color.BLACK, Square.squareAt(5, 8));
-        KING_SQUARES = Collections.unmodifiableMap(kingSquares);
-    }
-
     /**
      * Create a ChessMove from its algebraic representation.
      *
@@ -47,11 +33,11 @@ public class AlgebraicNotation {
         // TODO: Refactor the heck out of this mess!  Or, at least, comment the heck out of it.
 
         if (alg.equals("O-O")) {
-            return new CastlingMove(KING_SQUARES.get(position.getToMoveColor()), new Delta(2, 0));
+            return new CastlingMove(CastlingInfo.Side.KINGSIDE, position.getToMoveColor());
         }
 
         if (alg.equals("O-O-O")) {
-            return new CastlingMove(KING_SQUARES.get(position.getToMoveColor()), new Delta(-2, 0));
+            return new CastlingMove(CastlingInfo.Side.QUEENSIDE, position.getToMoveColor());
         }
 
         // TODO: Implement promotion.

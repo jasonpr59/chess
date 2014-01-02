@@ -25,8 +25,10 @@ public class King extends Piece {
             // There's a decent chance that the king's in its home square,
             // and a zero chance that a two-square hop along a rank will
             // put us off the board.
-            candidateMoves.add(new CastlingMove(start, new Delta(2, 0)));
-            candidateMoves.add(new CastlingMove(start, new Delta(-2, 0)));
+            candidateMoves.add(new CastlingMove(CastlingInfo.Side.KINGSIDE,
+                                                position.getToMoveColor()));
+            candidateMoves.add(new CastlingMove(CastlingInfo.Side.QUEENSIDE,
+                                                position.getToMoveColor()));
         }
         return filterSane(candidateMoves, position);
     }
