@@ -1,9 +1,10 @@
 package chess;
 
-import chess.CastlingInfo.Side;
 import chess.piece.Piece;
 
 public class CastlingMove implements ChessMove {
+
+    public enum Side { KINGSIDE, QUEENSIDE; }
 
     private static final Delta KINGSIDE_DELTA = new Delta(2, 0);
     private static final Delta QUEENSIDE_DELTA = new Delta(-2, 0);
@@ -15,10 +16,10 @@ public class CastlingMove implements ChessMove {
     private static final Square E1 = Square.squareAt(5, 1);
     private static final Square E8 = Square.squareAt(5, 8);
 
-    private final CastlingInfo.Side side;
+    private final Side side;
     private final Piece.Color color;
 
-    public CastlingMove(CastlingInfo.Side side, Piece.Color color) {
+    public CastlingMove(Side side, Piece.Color color) {
         this.side = side;
         this.color = color;
     }
@@ -46,11 +47,11 @@ public class CastlingMove implements ChessMove {
             throw new IllegalArgumentException("Start rank must be 1 or 8.");
         }
 
-        CastlingInfo.Side side;
+        Side side;
         if (endFile == 3) {
-            side = CastlingInfo.Side.QUEENSIDE;
+            side = Side.QUEENSIDE;
         } else if (endFile == 7) {
-            side = CastlingInfo.Side.KINGSIDE;
+            side = Side.KINGSIDE;
         } else {
             throw new IllegalArgumentException("End file must be 3 or 7.");
         }
@@ -60,7 +61,7 @@ public class CastlingMove implements ChessMove {
 
     @Override
     public int hashCode() {
-        return (side == CastlingInfo.Side.KINGSIDE ? 2 : 0) +
+        return (side == Side.KINGSIDE ? 2 : 0) +
                (color == Piece.Color.WHITE ? 1 : 0);
     }
 
@@ -104,16 +105,12 @@ public class CastlingMove implements ChessMove {
         return color;
     }
 
-    public CastlingInfo.Side getSide() {
+    public Side getSide() {
         return side;
     }
 
     private Delta getDelta () {
-        if (side == CastlingInfo.Side.KINGSIDE) {
-            return KINGSIDE_DELTA;
-        } else {
-            return QUEENSIDE_DELTA;
-        }
+        return (side == Side.KINGSIDE ? KINGSIDE_DELTA : QUEENSIDE_DELTA);
     }
 
     /** Get the starting Square of the Rook involved in castling. */
@@ -199,7 +196,7 @@ public class CastlingMove implements ChessMove {
     @Override
     public Square getEnd() {
         int endRank = color == Piece.Color.WHITE ? 1 : 8;
-        int endFile = side == CastlingInfo.Side.KINGSIDE ? 7 : 3;
+        int endFile = side == Side.KINGSIDE ? 7 : 3;
         return Square.squareAt(endFile, endRank);
     }
 
@@ -209,3 +206,4 @@ public class CastlingMove implements ChessMove {
         return Square.between(kingStart, getRookStart());
     }
 }
+

@@ -33,11 +33,11 @@ public class AlgebraicNotation {
         // TODO: Refactor the heck out of this mess!  Or, at least, comment the heck out of it.
 
         if (alg.equals("O-O")) {
-            return new CastlingMove(CastlingInfo.Side.KINGSIDE, position.getToMoveColor());
+            return new CastlingMove(CastlingMove.Side.KINGSIDE, position.getToMoveColor());
         }
 
         if (alg.equals("O-O-O")) {
-            return new CastlingMove(CastlingInfo.Side.QUEENSIDE, position.getToMoveColor());
+            return new CastlingMove(CastlingMove.Side.QUEENSIDE, position.getToMoveColor());
         }
 
         // TODO: Implement promotion.

@@ -8,8 +8,6 @@ import chess.piece.Piece;
  */
 public class CastlingInfo {
 
-    public enum Side { KINGSIDE, QUEENSIDE; }
-
     // There are only 2^4 = 16 possible CastlingInfos, since
     // a CastlingInfo is defined by 4 booleans.  We generate
     // all of them statically, then pass around references to
@@ -149,8 +147,8 @@ public class CastlingInfo {
     }
 
     /** Return whether the king is unmoved AND the h-rook is unmoved. */
-    public boolean castlePiecesReady(Piece.Color color, Side side) {
-        if (side == Side.KINGSIDE){
+    public boolean castlePiecesReady(Piece.Color color, CastlingMove.Side side) {
+        if (side == CastlingMove.Side.KINGSIDE){
             return (color == Piece.Color.WHITE) ? whiteCanKingCastle : blackCanKingCastle;
         } else {
             return (color == Piece.Color.WHITE) ? whiteCanQueenCastle : blackCanQueenCastle;
