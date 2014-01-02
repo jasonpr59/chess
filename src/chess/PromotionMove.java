@@ -74,6 +74,7 @@ public class PromotionMove implements ChessMove {
         return allPromotions;
     }
 
+    @Override
     public boolean isSane(ChessPosition position) {
         Piece movingPiece = position.getPiece(baseMove.getStart());
         if (movingPiece == null) {
@@ -119,7 +120,12 @@ public class PromotionMove implements ChessMove {
 
     @Override
     public boolean isLegal(ChessPosition position) {
-        return baseMove.isLegal(position);
+        // All legal Moves are sane.
+        if (!isSane(position)) {
+            return false;
+        }
+        ChessPosition resultBoard = result(position);
+        return !resultBoard.checked(position.getToMoveColor());
     }
 
     private static Piece.Color getPromotingColor(NormalChessMove move) {
