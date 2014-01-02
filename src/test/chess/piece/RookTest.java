@@ -1,12 +1,19 @@
 package test.chess.piece;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import test.TestUtil;
+import chess.ChessMove;
 import chess.ChessPosition;
 import chess.ChessPositionBuilder;
+import chess.NormalChessMove;
 import chess.Square;
 import chess.piece.King;
 import chess.piece.Piece;
@@ -28,51 +35,107 @@ public class RookTest {
 
     @Test
     public void testMoveNorthIsSane() {
-        fail();
+        builder.placePiece("WRe5");
+        position = builder.build();
+        NormalChessMove oneNorth = new NormalChessMove("e5", "e6");
+        assertTrue(WHITE_ROOK.isSane(oneNorth, position));
     }
 
     @Test
     public void testMoveEastIsSane() {
-        fail();
+        builder.placePiece("WRe5");
+        position = builder.build();
+        NormalChessMove twoEast = new NormalChessMove("e5", "c5");
+        assertTrue(WHITE_ROOK.isSane(twoEast, position));
     }
 
     @Test
     public void testMoveSouthIsSane() {
-        fail();
+        builder.placePiece("WRe5");
+        position = builder.build();
+        NormalChessMove threeSouth = new NormalChessMove("e5", "e2");
+        assertTrue(WHITE_ROOK.isSane(threeSouth, position));
     }
 
     @Test
     public void testMoveWestIsSane() {
-        fail();
+        builder.placePiece("WRe5");
+        position = builder.build();
+        NormalChessMove fourWest = new NormalChessMove("e5", "a5");
+        assertTrue(WHITE_ROOK.isSane(fourWest, position));
     }
 
     @Test
     public void testNonBasicIsInsane() {
-        fail();
+        builder.placePiece("WRe5");
+        position = builder.build();
+        NormalChessMove nonBasic = new NormalChessMove("e5", "f6");
+        assertFalse(WHITE_ROOK.isSane(nonBasic, position));
     }
 
     @Test
     public void testHopFriendlyPieceIsInsane() {
-        fail();
+        builder.placePiece("WRd2");
+        builder.placePiece("WNd4");
+        position = builder.build();
+        NormalChessMove hop = new NormalChessMove("d2", "d6");
+        assertFalse(WHITE_ROOK.isSane(hop, position));
     }
 
     @Test
     public void testHopEnemyPieceIsInsane() {
-        fail();
+        builder.placePiece("WRd2");
+        builder.placePiece("BNd4");
+        position = builder.build();
+        NormalChessMove hop = new NormalChessMove("d2", "d6");
+        assertFalse(WHITE_ROOK.isSane(hop, position));
     }
 
     @Test
     public void testCaptureIsSane() {
-        fail();
+        builder.placePiece("WRd2");
+        builder.placePiece("BNd4");
+        position = builder.build();
+        NormalChessMove hop = new NormalChessMove("d2", "d4");
+        assertTrue(WHITE_ROOK.isSane(hop, position));
     }
 
     @Test
     public void testFriendlyCaptureIsInsane() {
-        fail();
+        builder.placePiece("WRd2");
+        builder.placePiece("WNd4");
+        position = builder.build();
+        NormalChessMove hop = new NormalChessMove("d2", "d4");
+        assertFalse(WHITE_ROOK.isSane(hop, position));
     }
 
     @Test
     public void testSaneMoves() {
-        fail();
+        // Moving white rook.
+        builder.placePiece("WRe4");
+        // White knight, blocks rook after three squares.
+        builder.placePiece("WNa4");
+        // White knight, blocks rook after zero squares.
+        builder.placePiece("WNf4");
+        // Black knight, blocks rook after one square, and is capturable.
+        builder.placePiece("BNe6");
+        position = builder.build();
+
+        Collection<ChessMove> expected = new ArrayList<ChessMove>();
+        // Move up to three Squares west (until hits white knight on a4).
+        expected.add(new NormalChessMove("e4", "d4"));
+        expected.add(new NormalChessMove("e4", "c4"));
+        expected.add(new NormalChessMove("e4", "b4"));
+        // Move up to three Squraes south (until hits boundary).
+        expected.add(new NormalChessMove("e4", "e3"));
+        expected.add(new NormalChessMove("e4", "e2"));
+        expected.add(new NormalChessMove("e4", "e1"));
+        // Move up to two squares north (until captures black knight).
+        expected.add(new NormalChessMove("e4", "e5"));
+        expected.add(new NormalChessMove("e4", "e6"));
+
+        Iterable<ChessMove> sane = WHITE_ROOK.saneMoves(Square.algebraic("e4"), position);
+
+        TestUtil.assertSameElements(expected, sane);
     }
 }
