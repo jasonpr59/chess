@@ -4,6 +4,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 import test.chess.abstractchessposition.AbstractChessPositionTests;
+import test.chess.chessmove.CastlingMoveTest;
+import test.chess.chessmove.ChessMoveTests;
+import test.chess.piece.PieceTests;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
@@ -11,11 +14,11 @@ import test.chess.abstractchessposition.AbstractChessPositionTests;
         AlgebraicNotationTest.class,
         CastlingInfoTest.class,
         CastlingMoveTest.class,
-        ChessMoveTest.class,
+        ChessMoveTests.class,
         ChessPositionBuilderTest.class,
         DeltaTest.class,
         GameTest.class,
-        PieceTest.class,
+        PieceTests.class,
         SquareTest.class
         })
 public class ChessTests {

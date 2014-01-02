@@ -1,4 +1,4 @@
-package test.chess;
+package test.chess.chessmove;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
@@ -11,7 +11,7 @@ import chess.Square;
 import chess.exceptions.AlgebraicNotationException;
 import chess.exceptions.IllegalMoveException;
 
-public class ChessMoveTest {
+public class NormalChessMoveTest {
     @Test
     public void testDoublePawnPush() throws IllegalMoveException, AlgebraicNotationException{
         String[] moves = {"e4", "h6"};
