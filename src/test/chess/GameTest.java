@@ -67,8 +67,7 @@ public class GameTest {
                           "Ng5", "d5",
                           "exd5", "Nxd5",
                           "Nxf7", "Kxf7",
-                          // TODO(jasonpr): Indicate Check ("Qf3+") once it's implemented!
-                          "Qf3"};
+                          "Qf3+"};
 
         // Just ensure that this executes without error.
         Game.fromMoves(moves);
