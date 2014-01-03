@@ -94,7 +94,13 @@ public class AlgebraicNotationTest {
 
     @Test
     public void testMultipleMatchingPieces() {
-        fail();
+        builder.placePiece("WRe4").placePiece("WRg4");
+        position = builder.build();
+        try {
+            AlgebraicNotation.parse("Rf4", position);
+            fail("Didn't complain that it is ambigious which rook to choose!");
+        } catch (AlgebraicNotationException expected) {
+        }
     }
 
     @Test
