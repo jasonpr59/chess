@@ -215,8 +215,8 @@ public class AlgebraicNotationTest {
         builder.placePiece("WRa5").placePiece("WRc5");
         builder.placePiece("WRe4");
         position = builder.build();
-        ChessMove checkmate = AlgebraicNotation.parse("Ra4#", position);
-        assertEquals(new NormalChessMove("e4", "a4"), checkmate);
+        ChessMove checkmate = AlgebraicNotation.parse("Rb4#", position);
+        assertEquals(new NormalChessMove("e4", "b4"), checkmate);
     }
 
     @Test
