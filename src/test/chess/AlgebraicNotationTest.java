@@ -227,7 +227,7 @@ public class AlgebraicNotationTest {
         position = builder.build();
         // Not checkmate-- black king can escape to c-file.
         try {
-            AlgebraicNotation.parse("Ra4#", position);
+            AlgebraicNotation.parse("Rb4#", position);
             fail("Didn't complain that non-checkmate move has a '#'.");
         } catch (AlgebraicNotationException expected) {
         }
