@@ -61,7 +61,7 @@ public class ScoreTest {
     }
 
     @Test
-    public void testUnequalEstimateMixedScores() {
+    public void testUnequalEstimateMixedWithWinsScores() {
         Score maxWins = TerminalScore.wins(Player.MAXIMIZER, 10);
         Score positiveEstimate = new EstimatedScore(100.0f);
         Score negativeEstimate = new EstimatedScore(-100.0f);
@@ -74,20 +74,35 @@ public class ScoreTest {
     }
 
     @Test
+    public void testUnequalEstimateMixedWithDrawScores() {
+        Score positiveEstimate = new EstimatedScore(100.0f);
+        Score draw = TerminalScore.draw(10);
+        Score negativeEstimate = new EstimatedScore(-100.f);
+
+        doGreaterAssertions(positiveEstimate, draw);
+        doGreaterAssertions(draw, negativeEstimate);
+    }
+
+    @Test
     public void testEqualTerminalScores() {
         doEqualAssertions(TerminalScore.wins(Player.MAXIMIZER, 9),
                           TerminalScore.wins(Player.MAXIMIZER, 9));
+
+        doEqualAssertions(TerminalScore.wins(Player.MAXIMIZER, 9),
+                          TerminalScore.loses(Player.MINIMIZER, 9));
     }
 
     @Test
     public void testUnequalTerminalScores() {
         Score maxWinSoon = TerminalScore.wins(Player.MAXIMIZER, 1);
         Score maxWinInAWhile = TerminalScore.wins(Player.MAXIMIZER, 11);
+        Score draw = TerminalScore.draw(6);
         Score minWinInAWhile = TerminalScore.wins(Player.MINIMIZER, 5);
         Score minWinSoon = TerminalScore.wins(Player.MINIMIZER, 1);
 
         doGreaterAssertions(maxWinSoon, maxWinInAWhile);
-        doGreaterAssertions(maxWinInAWhile, minWinInAWhile);
+        doGreaterAssertions(maxWinInAWhile, draw);
+        doGreaterAssertions(draw, minWinInAWhile);
         doGreaterAssertions(minWinInAWhile, minWinSoon);
     }
 
