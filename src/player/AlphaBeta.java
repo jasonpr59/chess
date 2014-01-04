@@ -16,11 +16,12 @@ public class AlphaBeta<P extends Position<P>> implements Decider<P>{
     @Override
     public Decision<P> bestDecision(P state, int depth) {
         // TODO(jasonpr): Come up with a better fake parent score.
-        return alphaBeta(state, depth, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY, 0.0f);
+        return alphaBeta(state, depth, TerminalScore.LOWEST, TerminalScore.HIGHEST,
+                         new EstimatedScore(0.0f));
     }
 
-    private Decision<P> alphaBeta(P position, int depth, float alpha, float beta, float parentScore) {
-        float score = heuristic.value(position);
+    private Decision<P> alphaBeta(P position, int depth, Score alpha, Score beta, EstimatedScore parentScore) {
+        EstimatedScore score = heuristic.value(position);
         if (depth > 0 || shouldExtend(score, parentScore)) {
             // Generate all legal transitions.
             List<Move<P>> moves = new ArrayList<Move<P>>(position.moves());
@@ -32,7 +33,7 @@ public class AlphaBeta<P extends Position<P>> implements Decider<P>{
                 return new Decision<P>(new ArrayList<Move<P>>(), heuristic.terminalValue(position));
             }
             final boolean isMaxStep = position.toMove() == Player.MAXIMIZER;
-            final float mult = isMaxStep? 1.0f : -1.0f;
+
 
             // We'll never actually return null:
             // bestDecision is ALWAYS set in the legalMoves loop.
@@ -47,7 +48,7 @@ public class AlphaBeta<P extends Position<P>> implements Decider<P>{
 
                 // Get the best decision from this possible result...
                 Decision<P> nextDecision = alphaBeta(possibleResult, depth - 1, alpha, beta, score);
-                if (!seenAny || nextDecision.getScore() * mult > bestDecision.getScore() * mult) {
+                if (!seenAny || Decision.isNewBest(nextDecision, bestDecision, isMaxStep)) {
                     seenAny = true;
                     variation = new ArrayList<Move<P>>();
                     variation.add(t);
@@ -56,14 +57,14 @@ public class AlphaBeta<P extends Position<P>> implements Decider<P>{
                 }
 
                 // update alpha and beta
-                if (isMaxStep && bestDecision.getScore() > alpha) {
+                if (isMaxStep && bestDecision.getScore().greaterThan(alpha)) {
                     alpha = bestDecision.getScore();
-                } else if (!isMaxStep && bestDecision.getScore() < beta) {
+                } else if (!isMaxStep && bestDecision.getScore().lessThan(beta)) {
                     beta = bestDecision.getScore();
                 }
 
                 // ...and terminate if alpha-beta condition is satisfied.
-                if (alpha >= beta) {
+                if (!beta.lessThan(alpha)) {
                     break;
                 }
             }
@@ -85,7 +86,7 @@ public class AlphaBeta<P extends Position<P>> implements Decider<P>{
      * @param score The Position's current score.
      * @param parentScore The score of the Position that led to this one.
      */
-    private static boolean shouldExtend(float score, float parentScore) {
-        return Math.abs(score - parentScore) > EXTENSION_THRESHOLD;
+    private static boolean shouldExtend(EstimatedScore score, EstimatedScore parentScore) {
+        return Math.abs(score.getValue() - parentScore.getValue()) > EXTENSION_THRESHOLD;
     }
 }

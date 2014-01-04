@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import player.AbstractHeuristic;
+import player.EstimatedScore;
 import chess.ChessPosition;
 import chess.Square;
 import chess.piece.Bishop;
@@ -32,7 +33,7 @@ public class BoardPieceValueHeuristic extends AbstractHeuristic<ChessPosition>{
     }
 
     @Override
-    public float value(ChessPosition board) {
+    public EstimatedScore value(ChessPosition board) {
         float totalScore = 0.0f;
         Piece p;
         float pieceScore;
@@ -46,6 +47,6 @@ public class BoardPieceValueHeuristic extends AbstractHeuristic<ChessPosition>{
             mult = (p.getColor() == Piece.Color.WHITE) ? +1.0f : -1.0f;
             totalScore += pieceScore * mult;
         }
-        return totalScore;
+        return new EstimatedScore(totalScore);
     }
 }
