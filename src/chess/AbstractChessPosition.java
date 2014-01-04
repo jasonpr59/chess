@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import player.Outcome;
+import player.Player;
 import chess.piece.King;
 import chess.piece.Piece;
 
@@ -96,9 +97,13 @@ public abstract class AbstractChessPosition implements ChessPosition {
         }
     }
 
-    @Override
-    public boolean shouldMaximize() {
+    private boolean shouldMaximize() {
         return (getToMoveColor() == Piece.Color.WHITE);
+    }
+
+    @Override
+    public Player toMove() {
+        return shouldMaximize() ? Player.MAXIMIZER : Player.MINIMIZER;
     }
 
     /**
