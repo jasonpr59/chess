@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import player.Outcome;
+import player.Player;
 import chess.CastlingInfo;
 import chess.ChessMove;
 import chess.ChessPosition;
@@ -48,18 +49,18 @@ public class AbstractChessPositionTest {
     }
 
     @Test
-    public void testShouldMaximize() {
+    public void testToMove() {
         // White to move -- should maximize.
         ChessPositionBuilder whiteToMoveBuilder = new ChessPositionBuilder();
         whiteToMoveBuilder.setToMoveColor(Piece.Color.WHITE);
         ChessPosition whiteToMove = whiteToMoveBuilder.build();
-        assertTrue(whiteToMove.shouldMaximize());
+        assertEquals(Player.MAXIMIZER, whiteToMove.toMove());
 
         // Black to move -- should not maximize.
         ChessPositionBuilder blackToMoveBuilder = new ChessPositionBuilder();
         blackToMoveBuilder.setToMoveColor(Piece.Color.BLACK);
         ChessPosition blackToMove = blackToMoveBuilder.build();
-        assertFalse(blackToMove.shouldMaximize());
+        assertEquals(Player.MINIMIZER, blackToMove.toMove());
     }
 
     @Test

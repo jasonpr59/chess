@@ -5,20 +5,20 @@ import java.util.Collections;
 import java.util.List;
 
 public class AlphaBeta<P extends Position<P>> implements Decider<P>{
-    
+
     private static final float EXTENSION_THRESHOLD = 0.7f;
     private final Heuristic<P> heuristic;
-    
+
     public AlphaBeta(Heuristic<P> heuristic) {
         this.heuristic = heuristic;
     }
-    
+
     @Override
     public Decision<P> bestDecision(P state, int depth) {
         // TODO(jasonpr): Come up with a better fake parent score.
         return alphaBeta(state, depth, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY, 0.0f);
-    }   
-    
+    }
+
     private Decision<P> alphaBeta(P position, int depth, float alpha, float beta, float parentScore) {
         float score = heuristic.value(position);
         if (depth > 0 || shouldExtend(score, parentScore)) {
@@ -26,14 +26,14 @@ public class AlphaBeta<P extends Position<P>> implements Decider<P>{
             List<Move<P>> moves = new ArrayList<Move<P>>(position.moves());
             // TODO(jasonpr): Order nicely.
             Collections.shuffle(moves);
-            
+
             // Decide it's checkmate/stalemate.
             if (moves.size() == 0) {
                 return new Decision<P>(new ArrayList<Move<P>>(), heuristic.terminalValue(position));
             }
-            final boolean isMaxStep = position.shouldMaximize(); 
+            final boolean isMaxStep = position.toMove() == Player.MAXIMIZER;
             final float mult = isMaxStep? 1.0f : -1.0f;
-            
+
             // We'll never actually return null:
             // bestDecision is ALWAYS set in the legalMoves loop.
             // (since we've gotten this far, legalMoves.size() >= 1.)
@@ -54,14 +54,14 @@ public class AlphaBeta<P extends Position<P>> implements Decider<P>{
                     variation.addAll(nextDecision.getVariation());
                     bestDecision = new Decision<P>(variation, nextDecision.getScore());
                 }
-                
+
                 // update alpha and beta
-                if (isMaxStep && bestDecision.getScore() > alpha) { 
+                if (isMaxStep && bestDecision.getScore() > alpha) {
                     alpha = bestDecision.getScore();
                 } else if (!isMaxStep && bestDecision.getScore() < beta) {
                     beta = bestDecision.getScore();
                 }
-                
+
                 // ...and terminate if alpha-beta condition is satisfied.
                 if (alpha >= beta) {
                     break;
@@ -72,7 +72,7 @@ public class AlphaBeta<P extends Position<P>> implements Decider<P>{
             return new Decision<P>(new ArrayList<Move<P>>(), score);
         }
     }
-    
+
     /**
      * Return whether to search deeper, even once the required depth has been reached.
      * If the score changed drastically in the last Move, there might be a response that
@@ -81,7 +81,7 @@ public class AlphaBeta<P extends Position<P>> implements Decider<P>{
      * until the drastic moves stop coming.  At that point, the dust has settled, and
      * there's a better chance that the Position's score is an accurate representation
      * of the Position's value.
-     * 
+     *
      * @param score The Position's current score.
      * @param parentScore The score of the Position that led to this one.
      */

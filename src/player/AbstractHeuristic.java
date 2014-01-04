@@ -12,10 +12,11 @@ public abstract class AbstractHeuristic<P extends Position<P>> implements Heuris
      * Requires that the Position is terminal, that is, that there are no
      * Moves from this Position.
      */
+    @Override
     public float terminalValue(P position){
         // Any game is either a win, a loss, or a tie if there are no
         // legal transitions left.
-        
+
         Outcome result = position.outcome();
 
         float outcomeScore;
@@ -33,7 +34,7 @@ public abstract class AbstractHeuristic<P extends Position<P>> implements Heuris
             // This could probably be fixed by making *every* step
             // a "maximizing step," and just negating scores in each
             // recursive call.
-            if (position.shouldMaximize()) {
+            if (position.toMove() == Player.MAXIMIZER) {
                 // The maximizing player lost.
                 // TODO: Differentiate between "lose now" and "lose in x moves."
                 outcomeScore = -10000.0f;

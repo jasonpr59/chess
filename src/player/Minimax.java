@@ -5,13 +5,13 @@ import java.util.Collections;
 import java.util.List;
 
 public class Minimax<P extends Position<P>> implements Decider<P>{
-    
+
     private final Heuristic<P> heuristic;
-    
+
     public Minimax(Heuristic<P> heuristic) {
         this.heuristic = heuristic;
     }
-    
+
     @Override
     public Decision<P> bestDecision(P position, int depth) {
         List<Move<P>> nextTransitions = new ArrayList<Move<P>>();
@@ -27,7 +27,7 @@ public class Minimax<P extends Position<P>> implements Decider<P>{
             if (transitions.size() == 0) {
                 return new Decision<P>(new ArrayList<Move<P>>(), heuristic.terminalValue(position));
             }
-            
+
             Collections.shuffle(possibleDecisions);
             for (Decision<P> decision : possibleDecisions) {
                 possibleResult = decision.getFirstMove().result(position);
@@ -37,15 +37,15 @@ public class Minimax<P extends Position<P>> implements Decider<P>{
                 nextTransitions.addAll(nextDecision.getVariation());
                 possibleDecisions.add(new Decision<P>(nextTransitions, nextDecision.getScore()));
             }
-            
+
             // Choose the possible decision that give the optimal score.
             Decision<P> bestDecision;
-            if (position.shouldMaximize()) {
+            if (position.toMove() == Player.MAXIMIZER) {
                 bestDecision = Decision.highestScored(possibleDecisions);
             } else {
                 bestDecision = Decision.lowestScored(possibleDecisions);
             }
             return bestDecision;
         }
-    }   
+    }
 }
