@@ -38,6 +38,4 @@ public class EstimatedScore extends Score {
         EstimatedScore other = (EstimatedScore) obj;
         return Float.floatToIntBits(value) == Float.floatToIntBits(other.value);
     }
-
-
 }
