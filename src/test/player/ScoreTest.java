@@ -61,11 +61,11 @@ public class ScoreTest {
     }
 
     @Test
-    public void testUnequalEstimateMixedScores() {
-        Score maxWins = new TerminalScore(Player.MAXIMIZER, 10);
+    public void testUnequalEstimateMixedWithWinsScores() {
+        Score maxWins = TerminalScore.wins(Player.MAXIMIZER, 10);
         Score positiveEstimate = new EstimatedScore(100.0f);
         Score negativeEstimate = new EstimatedScore(-100.0f);
-        Score minWins = new TerminalScore(Player.MINIMIZER, 10);
+        Score minWins = TerminalScore.wins(Player.MINIMIZER, 10);
 
         doGreaterAssertions(maxWins, positiveEstimate);
         doGreaterAssertions(maxWins, negativeEstimate);
@@ -74,20 +74,35 @@ public class ScoreTest {
     }
 
     @Test
+    public void testUnequalEstimateMixedWithDrawScores() {
+        Score positiveEstimate = new EstimatedScore(100.0f);
+        Score draw = TerminalScore.draw(10);
+        Score negativeEstimate = new EstimatedScore(-100.f);
+
+        doGreaterAssertions(positiveEstimate, draw);
+        doGreaterAssertions(draw, negativeEstimate);
+    }
+
+    @Test
     public void testEqualTerminalScores() {
-        doEqualAssertions(new TerminalScore(Player.MAXIMIZER, 9),
-                          new TerminalScore(Player.MAXIMIZER, 9));
+        doEqualAssertions(TerminalScore.wins(Player.MAXIMIZER, 9),
+                          TerminalScore.wins(Player.MAXIMIZER, 9));
+
+        doEqualAssertions(TerminalScore.wins(Player.MAXIMIZER, 9),
+                          TerminalScore.loses(Player.MINIMIZER, 9));
     }
 
     @Test
     public void testUnequalTerminalScores() {
-        Score maxWinSoon = new TerminalScore(Player.MAXIMIZER, 1);
-        Score maxWinInAWhile = new TerminalScore(Player.MAXIMIZER, 11);
-        Score minWinInAWhile = new TerminalScore(Player.MINIMIZER, 5);
-        Score minWinSoon = new TerminalScore(Player.MINIMIZER, 1);
+        Score maxWinSoon = TerminalScore.wins(Player.MAXIMIZER, 1);
+        Score maxWinInAWhile = TerminalScore.wins(Player.MAXIMIZER, 11);
+        Score draw = TerminalScore.draw(6);
+        Score minWinInAWhile = TerminalScore.wins(Player.MINIMIZER, 5);
+        Score minWinSoon = TerminalScore.wins(Player.MINIMIZER, 1);
 
         doGreaterAssertions(maxWinSoon, maxWinInAWhile);
-        doGreaterAssertions(maxWinInAWhile, minWinInAWhile);
+        doGreaterAssertions(maxWinInAWhile, draw);
+        doGreaterAssertions(draw, minWinInAWhile);
         doGreaterAssertions(minWinInAWhile, minWinSoon);
     }
 
@@ -99,12 +114,12 @@ public class ScoreTest {
 
     @Test
     public void testTerminalGetters() {
-        TerminalScore maxWins = new TerminalScore(Player.MAXIMIZER, 5);
+        TerminalScore maxWins = TerminalScore.wins(Player.MAXIMIZER, 5);
         assertEquals(Float.POSITIVE_INFINITY, maxWins.getValue(), EQUALITY_EPSILON);
-        assertEquals(5, maxWins.getPliesUntilWin());
+        assertEquals(5, maxWins.getPliesUntilEnd());
 
-        TerminalScore minWins = new TerminalScore(Player.MINIMIZER, 3);
+        TerminalScore minWins = TerminalScore.wins(Player.MINIMIZER, 3);
         assertEquals(Float.NEGATIVE_INFINITY,minWins.getValue(), EQUALITY_EPSILON);
-        assertEquals(3, minWins.getPliesUntilWin());
+        assertEquals(3, minWins.getPliesUntilEnd());
     }
 }
