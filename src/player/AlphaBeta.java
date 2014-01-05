@@ -16,13 +16,14 @@ public class AlphaBeta<P extends Position<P>> implements Decider<P>{
     @Override
     public Decision<P> bestDecision(P state, int depth) {
         // TODO(jasonpr): Come up with a better fake parent score.
-        return alphaBeta(state, depth, TerminalScore.LOWEST, TerminalScore.HIGHEST,
+        int pliesFromRoot = 0;
+        return alphaBeta(state, pliesFromRoot, depth, TerminalScore.LOWEST, TerminalScore.HIGHEST,
                          new EstimatedScore(0.0f));
     }
 
-    private Decision<P> alphaBeta(P position, int depth, Score alpha, Score beta, EstimatedScore parentScore) {
+    private Decision<P> alphaBeta(P position, int pliesFromRoot, int maxPlies, Score alpha, Score beta, EstimatedScore parentScore) {
         EstimatedScore score = heuristic.value(position);
-        if (depth > 0 || shouldExtend(score, parentScore)) {
+        if (pliesFromRoot < maxPlies || shouldExtend(score, parentScore)) {
             // Generate all legal transitions.
             List<Move<P>> moves = new ArrayList<Move<P>>(position.moves());
             // TODO(jasonpr): Order nicely.
@@ -30,7 +31,22 @@ public class AlphaBeta<P extends Position<P>> implements Decider<P>{
 
             // Decide it's checkmate/stalemate.
             if (moves.size() == 0) {
-                return new Decision<P>(new ArrayList<Move<P>>(), heuristic.terminalValue(position));
+                TerminalScore mate;
+                Outcome outcome = position.outcome();
+                switch (outcome) {
+                case WIN:
+                    mate = TerminalScore.wins(position.toMove(), pliesFromRoot);
+                    break;
+                case DRAW:
+                    mate = TerminalScore.draw(pliesFromRoot);
+                    break;
+                case LOSS:
+                    mate = TerminalScore.loses(position.toMove(), pliesFromRoot);
+                    break;
+                default:
+                    throw new RuntimeException("Illegal Outcome " + outcome);
+                }
+                return new Decision<P>(new ArrayList<Move<P>>(), mate);
             }
             final boolean isMaxStep = position.toMove() == Player.MAXIMIZER;
 
@@ -47,7 +63,7 @@ public class AlphaBeta<P extends Position<P>> implements Decider<P>{
                 possibleResult = t.result(position);
 
                 // Get the best decision from this possible result...
-                Decision<P> nextDecision = alphaBeta(possibleResult, depth - 1, alpha, beta, score);
+                Decision<P> nextDecision = alphaBeta(possibleResult, pliesFromRoot + 1, maxPlies, alpha, beta, score);
                 if (!seenAny || Decision.isNewBest(nextDecision, bestDecision, isMaxStep)) {
                     seenAny = true;
                     variation = new ArrayList<Move<P>>();
