@@ -103,10 +103,12 @@ public class NormalChessMove implements ChessMove{
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null)
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
 
         NormalChessMove that = (NormalChessMove) obj;
         return start.equals(that.getStart()) && end.equals(that.getEnd());
@@ -145,11 +147,11 @@ public class NormalChessMove implements ChessMove{
         Square capturedSquare = capturedSquare(position);
         if (capturedSquare != null) {
             // Remove the captured piece.
-            builder.placePiece(null, capturedSquare);
+            builder.vacate(capturedSquare);
         }
 
         // Remove the piece from its starting position...
-        builder.placePiece(null, start);
+        builder.vacate(start);
         // ... and put it in its final position.
         builder.placePiece(movingPiece, end);
 

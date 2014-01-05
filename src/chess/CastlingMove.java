@@ -167,13 +167,13 @@ public class CastlingMove implements ChessMove {
 
         // Move the king.
         Piece movingKing = position.getPiece(getStart());
-        builder.placePiece(null, getStart());
+        builder.vacate(getStart());
         builder.placePiece(movingKing, getEnd());
 
         // Move the rook.
         Square rookStart = getRookStart();
         Piece movingRook = position.getPiece(rookStart);
-        builder.placePiece(null, rookStart);
+        builder.vacate(rookStart);
         builder.placePiece(movingRook, getRookEnd());
 
         // Clear en-passant square.

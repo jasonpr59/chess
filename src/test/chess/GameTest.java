@@ -90,9 +90,9 @@ public class GameTest {
 
         // Assert after first full move, position is correct.
         ChessPosition open = new ChessPositionBuilder().setupNewGame()
-                             .placePiece(null, Square.algebraic("e2"))
+                             .vacate(Square.algebraic("e2"))
                              .placePiece(whitePawn, Square.algebraic("e4"))
-                             .placePiece(null, Square.algebraic("e7"))
+                             .vacate(Square.algebraic("e7"))
                              .placePiece(blackPawn, Square.algebraic("e5"))
                              .setEnPassantSquare(Square.algebraic("e6"))
                              .build();
@@ -101,11 +101,11 @@ public class GameTest {
 
         // Assert after first move and a half, position is correct.
         ChessPosition kingKnightPosition = new ChessPositionBuilder().setupNewGame()
-                                           .placePiece(null, Square.algebraic("e2"))
+                                           .vacate(Square.algebraic("e2"))
                                            .placePiece(whitePawn, Square.algebraic("e4"))
-                                           .placePiece(null, Square.algebraic("e7"))
+                                           .vacate(Square.algebraic("e7"))
                                            .placePiece(blackPawn, Square.algebraic("e5"))
-                                           .placePiece(null, Square.algebraic("g1"))
+                                           .vacate(Square.algebraic("g1"))
                                            .placePiece(whiteKnight, Square.algebraic("f3"))
                                            .setToMoveColor(Piece.Color.BLACK)
                                            .build();
