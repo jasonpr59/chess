@@ -4,8 +4,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import player.AbstractHeuristic;
 import player.EstimatedScore;
+import player.Heuristic;
 import chess.ChessPosition;
 import chess.Square;
 import chess.piece.Bishop;
@@ -16,7 +16,7 @@ import chess.piece.Piece;
 import chess.piece.Queen;
 import chess.piece.Rook;
 
-public class BoardPieceValueHeuristic extends AbstractHeuristic<ChessPosition>{
+public class BoardPieceValueHeuristic implements Heuristic<ChessPosition>{
     // TODO: Figure out how to restrict this to classes that extend Piece.
     private static final Map<Class<?>, Float> PIECE_VALUES;
 

@@ -14,10 +14,15 @@ public class Minimax<P extends Position<P>> implements Decider<P>{
 
     @Override
     public Decision<P> bestDecision(P position, int depth) {
+        int pliesFromRoot = 0;
+        return minimax(position, pliesFromRoot, depth);
+    }
+
+    private Decision<P> minimax(P position, int pliesFromRoot, int maxPlies) {
         List<Move<P>> nextTransitions = new ArrayList<Move<P>>();
-        if (depth < 0) {
-            throw new IllegalArgumentException("Depth cannot be negative.");
-        } else if (depth == 0) {
+        if (pliesFromRoot > maxPlies) {
+            throw new IllegalArgumentException("pliesFromRoot cannot be greater than maxPlies.");
+        } else if (pliesFromRoot == maxPlies) {
             return new Decision<P>(nextTransitions, heuristic.value(position));
         } else {
             // Get all possible decisions.
@@ -25,13 +30,28 @@ public class Minimax<P extends Position<P>> implements Decider<P>{
             P possibleResult;
             List<Move<P>> transitions = new ArrayList<Move<P>>(position.moves());
             if (transitions.size() == 0) {
-                return new Decision<P>(new ArrayList<Move<P>>(), heuristic.terminalValue(position));
+                TerminalScore mate;
+                Outcome outcome = position.outcome();
+                switch (outcome) {
+                case WIN:
+                    mate = TerminalScore.wins(position.toMove(), pliesFromRoot);
+                    break;
+                case DRAW:
+                    mate = TerminalScore.draw(pliesFromRoot);
+                    break;
+                case LOSS:
+                    mate = TerminalScore.loses(position.toMove(), pliesFromRoot);
+                    break;
+                default:
+                    throw new RuntimeException("Illegal Outcome " + outcome);
+                }
+                return new Decision<P>(new ArrayList<Move<P>>(), mate);
             }
 
             Collections.shuffle(possibleDecisions);
             for (Decision<P> decision : possibleDecisions) {
                 possibleResult = decision.getFirstMove().result(position);
-                Decision<P> nextDecision = bestDecision(possibleResult, depth - 1);
+                Decision<P> nextDecision = minimax(possibleResult, pliesFromRoot, maxPlies);
                 nextTransitions = new ArrayList<Move<P>>();
                 nextTransitions.add(decision.getFirstMove());
                 nextTransitions.addAll(nextDecision.getVariation());
