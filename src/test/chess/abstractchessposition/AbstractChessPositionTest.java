@@ -83,6 +83,15 @@ public class AbstractChessPositionTest {
     }
 
     @Test
+    public void testPromotionChecked() {
+        String[] whiteCheckedByPawnPlacements = {"WKe1", "BKe8", "BPf2"};
+        ChessPositionBuilder builder = new ChessPositionBuilder();
+        builder.placePieces(whiteCheckedByPawnPlacements);
+        ChessPosition whiteCheckedByPawn = builder.build();
+        assertTrue(whiteCheckedByPawn.checked(Piece.Color.WHITE));
+    }
+
+    @Test
     public void testEquality() {
         // Assert that two equal (new) ChessPositions are equal, and have the same hashCode.
         ChessPosition newGame = new ChessPositionBuilder().setupNewGame().build();
