@@ -12,8 +12,8 @@ import java.util.HashSet;
 import org.junit.Test;
 
 import test.TestUtil;
-import chess.NormalChessMove;
 import chess.Delta;
+import chess.NormalChessMove;
 import chess.Square;
 import chess.piece.Piece;
 
@@ -94,7 +94,7 @@ public class SquareTest {
         // No directions.
         Square start = Square.algebraic("d5");
         Collection<Delta> noDirs = new HashSet<Delta>();
-        Collection<Square> found = start.explore(noDirs, 5);
+        Iterable<Square> found = start.explore(noDirs, 5);
         Collection<Square> noSquares = new HashSet<Square>();
         TestUtil.assertSameElements(noSquares, found);
     }
@@ -104,7 +104,7 @@ public class SquareTest {
         Square start = Square.algebraic("d5");
         Collection<Delta> dirs = new HashSet<Delta>();
         dirs.add(Delta.NORTH_EAST);
-        Collection<Square> found = start.explore(dirs, 0);
+        Iterable<Square> found = start.explore(dirs, 0);
         Collection<Square> noSquares = new HashSet<Square>();
         TestUtil.assertSameElements(noSquares, found);
     }
@@ -116,7 +116,7 @@ public class SquareTest {
         dirs.add(Delta.WEST);
 
         Square start = Square.algebraic("d5");
-        Collection<Square> found = start.explore(dirs, 1);
+        Iterable<Square> found = start.explore(dirs, 1);
 
         Collection<Square> expected = new HashSet<Square>();
         expected.add(Square.algebraic("e6"));
@@ -131,7 +131,7 @@ public class SquareTest {
         dirs.add(Delta.NORTH_EAST);
 
         Square start = Square.algebraic("c4");
-        Collection<Square> found = start.explore(dirs, 3);
+        Iterable<Square> found = start.explore(dirs, 3);
 
         Collection<Square> expected = new HashSet<Square>();
         expected.add(Square.algebraic("d5"));
@@ -144,7 +144,7 @@ public class SquareTest {
     @Test
     public void testExploreFewDirs() {
         Square start = Square.algebraic("d5");
-        Collection<Square> found = start.explore(Delta.BASIC_DIRS, 1);
+        Iterable<Square> found = start.explore(Delta.BASIC_DIRS, 1);
 
         Collection<Square> expected = new HashSet<Square>();
         expected.add(Square.algebraic("c5"));
@@ -161,7 +161,7 @@ public class SquareTest {
         // even if some of the exploration directions
         // are cut off by the edge of the board prematurely.
         Square start = Square.algebraic("b2");
-        Collection<Square> found = start.explore(Delta.BASIC_DIRS, 2);
+        Iterable<Square> found = start.explore(Delta.BASIC_DIRS, 2);
 
         Collection<Square> expected = new HashSet<Square>();
         expected.add(Square.algebraic("a2"));
@@ -181,7 +181,7 @@ public class SquareTest {
         dirs.add(Delta.SOUTH_EAST);
 
         Square start = Square.algebraic("b4");
-        Collection<Square> found = start.explore(dirs);
+        Iterable<Square> found = start.explore(dirs);
 
         Collection<Square> expected = new HashSet<Square>();
         expected.add(Square.algebraic("a5"));

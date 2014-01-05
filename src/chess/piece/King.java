@@ -19,7 +19,7 @@ public class King extends Piece {
     @Override
     public Iterable<ChessMove> saneMoves(Square start, ChessPosition position) {
         Collection<ChessMove> candidateMoves = new ArrayList<ChessMove>();
-        Collection<Square> candidateEnds = start.explore(Delta.QUEEN_DIRS, 1);
+        Iterable<Square> candidateEnds = start.explore(Delta.QUEEN_DIRS, 1);
         candidateMoves.addAll(start.distributeOverEnds(candidateEnds));
         if (start.getFile() == 5) {
             // There's a decent chance that the king's in its home square,
