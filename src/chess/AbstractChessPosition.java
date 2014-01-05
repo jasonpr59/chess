@@ -8,6 +8,7 @@ import player.Outcome;
 import player.Player;
 import chess.piece.King;
 import chess.piece.Piece;
+import chess.piece.Queen;
 
 
 /**
@@ -135,7 +136,10 @@ public abstract class AbstractChessPosition implements ChessPosition {
                 // No attacker on this square.
                 continue;
             }
-            if (new NormalChessMove(attackerSquare, target).isSane(trialPosition)) {
+            NormalChessMove attack = new NormalChessMove(attackerSquare, target);
+            if (attack.isSane(trialPosition)) {
+                return true;
+            } else if (new PromotionMove(attack, new Queen(attackerColor)).isSane(trialPosition)) {
                 return true;
             }
         }
