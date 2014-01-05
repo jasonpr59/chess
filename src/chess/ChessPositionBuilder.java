@@ -77,7 +77,7 @@ public class ChessPositionBuilder {
 
         // Clear out the whole board.
         for (Square sq : Square.ALL) {
-            placePiece(null, sq);
+            vacate(sq);
         }
         // No en passant square, yet.
         setEnPassantSquare(null);
@@ -187,9 +187,18 @@ public class ChessPositionBuilder {
      * If another piece is already on that square, it is replaced.
      * @return This ChessPositionBuilder, for daisy chaining.
      */
-    public ChessPositionBuilder placePiece(Piece piece, Square square){
+    public ChessPositionBuilder placePiece(Piece piece, Square square) {
         assertUnbuilt();
         board[square.getFile() - 1][square.getRank() - 1] = piece;
+        return this;
+    }
+
+    /** Remove a piece from a Square, if the Square is occupied.
+     * @return This ChessPositionBuilder, for daisy chaining.
+     */
+    public ChessPositionBuilder vacate(Square square) {
+        assertUnbuilt();
+        board[square.getFile() - 1][square.getRank() - 1] = null;
         return this;
     }
 

@@ -101,7 +101,7 @@ public class AbstractChessPositionTest {
 
         // Assert that differing pieces make ChessPositions unequal.
         ChessPosition noQueenRook = new ChessPositionBuilder().setupNewGame()
-                                    .placePiece(null, Square.algebraic("a1")).build();
+                                    .vacate(Square.algebraic("a1")).build();
         assertFalse(noQueenRook.equals(newGame));
 
         // Assert that differing toMoveColors make ChessPositions unequal.

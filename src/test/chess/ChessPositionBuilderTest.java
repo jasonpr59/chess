@@ -107,7 +107,7 @@ public class ChessPositionBuilderTest {
         Square removalTarget = Square.algebraic("c3");
         Piece removedPiece = new Queen(Piece.Color.BLACK);
         builder.placePiece(removedPiece, removalTarget);
-        builder.placePiece(null, removalTarget);
+        builder.vacate(removalTarget);
 
         // Build it...
         ChessPosition position = builder.build();
