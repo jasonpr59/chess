@@ -64,7 +64,7 @@ public class AlphaBeta<P extends Position<P>> implements Decider<P>{
                 }
 
                 // ...and terminate if alpha-beta condition is satisfied.
-                if (!beta.lessThan(alpha)) {
+                if (!alpha.lessThan(beta)) {
                     break;
                 }
             }
