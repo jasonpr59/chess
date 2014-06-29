@@ -25,3 +25,14 @@ sourceSets {
 test {
      include 'com/stalepretzel/AllTests.class'
 }
+
+// Make the jar run the Server.
+jar {
+    manifest {
+        attributes 'Main-Class': 'com.stalepretzel.server.StreamChessServer'
+    }
+}
+
+task play(dependsOn: jar, type: Exec) {
+    commandLine './serve.sh'
+}
