@@ -1,9 +1,7 @@
 *.class
-bin/
-gen/
+src/bin/
+src/.project
+src/.settings/
 build/
-testreport/
 .classpath
-.project
-.settings/
 .gradle/
