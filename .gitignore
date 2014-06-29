@@ -5,3 +5,4 @@ build/
 testreport/
 .classpath
 .project
+.settings/

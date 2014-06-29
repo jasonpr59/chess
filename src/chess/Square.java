@@ -143,7 +143,7 @@ public class Square {
      *     condition.
      * See explore(Collection<Delta> directions, int maxDist) for more info.
      */
-    public Collection<Square> explore(Collection<Delta> directions) {
+    public Iterable<Square> explore(Collection<Delta> directions) {
         // Moving more than 7 in *any* direction will land you
         // off the board.
         return explore(directions, 7);
@@ -164,25 +164,42 @@ public class Square {
      * @param directions a set of quasi-unit Deltas, specifying directions to explore.
      * @param maxDist The maximum number of steps to take in any direction while exploring.
      */
-    public Collection<Square> explore(Collection<Delta> directions, int maxDist) {
+    public Iterable<Square> explore(Collection<Delta> directions, int maxDist) {
         Collection<Square> foundSquares = new ArrayList<Square>();
-        int factor;
-        Square foundSquare;
         for (Delta d : directions) {
-            factor = 1;
-            // We should always break by attempting to create a bad square,
-            // but keep factor below 8, just in case.
-            // TODO: Throw a RuntimeException if factor grows beyond 8?
-            // TODO: Remove use of Exceptions for control flow?
-            while (factor <= maxDist) {
-                try {
-                    foundSquare = this.plus(d.scaled(factor));
-                } catch (ArrayIndexOutOfBoundsException e) {
-                    break;
-                }
-                foundSquares.add(foundSquare);
-                factor++;
+            for (Square found : explore(d, maxDist)) {
+                foundSquares.add(found);
             }
+        }
+        return foundSquares;
+    }
+
+    private Collection<Square> explore(Delta direction, int maxDist) {
+        int deltaFile = direction.getDeltaFile();
+        int deltaRank= direction.getDeltaRank();
+
+        int furthestFile = (deltaFile > 0) ? 8 : 1;
+        int furthestRank = (deltaRank > 0) ? 8 : 1;
+
+        // Integer.MAX_VALUE is a spelling of "infinity", for our purposes.
+        // At least one of these values will be replaced with a small integer.
+        // The minimum of the two is the only value that is used, so the exact
+        // value of our fake infinity value does not matter.
+        int stepsToFurthestFile = (deltaFile == 0)
+                ? Integer.MAX_VALUE
+                : Math.abs((furthestFile - file) / deltaFile);
+        int stepsToFurthestRank = (deltaRank == 0)
+                ? Integer.MAX_VALUE
+                : Math.abs((furthestRank - rank) / deltaRank);
+
+        // Take the minimum.
+        // TODO: Use Guava to simplify.
+        int stepsToEdge = (stepsToFurthestFile < stepsToFurthestRank)
+                ? stepsToFurthestFile : stepsToFurthestRank;
+
+        Collection<Square> foundSquares = new ArrayList<>();
+        for (int factor = 1; factor <= maxDist && factor <= stepsToEdge; factor++) {
+            foundSquares.add(this.plus(direction.scaled(factor)));
         }
         return foundSquares;
     }
@@ -191,7 +208,7 @@ public class Square {
      * Return a set of NormalChessMoves with this square as the start.
      * For each Square in ends, create a NormalChessMove from this Square to that Square.
      */
-    public Collection<NormalChessMove> distributeOverEnds(Collection<Square> ends) {
+    public Collection<NormalChessMove> distributeOverEnds(Iterable<Square> ends) {
         Collection<NormalChessMove> moves = new ArrayList<NormalChessMove>();
         for (Square end : ends) {
             moves.add(new NormalChessMove(this, end));
