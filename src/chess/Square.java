@@ -175,37 +175,31 @@ public class Square {
     }
 
     private Collection<Square> explore(Delta direction, int maxDist) {
-        Collection<Square> foundSquares = new ArrayList<Square>();
-        Square foundSquare;
-        int factor = 1;
-
         int deltaFile = direction.getDeltaFile();
         int deltaRank= direction.getDeltaRank();
 
-        int furthestFile = (deltaFile > 0) ? 8 :1;
+        int furthestFile = (deltaFile > 0) ? 8 : 1;
         int furthestRank = (deltaRank > 0) ? 8 : 1;
 
-        final int FAKE_INFINITY = 100;
-        int stepsToFurthestFile = FAKE_INFINITY;
-        int stepsToFurthestRank = FAKE_INFINITY;
-        if (deltaFile != 0) {
-            stepsToFurthestFile = Math.abs((furthestFile - file) / deltaFile);
-        }
-        if (deltaRank != 0 ) {
-            stepsToFurthestRank = Math.abs((furthestRank - rank) / deltaRank);
-        }
+        // Integer.MAX_VALUE is a spelling of "infinity", for our purposes.
+        // At least one of these values will be replaced with a small integer.
+        // The minimum of the two is the only value that is used, so the exact
+        // value of our fake infinity value does not matter.
+        int stepsToFurthestFile = (deltaFile == 0)
+                ? Integer.MAX_VALUE
+                : Math.abs((furthestFile - file) / deltaFile);
+        int stepsToFurthestRank = (deltaRank == 0)
+                ? Integer.MAX_VALUE
+                : Math.abs((furthestRank - rank) / deltaRank);
 
-        int stepsToEdge;
-        if (stepsToFurthestFile < stepsToFurthestRank) {
-            stepsToEdge = stepsToFurthestFile;
-        } else {
-            stepsToEdge = stepsToFurthestRank;
-        }
+        // Take the minimum.
+        // TODO: Use Guava to simplify.
+        int stepsToEdge = (stepsToFurthestFile < stepsToFurthestRank)
+                ? stepsToFurthestFile : stepsToFurthestRank;
 
-        while (factor <= maxDist && factor <= stepsToEdge) {
-            foundSquare = this.plus(direction.scaled(factor));
-            foundSquares.add(foundSquare);
-            factor++;
+        Collection<Square> foundSquares = new ArrayList<>();
+        for (int factor = 1; factor <= maxDist && factor <= stepsToEdge; factor++) {
+            foundSquares.add(this.plus(direction.scaled(factor)));
         }
         return foundSquares;
     }
