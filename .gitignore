@@ -6,3 +6,4 @@ testreport/
 .classpath
 .project
 .settings/
+.gradle/
